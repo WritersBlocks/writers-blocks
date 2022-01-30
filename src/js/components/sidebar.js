@@ -1,10 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { PluginSidebar, PluginSidebarMoreMenuItem } from '@wordpress/edit-post';
 import { registerPlugin } from '@wordpress/plugins';
-import { useDispatch, withSelect } from '@wordpress/data';
+import { useDispatch, useSelect, withSelect } from '@wordpress/data';
 import { useState, useEffect } from '@wordpress/element';
 
 import check from '../checks';
+import { readingScore } from '../utils/reading-score';
 
 const ALLOWED_BLOCKS = [
 	'core/paragraph',
@@ -20,6 +21,9 @@ const ALLOWED_BLOCKS = [
 const AccessPanel = ({ contentBlocks }) => {
 	const [ problems, setProblems ] = useState([]);
 	const { updateBlockAttributes } = useDispatch( 'core/block-editor' );
+	const content = useSelect( (select) =>
+		select('core/editor').getEditedPostAttribute('content')
+	);
 	
 	useEffect( () => {
 		const blockData = contentBlocks.map((block) => ({
@@ -37,16 +41,16 @@ const AccessPanel = ({ contentBlocks }) => {
 	}, [ contentBlocks ]);
 
 	console.log(problems);
+	console.log(readingScore(content));
 
 	useEffect( () => {
 		problems.forEach((block) => {
-			const { attributes: { className }, clientId, readability, warnings } = block;
+			const { attributes: { className }, clientId, warnings } = block;
+			const classes = warnings.map((warning) => `has-problems--${warning.type}-${warning.level}`).join(' ');
 	
 			if (!className || !className.includes('has-problems')) {
-				const problem = warnings.length ? 'has-problems--syntax' : 'has-problems--readability';
-	
 				updateBlockAttributes(clientId, {
-					className: `has-problems has-problems--${problem}`,
+					className: `has-problems ${classes}`,
 				});
 			}
 		});

@@ -16,7 +16,10 @@ export default (text) => {
             message: 'omit "So" from the beginning of sentences',
             index: match.index,
             offset: value.length + match.index,
-            replacements: '',
+            replacements: [{
+                action: 'delete',
+                value: '',
+            }],
         }
     });
 };

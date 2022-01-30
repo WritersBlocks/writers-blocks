@@ -1,6 +1,6 @@
 import words from '../data/adverbs';
 
-export default (text) => {
+export default function adverbs(text) {
     const expression = new RegExp('\\b(' + words.join('|') + ')(y)\\b', 'gi');
     const matches = [...text.matchAll(expression)];
     
@@ -20,4 +20,4 @@ export default (text) => {
             offset: value.length + match.index,
         };
     });
-};
+}
