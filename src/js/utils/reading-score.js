@@ -1,12 +1,15 @@
 import { flow } from 'lodash';
-import { count as characterCount } from '@wordpress/wordcount';
+import { count as characterCounter } from '@wordpress/wordcount';
 import readingTime from 'reading-time/lib/reading-time';
+import { automatedReadability } from 'automated-readability';
+import { polarity } from 'polarity';
 
 import stripAstrals from './strip-astrals';
 import stripHTMComments from './strip-html-comments';
 import stripSpaces from './strip-spaces';
 import stripTags from './strip-tags';
 import stripHTMLEntities from './strip-html-entities';
+import { tokenize } from './tokenizer';
 
 /**
  * 
@@ -23,22 +26,31 @@ export const readingScore = (content) => {
         )(content)
     }\n`;
 
-    const paragraphs = text.replace(/\n$/gm, '').split(/\n/g).filter((line) => line.length).length;
-    const sentences = text.match(/[^\.!\?]+[\.!\?]+/g)?.length || 0;
-    const words = characterCount(text, 'words');
-    const characters = characterCount(text, 'characters_including_spaces');
-    const alphaNumericCharacters = text.match(/[a-zA-Z0-9]/g)?.length || 0;
+    /**
+     * Not very accurate at the moment.
+     */
+    const paragraphs = text.replace(/\n$/gm, '').split(/\n/g).filter((line) => line.length);
+    const { sentences, words } = tokenize(paragraphs.join(' '));
+    const wordCount = characterCounter(text, 'words');
+    const characterCount = characterCounter(text, 'characters_including_spaces');
+    const alphaNumericCharacters = text.match(/[a-zA-Z0-9]/g);
     const letters = text.match(/[a-zA-Z]/g)?.length || 0;
-    const score = 4.71 * (alphaNumericCharacters / words) + 0.5 * (words / sentences) - 21.43;
-    const { time } = readingTime(text, { wordsPerMinute: 275 });
+    const score = automatedReadability({
+        sentence: sentences.length,
+        word: wordCount,
+        character: alphaNumericCharacters?.length || 0,
+    });
+    const { polarity: polarityScore } = polarity(words);
+    const { minutes } = readingTime(text, { wordsPerMinute: 275 });
 
     return {
-        paragraphs,
-        sentences,
-        words,
-        characters,
+        paragraphs: paragraphs.length,
+        sentences: sentences.length,
+        words: words.length,
+        characters: characterCount,
         score: Math.round(score),
         letters,
-        readingTime: time,
+        polarity: polarityScore,
+        readingTime: minutes,
     };
 };

@@ -1,9 +1,11 @@
 import { __ } from '@wordpress/i18n';
-import { PluginSidebar, PluginSidebarMoreMenuItem } from '@wordpress/edit-post';
+import { PluginSidebar } from '@wordpress/edit-post';
+import { PanelBody, PanelRow } from '@wordpress/components';
 import { registerPlugin } from '@wordpress/plugins';
-import { useDispatch, useSelect, withSelect } from '@wordpress/data';
-import { useState, useEffect } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
+import { useEffect, useMemo } from '@wordpress/element';
 
+import { addProblems } from '../api';
 import check from '../checks';
 import { readingScore } from '../utils/reading-score';
 
@@ -18,66 +20,103 @@ const ALLOWED_BLOCKS = [
 	'core/preformatted',
 ];
 
-const AccessPanel = ({ contentBlocks }) => {
-	const [ problems, setProblems ] = useState([]);
-	const { updateBlockAttributes } = useDispatch( 'core/block-editor' );
+const AccessPanel = () => {
+	const blocks = useSelect( (select) =>
+		select('core/block-editor').getBlocks()
+	);
 	const content = useSelect( (select) =>
 		select('core/editor').getEditedPostAttribute('content')
 	);
-	
-	useEffect( () => {
+
+	const { score, sentences, words, characters, paragraphs, letters, polarity, readingTime } = useMemo( () => readingScore(content), [ content ] );
+	const contentBlocks = useMemo( () => blocks.filter((block) => ALLOWED_BLOCKS.includes(block.name)), [ blocks ] );
+	const blocksWithProblems = useMemo( () => {
 		const blockData = contentBlocks.map((block) => ({
-			...block,
+			blockId: block.clientId,
 			...(block?.attributes?.content?.length ? {
-				warnings: check(block.attributes.content),
+				problems: check(block.attributes.content),
 			} : {}),
 		}));
 
-		const problems = blockData.filter((block) => {
-			return block?.warnings?.length;
-		});
+		return blockData.filter((block) => block?.problems?.length);
+	}, [ contentBlocks ] );
+	const { adverbs, passive, simpler, weasels, hedges, readability } = useMemo( () => blocksWithProblems.reduce( (acc, block) => {
+		acc.adverbs = acc.adverbs.concat(block.problems.filter(({ type }) => type === 'adverbs'));
+		acc.passive = acc.passive.concat(block.problems.filter(({ type }) => type === 'passive'));
+		acc.simpler = acc.simpler.concat(block.problems.filter(({ type }) => type === 'simpler'));
+		acc.weasels = acc.weasels.concat(block.problems.filter(({ type }) => type === 'weasels'));
+		acc.hedges = acc.hedges.concat(block.problems.filter(({ type }) => type === 'hedges'));
+		acc.readability = acc.readability.concat(block.problems.filter(({ type }) => type === 'readability'));
 
-		setProblems(problems);
-	}, [ contentBlocks ]);
+		return acc;
+	}, { adverbs: [], passive: [], simpler: [], weasels: [], hedges: [], readability: [] } ), [ blocksWithProblems ] );
 
-	console.log(problems);
-	console.log(readingScore(content));
+	useEffect(() => {
+		if (blocksWithProblems.length) {
+			addProblems(blocksWithProblems);
+		}
+	}, [ blocksWithProblems ]);
 
-	useEffect( () => {
-		problems.forEach((block) => {
-			const { attributes: { className }, clientId, warnings } = block;
-			const classes = warnings.map((warning) => `has-problems--${warning.type}-${warning.level}`).join(' ');
-	
-			if (!className || !className.includes('has-problems')) {
-				updateBlockAttributes(clientId, {
-					className: `has-problems ${classes}`,
-				});
-			}
-		});
-	}, [ problems ]);
-	
 	return (
 		<>
-			<PluginSidebarMoreMenuItem target="syntax-highlighter" icon="text">
-				{__('Syntax Highlighter', 'syntax')}
-			</PluginSidebarMoreMenuItem>
 			<PluginSidebar
 				name="syntax-highlighter"
 				icon="text"
 				title={__('Syntax Highlighter', 'syntax')}
 			>
-				<div
-					className="syntax-highlighter__readability components-panel__body is-opened"
-					id="syntax-highlighter_readability"
-				>
-
-				</div>
-				<div
-					className="syntax-highlighter__problems components-panel__body is-opened"
-					id="syntax-highlighter_problems"
-				>
-
-				</div>
+				<PanelBody title={__('Readability', 'yext')}>
+					<PanelRow>
+						<h2>Grade {score}</h2>
+					</PanelRow>
+					<PanelRow>
+						<h2>Polarity {polarity}</h2>
+					</PanelRow>
+				</PanelBody>
+				<PanelBody title={__('Stats', 'yext')} initialOpen={false}>
+					<PanelRow>
+						<p><strong>Reading time:</strong> {readingTime >= 1 ? `${
+							Math.round(readingTime)} minute${Math.round(readingTime) > 1 ? 's' : ''
+						}` : 'Less than a minute'}</p>
+					</PanelRow>
+					<PanelRow>
+						<p><strong>Paragraphs:</strong> {paragraphs}</p>
+					</PanelRow>
+					<PanelRow>
+						<p><strong>Sentences:</strong> {sentences}</p>
+					</PanelRow>
+					<PanelRow>
+						<p><strong>Words:</strong> {words}</p>
+					</PanelRow>
+					<PanelRow>
+						<p><strong>Characters:</strong> {characters}</p>
+					</PanelRow>
+					<PanelRow>
+						<p><strong>Letters:</strong> {letters}</p>
+					</PanelRow>
+				</PanelBody>
+				<PanelBody title={__('Suggestions', 'yext')}>
+					<PanelRow>
+						<p>{adverbs.length} adverbs</p>
+					</PanelRow>
+					<PanelRow>
+						<p>{weasels.length} weasel words</p>
+					</PanelRow>
+					<PanelRow>
+						<p>{hedges.length} hedge words</p>
+					</PanelRow>
+					<PanelRow>
+						<p>{passive.length} uses of passive voice.</p>
+					</PanelRow>
+					<PanelRow>
+						<p>{simpler.length} phrases have simpler alternatives.</p>
+					</PanelRow>
+					<PanelRow>
+						<p>{readability.filter(({ level }) => level === 'suggestion').length} of {sentences} are hard to read.</p>
+					</PanelRow>
+					<PanelRow>
+						<p>{readability.filter(({ level }) => level === 'warning').length} of {sentences} are very hard to read.</p>
+					</PanelRow>
+				</PanelBody>
 			</PluginSidebar>
 		</>
 	);
@@ -87,11 +126,5 @@ const AccessPanel = ({ contentBlocks }) => {
  * Register Access Panel Plugin
  */
 registerPlugin('syntax-highlighter', {
-	render: withSelect((select) => {
-		const { getBlocks } = select('core/block-editor');
-
-		return {
-			contentBlocks: getBlocks().filter((block) => ALLOWED_BLOCKS.includes(block.name)),
-		};
-	})(AccessPanel),
+	render: AccessPanel,
 });

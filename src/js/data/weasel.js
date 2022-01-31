@@ -1,32 +1,9 @@
+import { weasels } from 'weasels';
+
 export default {
 	exceptions: [
 		'many',
 		'few',
 	],
-	list: [
-		'are a number',
-		'clearly',
-		'completely',
-		'exceedingly',
-		'excellent',
-		'extremely',
-		'fairly',
-		'huge',
-		'interestingly',
-		'is a number',
-		'largely',
-		'mostly',
-		'obviously',
-		'quite',
-		'relatively',
-		'remarkably',
-		'several',
-		'significantly',
-		'substantially',
-		'surprisingly',
-		'tiny',
-		'various',
-		'vast',
-		'very'
-	],
+	list: weasels,
 };

@@ -1,4 +1,4 @@
-import words from '../data/weasel';
+import words from '../data/hedges';
 
 const expression = new RegExp('\\b(' + words.list.join('|') + ')\\b', 'gi');
 
@@ -14,9 +14,9 @@ export default function weasel(text) {
 
 		return {
 			value,
-			type: 'weasel',
+			type: 'hedges',
 			level: 'warning',
-			message: `"${value}" is a weasel word`,
+			message: `"${value}" is a hedge word`,
 			index: match.index,
 			offset: value.length + match.index,
 			replacements: [{
