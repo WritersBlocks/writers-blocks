@@ -6,5 +6,5 @@
  * @return {string} The manipulated text.
  */
 export default function stripTags(text) {
-	return text.replace( /<\/?[a-z][^>]*?>/gi, '\n' );
+	return text.replace( /<\/?[a-z][^>]*?>/gi, ' ' );
 }

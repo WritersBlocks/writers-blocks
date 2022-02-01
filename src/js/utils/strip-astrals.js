@@ -6,5 +6,5 @@
  * @return {string} The manipulated text.
  */
 export default function stripAstrals( text ) {
-	return text.replace( /[\uD800-\uDBFF][\uDC00-\uDFFF]/g, 'a' );
+	return text.replace( /[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '' );
 }

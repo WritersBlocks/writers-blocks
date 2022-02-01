@@ -25,28 +25,38 @@ export const readingScore = (content) => {
             stripHTMLEntities,
         )(content)
     }\n`;
+    const stripped = text.split(' ').filter(Boolean).join(' ');
 
     /**
      * Not very accurate at the moment.
      */
-    const paragraphs = text.replace(/\n$/gm, '').split(/\n/g).filter((line) => line.length);
-    const { sentences, words } = tokenize(paragraphs.join(' '));
-    const wordCount = characterCounter(text, 'words');
-    const characterCount = characterCounter(text, 'characters_including_spaces');
-    const alphaNumericCharacters = text.match(/[a-zA-Z0-9]/g);
-    const letters = text.match(/[a-zA-Z]/g)?.length || 0;
+    const paragraphs = stripped.replace(/\n$/gm, '').split(/\n/g).filter((line) => line.length);
+    const { sentences } = tokenize(paragraphs.join(' '));
+    const words = sentences.reduce((accumulator, sentence) => {
+        const { words } = tokenize(sentence);
+
+        accumulator.push(...words);
+        return accumulator;
+    }, []);
+
+    const wordCount = characterCounter(stripped, 'words');
+    const characterCount = characterCounter(stripped, 'characters_including_spaces');
+    const alphaNumericCharacters = stripped.match(/[a-zA-Z0-9]/g);
+    const letters = stripped.match(/[a-zA-Z]/g)?.length || 0;
     const score = automatedReadability({
         sentence: sentences.length,
         word: wordCount,
         character: alphaNumericCharacters?.length || 0,
     });
     const { polarity: polarityScore } = polarity(words);
-    const { minutes } = readingTime(text, { wordsPerMinute: 275 });
+    const { minutes } = readingTime(stripped, { wordsPerMinute: 275 });
+
+    console.log({sentences, words});
 
     return {
         paragraphs: paragraphs.length,
         sentences: sentences.length,
-        words: words.length,
+        words: wordCount,
         characters: characterCount,
         score: Math.round(score),
         letters,

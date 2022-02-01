@@ -1,9 +1,10 @@
+import { debounce } from 'lodash';
 import { __ } from '@wordpress/i18n';
 import { PluginSidebar } from '@wordpress/edit-post';
 import { PanelBody, PanelRow } from '@wordpress/components';
 import { registerPlugin } from '@wordpress/plugins';
 import { dispatch, useSelect } from '@wordpress/data';
-import { useEffect, useMemo } from '@wordpress/element';
+import { useEffect, useMemo, useCallback } from '@wordpress/element';
 
 import { addProblems } from '../hooks';
 import check from '../parsers';
@@ -57,10 +58,16 @@ const AccessPanel = () => {
 		acc.simpler = acc.simpler.concat(block.problems.filter(({ type }) => type === 'simpler'));
 		acc.weasels = acc.weasels.concat(block.problems.filter(({ type }) => type === 'weasels'));
 		acc.hedges = acc.hedges.concat(block.problems.filter(({ type }) => type === 'hedges'));
-		acc.readability = acc.readability.concat(block.problems.filter(({ type }) => type === 'readability'));
+		acc.readability = acc.readability.concat(block.problems.filter(({ type }) => type.includes('readability')));
 
 		return acc;
 	}, { adverbs: [], passive: [], simpler: [], weasels: [], hedges: [], readability: [] } ), [ blocksWithProblems ] );
+
+	const updateProblems = useCallback( debounce((problems) => {
+		if (problems.length) {
+			addProblems(problems);
+		}
+	}, 500), [] );
 
 	useEffect(() => {
 		TYPES.forEach((type) => {
@@ -68,10 +75,10 @@ const AccessPanel = () => {
 		});
 
 		if (blocksWithProblems.length) {
-			addProblems(blocksWithProblems);
+			updateProblems(blocksWithProblems);
 
 			blocksWithProblems.forEach(({ blockId, problems }) => {
-				problems.forEach(({ type, level, index, offset }) => {
+				problems.forEach(({ type, index, offset }) => {
 					dispatch('core/annotations').__experimentalAddAnnotation({
 						source: `writers-blocks--${type}`,
 						blockClientId: blockId,

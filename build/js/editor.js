@@ -11,19 +11,22 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_edit_post__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/edit-post */ "@wordpress/edit-post");
-/* harmony import */ var _wordpress_edit_post__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_edit_post__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_plugins__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/plugins */ "@wordpress/plugins");
-/* harmony import */ var _wordpress_plugins__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_plugins__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../hooks */ "./src/js/hooks/index.js");
-/* harmony import */ var _parsers__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../parsers */ "./src/js/parsers/index.js");
-/* harmony import */ var _reading_score__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../reading-score */ "./src/js/reading-score.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash */ "lodash");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_edit_post__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/edit-post */ "@wordpress/edit-post");
+/* harmony import */ var _wordpress_edit_post__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_edit_post__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _wordpress_plugins__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/plugins */ "@wordpress/plugins");
+/* harmony import */ var _wordpress_plugins__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_plugins__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../hooks */ "./src/js/hooks/index.js");
+/* harmony import */ var _parsers__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../parsers */ "./src/js/parsers/index.js");
+/* harmony import */ var _reading_score__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../reading-score */ "./src/js/reading-score.js");
+
 
 
 
@@ -38,8 +41,8 @@ const ALLOWED_BLOCKS = ['core/paragraph', 'core/heading', 'core/list', 'core/quo
 const TYPES = ['simpler', 'adverbs', 'hedges', 'weasel', 'passive', 'readability-hard', 'readability-very-hard', 'so'];
 
 const AccessPanel = () => {
-  const blocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_5__.useSelect)(select => select('core/block-editor').getBlocks());
-  const content = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_5__.useSelect)(select => select('core/editor').getEditedPostAttribute('content'));
+  const blocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_6__.useSelect)(select => select('core/block-editor').getBlocks());
+  const content = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_6__.useSelect)(select => select('core/editor').getEditedPostAttribute('content'));
   const {
     score,
     sentences,
@@ -49,13 +52,13 @@ const AccessPanel = () => {
     letters,
     polarity,
     readingTime
-  } = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => (0,_reading_score__WEBPACK_IMPORTED_MODULE_8__.readingScore)(content), [content]);
+  } = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => (0,_reading_score__WEBPACK_IMPORTED_MODULE_9__.readingScore)(content), [content]);
   const contentBlocks = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => blocks.filter(block => ALLOWED_BLOCKS.includes(block.name)), [blocks]);
   const blocksWithProblems = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => {
     const blockData = contentBlocks.map(block => ({
       blockId: block.clientId,
       ...(block?.attributes?.content?.length ? {
-        problems: (0,_parsers__WEBPACK_IMPORTED_MODULE_7__["default"])(block.attributes.content)
+        problems: (0,_parsers__WEBPACK_IMPORTED_MODULE_8__["default"])(block.attributes.content)
       } : {})
     }));
     return blockData.filter(block => block?.problems?.length);
@@ -102,7 +105,7 @@ const AccessPanel = () => {
       let {
         type
       } = _ref6;
-      return type === 'readability';
+      return type.includes('readability');
     }));
     return acc;
   }, {
@@ -113,13 +116,18 @@ const AccessPanel = () => {
     hedges: [],
     readability: []
   }), [blocksWithProblems]);
+  const updateProblems = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)((0,lodash__WEBPACK_IMPORTED_MODULE_1__.debounce)(problems => {
+    if (problems.length) {
+      (0,_hooks__WEBPACK_IMPORTED_MODULE_7__.addProblems)(problems);
+    }
+  }, 500), []);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     TYPES.forEach(type => {
-      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_5__.dispatch)("core/annotations").__experimentalRemoveAnnotationsBySource(`writers-blocks--${type}`);
+      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_6__.dispatch)("core/annotations").__experimentalRemoveAnnotationsBySource(`writers-blocks--${type}`);
     });
 
     if (blocksWithProblems.length) {
-      (0,_hooks__WEBPACK_IMPORTED_MODULE_6__.addProblems)(blocksWithProblems);
+      updateProblems(blocksWithProblems);
       blocksWithProblems.forEach(_ref7 => {
         let {
           blockId,
@@ -128,12 +136,11 @@ const AccessPanel = () => {
         problems.forEach(_ref8 => {
           let {
             type,
-            level,
             index,
             offset
           } = _ref8;
 
-          (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_5__.dispatch)('core/annotations').__experimentalAddAnnotation({
+          (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_6__.dispatch)('core/annotations').__experimentalAddAnnotation({
             source: `writers-blocks--${type}`,
             blockClientId: blockId,
             richTextIdentifier: 'content',
@@ -146,23 +153,23 @@ const AccessPanel = () => {
       });
     }
   }, [blocksWithProblems]);
-  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_edit_post__WEBPACK_IMPORTED_MODULE_2__.PluginSidebar, {
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_edit_post__WEBPACK_IMPORTED_MODULE_3__.PluginSidebar, {
     name: "syntax-highlighter",
     icon: "text",
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Syntax Highlighter', 'syntax')
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Readability', 'yext')
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Grade ", score)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Polarity ", polarity))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Stats', 'yext'),
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Syntax Highlighter', 'syntax')
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Readability', 'yext')
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Grade ", score)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Polarity ", polarity))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Stats', 'yext'),
     initialOpen: false
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Reading time:"), " ", readingTime >= 1 ? `${Math.round(readingTime)} minute${Math.round(readingTime) > 1 ? 's' : ''}` : 'Less than a minute')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Paragraphs:"), " ", paragraphs)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Sentences:"), " ", sentences)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Words:"), " ", words)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Characters:"), " ", characters)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Letters:"), " ", letters))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Suggestions', 'yext')
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, adverbs.length, " adverbs")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, weasels.length, " weasel words")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, hedges.length, " hedge words")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, passive.length, " uses of passive voice.")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, simpler.length, " phrases have simpler alternatives.")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, readability.filter(_ref9 => {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Reading time:"), " ", readingTime >= 1 ? `${Math.round(readingTime)} minute${Math.round(readingTime) > 1 ? 's' : ''}` : 'Less than a minute')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Paragraphs:"), " ", paragraphs)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Sentences:"), " ", sentences)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Words:"), " ", words)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Characters:"), " ", characters)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Letters:"), " ", letters))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Suggestions', 'yext')
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, adverbs.length, " adverbs")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, weasels.length, " weasel words")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, hedges.length, " hedge words")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, passive.length, " uses of passive voice.")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, simpler.length, " phrases have simpler alternatives.")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, readability.filter(_ref9 => {
     let {
       level
     } = _ref9;
     return level === 'suggestion';
-  }).length, " of ", sentences, " are hard to read.")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, readability.filter(_ref10 => {
+  }).length, " of ", sentences, " are hard to read.")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, readability.filter(_ref10 => {
     let {
       level
     } = _ref10;
@@ -174,7 +181,7 @@ const AccessPanel = () => {
  */
 
 
-(0,_wordpress_plugins__WEBPACK_IMPORTED_MODULE_4__.registerPlugin)('syntax-highlighter', {
+(0,_wordpress_plugins__WEBPACK_IMPORTED_MODULE_5__.registerPlugin)('syntax-highlighter', {
   render: AccessPanel
 });
 
@@ -1226,14 +1233,25 @@ function weasel(text) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _adverbs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./adverbs */ "./src/js/parsers/adverbs.js");
-/* harmony import */ var _hedges__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./hedges */ "./src/js/parsers/hedges.js");
-/* harmony import */ var _passive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./passive */ "./src/js/parsers/passive.js");
-/* harmony import */ var _readability__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./readability */ "./src/js/parsers/readability.js");
-/* harmony import */ var _simpler__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./simpler */ "./src/js/parsers/simpler.js");
-/* harmony import */ var _so__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./so */ "./src/js/parsers/so.js");
-/* harmony import */ var _weasel__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./weasel */ "./src/js/parsers/weasel.js");
-/* harmony import */ var _utils_strip_tags__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/strip-tags */ "./src/js/utils/strip-tags.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "lodash");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _adverbs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./adverbs */ "./src/js/parsers/adverbs.js");
+/* harmony import */ var _hedges__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./hedges */ "./src/js/parsers/hedges.js");
+/* harmony import */ var _passive__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./passive */ "./src/js/parsers/passive.js");
+/* harmony import */ var _readability__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./readability */ "./src/js/parsers/readability.js");
+/* harmony import */ var _simpler__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./simpler */ "./src/js/parsers/simpler.js");
+/* harmony import */ var _so__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./so */ "./src/js/parsers/so.js");
+/* harmony import */ var _weasel__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./weasel */ "./src/js/parsers/weasel.js");
+/* harmony import */ var _utils_strip_tags__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/strip-tags */ "./src/js/utils/strip-tags.js");
+/* harmony import */ var _utils_strip_astrals__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../utils/strip-astrals */ "./src/js/utils/strip-astrals.js");
+/* harmony import */ var _utils_strip_html_comments__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../utils/strip-html-comments */ "./src/js/utils/strip-html-comments.js");
+/* harmony import */ var _utils_strip_spaces__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../utils/strip-spaces */ "./src/js/utils/strip-spaces.js");
+/* harmony import */ var _utils_strip_html_entities__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../utils/strip-html-entities */ "./src/js/utils/strip-html-entities.js");
+
+
+
+
+
 
 
 
@@ -1243,8 +1261,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ __webpack_exports__["default"] = (text => {
-  const content = (0,_utils_strip_tags__WEBPACK_IMPORTED_MODULE_7__["default"])(text);
-  return [...(0,_passive__WEBPACK_IMPORTED_MODULE_2__["default"])(content), ...(0,_so__WEBPACK_IMPORTED_MODULE_5__["default"])(content), ...(0,_adverbs__WEBPACK_IMPORTED_MODULE_0__["default"])(content), ...(0,_readability__WEBPACK_IMPORTED_MODULE_3__["default"])(content), ...(0,_simpler__WEBPACK_IMPORTED_MODULE_4__["default"])(content), ...(0,_hedges__WEBPACK_IMPORTED_MODULE_1__["default"])(content), ...(0,_weasel__WEBPACK_IMPORTED_MODULE_6__["default"])(content)].filter(Boolean);
+  const content = `${(0,lodash__WEBPACK_IMPORTED_MODULE_0__.flow)(_utils_strip_tags__WEBPACK_IMPORTED_MODULE_8__["default"], _utils_strip_html_comments__WEBPACK_IMPORTED_MODULE_10__["default"], _utils_strip_astrals__WEBPACK_IMPORTED_MODULE_9__["default"], _utils_strip_spaces__WEBPACK_IMPORTED_MODULE_11__["default"], _utils_strip_html_entities__WEBPACK_IMPORTED_MODULE_12__["default"])(text)}\n`;
+  const stripped = content.split(' ').filter(Boolean).join(' ');
+  return [...(0,_passive__WEBPACK_IMPORTED_MODULE_3__["default"])(stripped), ...(0,_so__WEBPACK_IMPORTED_MODULE_6__["default"])(stripped), ...(0,_adverbs__WEBPACK_IMPORTED_MODULE_1__["default"])(stripped), ...(0,_readability__WEBPACK_IMPORTED_MODULE_4__["default"])(stripped), ...(0,_simpler__WEBPACK_IMPORTED_MODULE_5__["default"])(stripped), ...(0,_hedges__WEBPACK_IMPORTED_MODULE_2__["default"])(stripped), ...(0,_weasel__WEBPACK_IMPORTED_MODULE_7__["default"])(stripped)].filter(Boolean);
 });
 
 /***/ }),
@@ -1304,10 +1323,15 @@ function passive(text) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _reading_score__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../reading-score */ "./src/js/reading-score.js");
+/* harmony import */ var _tokenizer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../tokenizer */ "./src/js/tokenizer.js");
+
 
 /* harmony default export */ __webpack_exports__["default"] = (text => {
-  const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [];
-  return !sentences ? [] : sentences.map(sentence => {
+  const paragraphs = text.replace(/\n$/gm, '').split(/\n/g).filter(line => line.length);
+  const {
+    sentences
+  } = (0,_tokenizer__WEBPACK_IMPORTED_MODULE_1__.tokenize)(paragraphs.join(' '));
+  return !sentences ? [] : sentences.map((sentence, index) => {
     const {
       score,
       words
@@ -1318,8 +1342,8 @@ __webpack_require__.r(__webpack_exports__);
       type: `readability-${level === 'warning' ? 'very-' : ''}hard`,
       level,
       message: `sentence is${level === 'warning' ? ' very' : ''} hard to read`,
-      index: 0,
-      offset: sentence.length
+      index: index === 0 ? 0 : sentences[index - 1].length + 1,
+      offset: sentences.reduce((accumulator, currentValue, currentIndex) => currentIndex <= index ? accumulator + currentValue.length : accumulator, 0)
     } : null;
   }).filter(Boolean);
 });
@@ -1496,19 +1520,26 @@ __webpack_require__.r(__webpack_exports__);
 
 const readingScore = content => {
   const text = `${(0,lodash__WEBPACK_IMPORTED_MODULE_0__.flow)(_utils_strip_tags__WEBPACK_IMPORTED_MODULE_6__["default"], _utils_strip_html_comments__WEBPACK_IMPORTED_MODULE_4__["default"], _utils_strip_astrals__WEBPACK_IMPORTED_MODULE_3__["default"], _utils_strip_spaces__WEBPACK_IMPORTED_MODULE_5__["default"], _utils_strip_html_entities__WEBPACK_IMPORTED_MODULE_7__["default"])(content)}\n`;
+  const stripped = text.split(' ').filter(Boolean).join(' ');
   /**
    * Not very accurate at the moment.
    */
 
-  const paragraphs = text.replace(/\n$/gm, '').split(/\n/g).filter(line => line.length);
+  const paragraphs = stripped.replace(/\n$/gm, '').split(/\n/g).filter(line => line.length);
   const {
-    sentences,
-    words
+    sentences
   } = (0,_tokenizer__WEBPACK_IMPORTED_MODULE_8__.tokenize)(paragraphs.join(' '));
-  const wordCount = (0,_wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__.count)(text, 'words');
-  const characterCount = (0,_wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__.count)(text, 'characters_including_spaces');
-  const alphaNumericCharacters = text.match(/[a-zA-Z0-9]/g);
-  const letters = text.match(/[a-zA-Z]/g)?.length || 0;
+  const words = sentences.reduce((accumulator, sentence) => {
+    const {
+      words
+    } = (0,_tokenizer__WEBPACK_IMPORTED_MODULE_8__.tokenize)(sentence);
+    accumulator.push(...words);
+    return accumulator;
+  }, []);
+  const wordCount = (0,_wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__.count)(stripped, 'words');
+  const characterCount = (0,_wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__.count)(stripped, 'characters_including_spaces');
+  const alphaNumericCharacters = stripped.match(/[a-zA-Z0-9]/g);
+  const letters = stripped.match(/[a-zA-Z]/g)?.length || 0;
   const score = (0,automated_readability__WEBPACK_IMPORTED_MODULE_9__.automatedReadability)({
     sentence: sentences.length,
     word: wordCount,
@@ -1519,13 +1550,17 @@ const readingScore = content => {
   } = (0,polarity__WEBPACK_IMPORTED_MODULE_10__.polarity)(words);
   const {
     minutes
-  } = reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2___default()(text, {
+  } = reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2___default()(stripped, {
     wordsPerMinute: 275
+  });
+  console.log({
+    sentences,
+    words
   });
   return {
     paragraphs: paragraphs.length,
     sentences: sentences.length,
-    words: words.length,
+    words: wordCount,
     characters: characterCount,
     score: Math.round(score),
     letters,
@@ -1717,7 +1752,7 @@ __webpack_require__.r(__webpack_exports__);
  * @return {string} The manipulated text.
  */
 function stripAstrals(text) {
-  return text.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, 'a');
+  return text.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '');
 }
 
 /***/ }),
@@ -1765,7 +1800,7 @@ __webpack_require__.r(__webpack_exports__);
  * @return {string} The manipulated text.
  */
 function stripHTMLEntities(text) {
-  return text.replace(/&\S+?;/g, 'a');
+  return text.replace(/&\S+?;/g, '');
 }
 
 /***/ }),
@@ -1813,7 +1848,7 @@ __webpack_require__.r(__webpack_exports__);
  * @return {string} The manipulated text.
  */
 function stripTags(text) {
-  return text.replace(/<\/?[a-z][^>]*?>/gi, '\n');
+  return text.replace(/<\/?[a-z][^>]*?>/gi, ' ');
 }
 
 /***/ }),

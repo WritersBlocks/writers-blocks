@@ -6,5 +6,5 @@
  * @return {string} The manipulated text.
  */
 export default function stripHTMLEntities( text ) {
-	return text.replace( /&\S+?;/g, 'a' );
+	return text.replace( /&\S+?;/g, '' );
 }
