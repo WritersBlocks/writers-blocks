@@ -2,12 +2,12 @@ import { __ } from '@wordpress/i18n';
 import { PluginSidebar } from '@wordpress/edit-post';
 import { PanelBody, PanelRow } from '@wordpress/components';
 import { registerPlugin } from '@wordpress/plugins';
-import { useSelect } from '@wordpress/data';
+import { dispatch, useSelect } from '@wordpress/data';
 import { useEffect, useMemo } from '@wordpress/element';
 
-import { addProblems } from '../api';
-import check from '../checks';
-import { readingScore } from '../utils/reading-score';
+import { addProblems } from '../hooks';
+import check from '../parsers';
+import { readingScore } from '../reading-score';
 
 const ALLOWED_BLOCKS = [
 	'core/paragraph',
@@ -18,6 +18,17 @@ const ALLOWED_BLOCKS = [
 	'core/verse',
 	'core/media-text',
 	'core/preformatted',
+];
+
+const TYPES = [
+	'simpler',
+	'adverbs',
+	'hedges',
+	'weasel',
+	'passive',
+	'readability-hard',
+	'readability-very-hard',
+	'so',
 ];
 
 const AccessPanel = () => {
@@ -52,8 +63,26 @@ const AccessPanel = () => {
 	}, { adverbs: [], passive: [], simpler: [], weasels: [], hedges: [], readability: [] } ), [ blocksWithProblems ] );
 
 	useEffect(() => {
+		TYPES.forEach((type) => {
+			dispatch( "core/annotations" ).__experimentalRemoveAnnotationsBySource( `writers-blocks--${type}` );
+		});
+
 		if (blocksWithProblems.length) {
 			addProblems(blocksWithProblems);
+
+			blocksWithProblems.forEach(({ blockId, problems }) => {
+				problems.forEach(({ type, level, index, offset }) => {
+					dispatch('core/annotations').__experimentalAddAnnotation({
+						source: `writers-blocks--${type}`,
+						blockClientId: blockId,
+						richTextIdentifier: 'content',
+						range: {
+							start: index,
+							end: offset,
+						},
+					});
+				});
+			});
 		}
 	}, [ blocksWithProblems ]);
 

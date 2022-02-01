@@ -4,11 +4,11 @@ import readingTime from 'reading-time/lib/reading-time';
 import { automatedReadability } from 'automated-readability';
 import { polarity } from 'polarity';
 
-import stripAstrals from './strip-astrals';
-import stripHTMComments from './strip-html-comments';
-import stripSpaces from './strip-spaces';
-import stripTags from './strip-tags';
-import stripHTMLEntities from './strip-html-entities';
+import stripAstrals from './utils/strip-astrals';
+import stripHTMComments from './utils/strip-html-comments';
+import stripSpaces from './utils/strip-spaces';
+import stripTags from './utils/strip-tags';
+import stripHTMLEntities from './utils/strip-html-entities';
 import { tokenize } from './tokenizer';
 
 /**

@@ -31,8 +31,15 @@ function syntax_editor_scripts() {
 	wp_enqueue_script(
 		'syntax',
 		SYNTAX_PLUGIN_URL . './build/js/editor.js',
-		Utility\get_asset_info( 'editor', 'dependencies' ),
-		Utility\get_asset_info( 'editor', 'version' ),
+		Utility\get_asset_info( 'editor', 'js', 'dependencies' ),
+		Utility\get_asset_info( 'editor', 'js', 'version' ),
 		false
+	);
+
+	wp_enqueue_style(
+		'syntax-style',
+		SYNTAX_PLUGIN_URL . './build/css/editor.css',
+		Utility\get_asset_info( 'editor', 'css', 'dependencies' ),
+		Utility\get_asset_info( 'editor', 'css', 'version' )
 	);
 }

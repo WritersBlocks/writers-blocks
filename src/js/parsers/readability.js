@@ -1,4 +1,4 @@
-import { readingScore } from "../utils/reading-score";
+import { readingScore } from "../reading-score";
 
 export default (text) => {
     const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [];
@@ -9,7 +9,7 @@ export default (text) => {
 
         return words > 14 && level ? {
             value: sentence,
-            type: 'readability',
+            type: `readability-${level === 'warning' ? 'very-' : ''}hard`,
             level,
             message: `sentence is${level ===  'warning' ? ' very' : ''} hard to read`,
             index: 0,

@@ -1,6 +1,6 @@
 export function addProblems(problems) {
 	return {
-		type: 'ADD_PROBLEMS',
+		type: 'UPDATE_PROBLEMS',
 		problems,
 	};
 }

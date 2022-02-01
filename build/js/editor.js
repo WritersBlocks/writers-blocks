@@ -1,357 +1,6 @@
 /******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/js/api/add.js":
-/*!***************************!*\
-  !*** ./src/js/api/add.js ***!
-  \***************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "addProblems": function() { return /* binding */ addProblems; }
-/* harmony export */ });
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../store */ "./src/js/store/index.js");
-
-
-function addProblems(problems) {
-  (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_1__.store).addProblems(problems);
-}
-
-/***/ }),
-
-/***/ "./src/js/api/index.js":
-/*!*****************************!*\
-  !*** ./src/js/api/index.js ***!
-  \*****************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "addProblems": function() { return /* reexport safe */ _add__WEBPACK_IMPORTED_MODULE_0__.addProblems; }
-/* harmony export */ });
-/* harmony import */ var _add__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./add */ "./src/js/api/add.js");
-
-
-
-/***/ }),
-
-/***/ "./src/js/checks/adverbs.js":
-/*!**********************************!*\
-  !*** ./src/js/checks/adverbs.js ***!
-  \**********************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": function() { return /* binding */ adverbs; }
-/* harmony export */ });
-/* harmony import */ var _data_adverbs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/adverbs */ "./src/js/data/adverbs.js");
-
-function adverbs(text) {
-  const expression = new RegExp('\\b(' + _data_adverbs__WEBPACK_IMPORTED_MODULE_0__["default"].join('|') + ')(y)\\b', 'gi');
-  const matches = [...text.matchAll(expression)];
-
-  if (!matches) {
-    return [];
-  }
-
-  return matches.map(match => {
-    const [value] = [...match].filter(Boolean);
-    return {
-      value,
-      type: 'adverbs',
-      level: 'warning',
-      message: 'adverbs can weaken meaning',
-      index: match.index,
-      offset: value.length + match.index
-    };
-  });
-}
-
-/***/ }),
-
-/***/ "./src/js/checks/hedges.js":
-/*!*********************************!*\
-  !*** ./src/js/checks/hedges.js ***!
-  \*********************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": function() { return /* binding */ weasel; }
-/* harmony export */ });
-/* harmony import */ var _data_hedges__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/hedges */ "./src/js/data/hedges.js");
-
-const expression = new RegExp('\\b(' + _data_hedges__WEBPACK_IMPORTED_MODULE_0__["default"].list.join('|') + ')\\b', 'gi');
-function weasel(text) {
-  const matches = [...text.matchAll(expression)];
-
-  if (!matches) {
-    return [];
-  }
-
-  return matches.map(match => {
-    const [value] = [...match].filter(Boolean);
-    return {
-      value,
-      type: 'hedges',
-      level: 'warning',
-      message: `"${value}" is a hedge word`,
-      index: match.index,
-      offset: value.length + match.index,
-      replacements: [{
-        action: 'delete',
-        value: ''
-      }]
-    };
-  });
-}
-;
-
-/***/ }),
-
-/***/ "./src/js/checks/index.js":
-/*!********************************!*\
-  !*** ./src/js/checks/index.js ***!
-  \********************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _adverbs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./adverbs */ "./src/js/checks/adverbs.js");
-/* harmony import */ var _hedges__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./hedges */ "./src/js/checks/hedges.js");
-/* harmony import */ var _passive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./passive */ "./src/js/checks/passive.js");
-/* harmony import */ var _readability__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./readability */ "./src/js/checks/readability.js");
-/* harmony import */ var _simpler__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./simpler */ "./src/js/checks/simpler.js");
-/* harmony import */ var _so__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./so */ "./src/js/checks/so.js");
-/* harmony import */ var _weasel__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./weasel */ "./src/js/checks/weasel.js");
-/* harmony import */ var _utils_strip_tags__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/strip-tags */ "./src/js/utils/strip-tags.js");
-
-
-
-
-
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = (text => {
-  const content = (0,_utils_strip_tags__WEBPACK_IMPORTED_MODULE_7__["default"])(text);
-  return [...(0,_passive__WEBPACK_IMPORTED_MODULE_2__["default"])(content), ...(0,_so__WEBPACK_IMPORTED_MODULE_5__["default"])(content), ...(0,_adverbs__WEBPACK_IMPORTED_MODULE_0__["default"])(content), ...(0,_readability__WEBPACK_IMPORTED_MODULE_3__["default"])(content), ...(0,_simpler__WEBPACK_IMPORTED_MODULE_4__["default"])(content), ...(0,_hedges__WEBPACK_IMPORTED_MODULE_1__["default"])(content), ...(0,_weasel__WEBPACK_IMPORTED_MODULE_6__["default"])(content)].filter(Boolean);
-});
-
-/***/ }),
-
-/***/ "./src/js/checks/passive.js":
-/*!**********************************!*\
-  !*** ./src/js/checks/passive.js ***!
-  \**********************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": function() { return /* binding */ passive; }
-/* harmony export */ });
-/* harmony import */ var _data_passive__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/passive */ "./src/js/data/passive.js");
-
-const expression = new RegExp('\\b(am|are|were|being|is|been|was|be)\\b\\s*([\\w]+ed|' + _data_passive__WEBPACK_IMPORTED_MODULE_0__["default"].map(word => word.value).join('|') + ')\\b', 'gi');
-function passive(text) {
-  const matches = [...text.matchAll(expression)];
-
-  if (!matches) {
-    return [];
-  }
-
-  return matches.map(match => {
-    const [value] = [...match].filter(Boolean);
-    const replacement = _data_passive__WEBPACK_IMPORTED_MODULE_0__["default"].find(_ref => {
-      let {
-        value: word
-      } = _ref;
-      return word === value;
-    });
-    return {
-      value,
-      type: 'passive',
-      level: 'warning',
-      message: `"${value}" may be passive voice`,
-      index: match.index,
-      offset: value.length + match.index,
-      replacements: replacement?.replace ? replacement.replace.split(', ').map(value => ({
-        value: value.toLocaleLowerCase(),
-        action: 'replace'
-      })) : []
-    };
-  });
-}
-
-/***/ }),
-
-/***/ "./src/js/checks/readability.js":
-/*!**************************************!*\
-  !*** ./src/js/checks/readability.js ***!
-  \**************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils_reading_score__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/reading-score */ "./src/js/utils/reading-score.js");
-
-/* harmony default export */ __webpack_exports__["default"] = (text => {
-  const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [];
-  return !sentences ? [] : sentences.map(sentence => {
-    const {
-      score,
-      words
-    } = (0,_utils_reading_score__WEBPACK_IMPORTED_MODULE_0__.readingScore)(sentence);
-    const level = score > 9 && score <= 16 ? 'suggestion' : score > 16 ? 'warning' : null;
-    return words > 14 && level ? {
-      value: sentence,
-      type: 'readability',
-      level,
-      message: `sentence is${level === 'warning' ? ' very' : ''} hard to read`,
-      index: 0,
-      offset: sentence.length
-    } : null;
-  }).filter(Boolean);
-});
-
-/***/ }),
-
-/***/ "./src/js/checks/simpler.js":
-/*!**********************************!*\
-  !*** ./src/js/checks/simpler.js ***!
-  \**********************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": function() { return /* binding */ simpler; }
-/* harmony export */ });
-/* harmony import */ var _data_simpler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/simpler */ "./src/js/data/simpler.js");
-
-const expression = new RegExp('\\b(' + _data_simpler__WEBPACK_IMPORTED_MODULE_0__["default"].map(_ref => {
-  let {
-    value
-  } = _ref;
-  return value;
-}).join('|') + ')\\b', 'gi');
-function simpler(text) {
-  const matches = [...text.matchAll(expression)];
-
-  if (!matches) {
-    return [];
-  }
-
-  return matches.map(match => {
-    const [value] = [...match].filter(Boolean);
-    const replacement = _data_simpler__WEBPACK_IMPORTED_MODULE_0__["default"].find(_ref2 => {
-      let {
-        value: word
-      } = _ref2;
-      return word === value;
-    });
-    return {
-      value,
-      type: 'simpler',
-      level: 'suggestion',
-      message: `"${value}" has a simpler alternative`,
-      index: match.index,
-      offset: value.length + match.index,
-      replacements: replacement?.replace ? replacement.replace.split(', ').map(value => ({
-        value: value.toLocaleLowerCase(),
-        action: 'replace'
-      })) : []
-    };
-  });
-}
-
-/***/ }),
-
-/***/ "./src/js/checks/so.js":
-/*!*****************************!*\
-  !*** ./src/js/checks/so.js ***!
-  \*****************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = (text => {
-  const expression = new RegExp(/^(\s)*so\b[\s\S]/gi);
-  const matches = [...text.matchAll(expression)];
-
-  if (!matches) {
-    return [];
-  }
-
-  return matches.map(match => {
-    const [value] = [...match].filter(Boolean);
-    return {
-      value,
-      type: 'so',
-      level: 'suggestion',
-      message: 'omit "So" from the beginning of sentences',
-      index: match.index,
-      offset: value.length + match.index,
-      replacements: [{
-        action: 'delete',
-        value: ''
-      }]
-    };
-  });
-});
-
-/***/ }),
-
-/***/ "./src/js/checks/weasel.js":
-/*!*********************************!*\
-  !*** ./src/js/checks/weasel.js ***!
-  \*********************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": function() { return /* binding */ weasel; }
-/* harmony export */ });
-/* harmony import */ var _data_weasel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/weasel */ "./src/js/data/weasel.js");
-
-const expression = new RegExp('\\b(' + _data_weasel__WEBPACK_IMPORTED_MODULE_0__["default"].list.join('|') + ')\\b', 'gi');
-function weasel(text) {
-  const matches = [...text.matchAll(expression)];
-
-  if (!matches) {
-    return [];
-  }
-
-  return matches.map(match => {
-    const [value] = [...match].filter(Boolean);
-    return {
-      value,
-      type: 'weasel',
-      level: 'warning',
-      message: `"${value}" is a weasel word`,
-      index: match.index,
-      offset: value.length + match.index,
-      replacements: [{
-        action: 'delete',
-        value: ''
-      }]
-    };
-  });
-}
-;
-
-/***/ }),
-
 /***/ "./src/js/components/sidebar.js":
 /*!**************************************!*\
   !*** ./src/js/components/sidebar.js ***!
@@ -372,9 +21,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_plugins__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_plugins__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../api */ "./src/js/api/index.js");
-/* harmony import */ var _checks__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../checks */ "./src/js/checks/index.js");
-/* harmony import */ var _utils_reading_score__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/reading-score */ "./src/js/utils/reading-score.js");
+/* harmony import */ var _hooks__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../hooks */ "./src/js/hooks/index.js");
+/* harmony import */ var _parsers__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../parsers */ "./src/js/parsers/index.js");
+/* harmony import */ var _reading_score__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../reading-score */ "./src/js/reading-score.js");
 
 
 
@@ -386,6 +35,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const ALLOWED_BLOCKS = ['core/paragraph', 'core/heading', 'core/list', 'core/quote', 'core/pullquote', 'core/verse', 'core/media-text', 'core/preformatted'];
+const TYPES = ['simpler', 'adverbs', 'hedges', 'weasel', 'passive', 'readability-hard', 'readability-very-hard', 'so'];
 
 const AccessPanel = () => {
   const blocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_5__.useSelect)(select => select('core/block-editor').getBlocks());
@@ -399,13 +49,13 @@ const AccessPanel = () => {
     letters,
     polarity,
     readingTime
-  } = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => (0,_utils_reading_score__WEBPACK_IMPORTED_MODULE_8__.readingScore)(content), [content]);
+  } = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => (0,_reading_score__WEBPACK_IMPORTED_MODULE_8__.readingScore)(content), [content]);
   const contentBlocks = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => blocks.filter(block => ALLOWED_BLOCKS.includes(block.name)), [blocks]);
   const blocksWithProblems = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => {
     const blockData = contentBlocks.map(block => ({
       blockId: block.clientId,
       ...(block?.attributes?.content?.length ? {
-        problems: (0,_checks__WEBPACK_IMPORTED_MODULE_7__["default"])(block.attributes.content)
+        problems: (0,_parsers__WEBPACK_IMPORTED_MODULE_7__["default"])(block.attributes.content)
       } : {})
     }));
     return blockData.filter(block => block?.problems?.length);
@@ -464,8 +114,36 @@ const AccessPanel = () => {
     readability: []
   }), [blocksWithProblems]);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    TYPES.forEach(type => {
+      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_5__.dispatch)("core/annotations").__experimentalRemoveAnnotationsBySource(`writers-blocks--${type}`);
+    });
+
     if (blocksWithProblems.length) {
-      (0,_api__WEBPACK_IMPORTED_MODULE_6__.addProblems)(blocksWithProblems);
+      (0,_hooks__WEBPACK_IMPORTED_MODULE_6__.addProblems)(blocksWithProblems);
+      blocksWithProblems.forEach(_ref7 => {
+        let {
+          blockId,
+          problems
+        } = _ref7;
+        problems.forEach(_ref8 => {
+          let {
+            type,
+            level,
+            index,
+            offset
+          } = _ref8;
+
+          (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_5__.dispatch)('core/annotations').__experimentalAddAnnotation({
+            source: `writers-blocks--${type}`,
+            blockClientId: blockId,
+            richTextIdentifier: 'content',
+            range: {
+              start: index,
+              end: offset
+            }
+          });
+        });
+      });
     }
   }, [blocksWithProblems]);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_edit_post__WEBPACK_IMPORTED_MODULE_2__.PluginSidebar, {
@@ -479,15 +157,15 @@ const AccessPanel = () => {
     initialOpen: false
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Reading time:"), " ", readingTime >= 1 ? `${Math.round(readingTime)} minute${Math.round(readingTime) > 1 ? 's' : ''}` : 'Less than a minute')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Paragraphs:"), " ", paragraphs)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Sentences:"), " ", sentences)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Words:"), " ", words)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Characters:"), " ", characters)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, "Letters:"), " ", letters))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Suggestions', 'yext')
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, adverbs.length, " adverbs")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, weasels.length, " weasel words")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, hedges.length, " hedge words")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, passive.length, " uses of passive voice.")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, simpler.length, " phrases have simpler alternatives.")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, readability.filter(_ref7 => {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, adverbs.length, " adverbs")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, weasels.length, " weasel words")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, hedges.length, " hedge words")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, passive.length, " uses of passive voice.")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, simpler.length, " phrases have simpler alternatives.")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, readability.filter(_ref9 => {
     let {
       level
-    } = _ref7;
+    } = _ref9;
     return level === 'suggestion';
-  }).length, " of ", sentences, " are hard to read.")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, readability.filter(_ref8 => {
+  }).length, " of ", sentences, " are hard to read.")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, readability.filter(_ref10 => {
     let {
       level
-    } = _ref8;
+    } = _ref10;
     return level === 'warning';
   }).length, " of ", sentences, " are very hard to read.")))));
 };
@@ -1424,6 +1102,440 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/js/hooks/index.js":
+/*!*******************************!*\
+  !*** ./src/js/hooks/index.js ***!
+  \*******************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "addProblems": function() { return /* reexport safe */ _update__WEBPACK_IMPORTED_MODULE_0__.addProblems; }
+/* harmony export */ });
+/* harmony import */ var _update__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./update */ "./src/js/hooks/update.js");
+
+
+
+/***/ }),
+
+/***/ "./src/js/hooks/update.js":
+/*!********************************!*\
+  !*** ./src/js/hooks/update.js ***!
+  \********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "addProblems": function() { return /* binding */ addProblems; }
+/* harmony export */ });
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../store */ "./src/js/store/index.js");
+
+
+function addProblems(problems) {
+  (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_1__.store).addProblems(problems);
+}
+
+/***/ }),
+
+/***/ "./src/js/parsers/adverbs.js":
+/*!***********************************!*\
+  !*** ./src/js/parsers/adverbs.js ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ adverbs; }
+/* harmony export */ });
+/* harmony import */ var _data_adverbs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/adverbs */ "./src/js/data/adverbs.js");
+
+function adverbs(text) {
+  const expression = new RegExp('\\b(' + _data_adverbs__WEBPACK_IMPORTED_MODULE_0__["default"].join('|') + ')(y)\\b', 'gi');
+  const matches = [...text.matchAll(expression)];
+
+  if (!matches) {
+    return [];
+  }
+
+  return matches.map(match => {
+    const [value] = [...match].filter(Boolean);
+    return {
+      value,
+      type: 'adverbs',
+      level: 'warning',
+      message: 'adverbs can weaken meaning',
+      index: match.index,
+      offset: value.length + match.index
+    };
+  });
+}
+
+/***/ }),
+
+/***/ "./src/js/parsers/hedges.js":
+/*!**********************************!*\
+  !*** ./src/js/parsers/hedges.js ***!
+  \**********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ weasel; }
+/* harmony export */ });
+/* harmony import */ var _data_hedges__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/hedges */ "./src/js/data/hedges.js");
+
+const expression = new RegExp('\\b(' + _data_hedges__WEBPACK_IMPORTED_MODULE_0__["default"].list.join('|') + ')\\b', 'gi');
+function weasel(text) {
+  const matches = [...text.matchAll(expression)];
+
+  if (!matches) {
+    return [];
+  }
+
+  return matches.map(match => {
+    const [value] = [...match].filter(Boolean);
+    return {
+      value,
+      type: 'hedges',
+      level: 'warning',
+      message: `"${value}" is a hedge word`,
+      index: match.index,
+      offset: value.length + match.index,
+      replacements: [{
+        action: 'delete',
+        value: ''
+      }]
+    };
+  });
+}
+;
+
+/***/ }),
+
+/***/ "./src/js/parsers/index.js":
+/*!*********************************!*\
+  !*** ./src/js/parsers/index.js ***!
+  \*********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _adverbs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./adverbs */ "./src/js/parsers/adverbs.js");
+/* harmony import */ var _hedges__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./hedges */ "./src/js/parsers/hedges.js");
+/* harmony import */ var _passive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./passive */ "./src/js/parsers/passive.js");
+/* harmony import */ var _readability__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./readability */ "./src/js/parsers/readability.js");
+/* harmony import */ var _simpler__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./simpler */ "./src/js/parsers/simpler.js");
+/* harmony import */ var _so__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./so */ "./src/js/parsers/so.js");
+/* harmony import */ var _weasel__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./weasel */ "./src/js/parsers/weasel.js");
+/* harmony import */ var _utils_strip_tags__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/strip-tags */ "./src/js/utils/strip-tags.js");
+
+
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (text => {
+  const content = (0,_utils_strip_tags__WEBPACK_IMPORTED_MODULE_7__["default"])(text);
+  return [...(0,_passive__WEBPACK_IMPORTED_MODULE_2__["default"])(content), ...(0,_so__WEBPACK_IMPORTED_MODULE_5__["default"])(content), ...(0,_adverbs__WEBPACK_IMPORTED_MODULE_0__["default"])(content), ...(0,_readability__WEBPACK_IMPORTED_MODULE_3__["default"])(content), ...(0,_simpler__WEBPACK_IMPORTED_MODULE_4__["default"])(content), ...(0,_hedges__WEBPACK_IMPORTED_MODULE_1__["default"])(content), ...(0,_weasel__WEBPACK_IMPORTED_MODULE_6__["default"])(content)].filter(Boolean);
+});
+
+/***/ }),
+
+/***/ "./src/js/parsers/passive.js":
+/*!***********************************!*\
+  !*** ./src/js/parsers/passive.js ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ passive; }
+/* harmony export */ });
+/* harmony import */ var _data_passive__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/passive */ "./src/js/data/passive.js");
+
+const expression = new RegExp('\\b(am|are|were|being|is|been|was|be)\\b\\s*([\\w]+ed|' + _data_passive__WEBPACK_IMPORTED_MODULE_0__["default"].map(word => word.value).join('|') + ')\\b', 'gi');
+function passive(text) {
+  const matches = [...text.matchAll(expression)];
+
+  if (!matches) {
+    return [];
+  }
+
+  return matches.map(match => {
+    const [value] = [...match].filter(Boolean);
+    const replacement = _data_passive__WEBPACK_IMPORTED_MODULE_0__["default"].find(_ref => {
+      let {
+        value: word
+      } = _ref;
+      return word === value;
+    });
+    return {
+      value,
+      type: 'passive',
+      level: 'warning',
+      message: `"${value}" may be passive voice`,
+      index: match.index,
+      offset: value.length + match.index,
+      replacements: replacement?.replace ? replacement.replace.split(', ').map(value => ({
+        value: value.toLocaleLowerCase(),
+        action: 'replace'
+      })) : []
+    };
+  });
+}
+
+/***/ }),
+
+/***/ "./src/js/parsers/readability.js":
+/*!***************************************!*\
+  !*** ./src/js/parsers/readability.js ***!
+  \***************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _reading_score__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../reading-score */ "./src/js/reading-score.js");
+
+/* harmony default export */ __webpack_exports__["default"] = (text => {
+  const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [];
+  return !sentences ? [] : sentences.map(sentence => {
+    const {
+      score,
+      words
+    } = (0,_reading_score__WEBPACK_IMPORTED_MODULE_0__.readingScore)(sentence);
+    const level = score > 9 && score <= 16 ? 'suggestion' : score > 16 ? 'warning' : null;
+    return words > 14 && level ? {
+      value: sentence,
+      type: `readability-${level === 'warning' ? 'very-' : ''}hard`,
+      level,
+      message: `sentence is${level === 'warning' ? ' very' : ''} hard to read`,
+      index: 0,
+      offset: sentence.length
+    } : null;
+  }).filter(Boolean);
+});
+
+/***/ }),
+
+/***/ "./src/js/parsers/simpler.js":
+/*!***********************************!*\
+  !*** ./src/js/parsers/simpler.js ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ simpler; }
+/* harmony export */ });
+/* harmony import */ var _data_simpler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/simpler */ "./src/js/data/simpler.js");
+
+const expression = new RegExp('\\b(' + _data_simpler__WEBPACK_IMPORTED_MODULE_0__["default"].map(_ref => {
+  let {
+    value
+  } = _ref;
+  return value;
+}).join('|') + ')\\b', 'gi');
+function simpler(text) {
+  const matches = [...text.matchAll(expression)];
+
+  if (!matches) {
+    return [];
+  }
+
+  return matches.map(match => {
+    const [value] = [...match].filter(Boolean);
+    const replacement = _data_simpler__WEBPACK_IMPORTED_MODULE_0__["default"].find(_ref2 => {
+      let {
+        value: word
+      } = _ref2;
+      return word === value;
+    });
+    return {
+      value,
+      type: 'simpler',
+      level: 'suggestion',
+      message: `"${value}" has a simpler alternative`,
+      index: match.index,
+      offset: value.length + match.index,
+      replacements: replacement?.replace ? replacement.replace.split(', ').map(value => ({
+        value: value.toLocaleLowerCase(),
+        action: 'replace'
+      })) : []
+    };
+  });
+}
+
+/***/ }),
+
+/***/ "./src/js/parsers/so.js":
+/*!******************************!*\
+  !*** ./src/js/parsers/so.js ***!
+  \******************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (text => {
+  const expression = new RegExp(/^(\s)*so\b[\s\S]/gi);
+  const matches = [...text.matchAll(expression)];
+
+  if (!matches) {
+    return [];
+  }
+
+  return matches.map(match => {
+    const [value] = [...match].filter(Boolean);
+    return {
+      value,
+      type: 'so',
+      level: 'suggestion',
+      message: 'omit "So" from the beginning of sentences',
+      index: match.index,
+      offset: value.length + match.index,
+      replacements: [{
+        action: 'delete',
+        value: ''
+      }]
+    };
+  });
+});
+
+/***/ }),
+
+/***/ "./src/js/parsers/weasel.js":
+/*!**********************************!*\
+  !*** ./src/js/parsers/weasel.js ***!
+  \**********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ weasel; }
+/* harmony export */ });
+/* harmony import */ var _data_weasel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../data/weasel */ "./src/js/data/weasel.js");
+
+const expression = new RegExp('\\b(' + _data_weasel__WEBPACK_IMPORTED_MODULE_0__["default"].list.join('|') + ')\\b', 'gi');
+function weasel(text) {
+  const matches = [...text.matchAll(expression)];
+
+  if (!matches) {
+    return [];
+  }
+
+  return matches.map(match => {
+    const [value] = [...match].filter(Boolean);
+    return {
+      value,
+      type: 'weasel',
+      level: 'warning',
+      message: `"${value}" is a weasel word`,
+      index: match.index,
+      offset: value.length + match.index,
+      replacements: [{
+        action: 'delete',
+        value: ''
+      }]
+    };
+  });
+}
+;
+
+/***/ }),
+
+/***/ "./src/js/reading-score.js":
+/*!*********************************!*\
+  !*** ./src/js/reading-score.js ***!
+  \*********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "readingScore": function() { return /* binding */ readingScore; }
+/* harmony export */ });
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "lodash");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/wordcount */ "@wordpress/wordcount");
+/* harmony import */ var _wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! reading-time/lib/reading-time */ "./node_modules/reading-time/lib/reading-time.js");
+/* harmony import */ var reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var automated_readability__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! automated-readability */ "./node_modules/automated-readability/index.js");
+/* harmony import */ var polarity__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! polarity */ "./node_modules/polarity/index.js");
+/* harmony import */ var _utils_strip_astrals__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/strip-astrals */ "./src/js/utils/strip-astrals.js");
+/* harmony import */ var _utils_strip_html_comments__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/strip-html-comments */ "./src/js/utils/strip-html-comments.js");
+/* harmony import */ var _utils_strip_spaces__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/strip-spaces */ "./src/js/utils/strip-spaces.js");
+/* harmony import */ var _utils_strip_tags__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils/strip-tags */ "./src/js/utils/strip-tags.js");
+/* harmony import */ var _utils_strip_html_entities__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils/strip-html-entities */ "./src/js/utils/strip-html-entities.js");
+/* harmony import */ var _tokenizer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./tokenizer */ "./src/js/tokenizer.js");
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * 
+ * @param {string} text
+ */
+
+const readingScore = content => {
+  const text = `${(0,lodash__WEBPACK_IMPORTED_MODULE_0__.flow)(_utils_strip_tags__WEBPACK_IMPORTED_MODULE_6__["default"], _utils_strip_html_comments__WEBPACK_IMPORTED_MODULE_4__["default"], _utils_strip_astrals__WEBPACK_IMPORTED_MODULE_3__["default"], _utils_strip_spaces__WEBPACK_IMPORTED_MODULE_5__["default"], _utils_strip_html_entities__WEBPACK_IMPORTED_MODULE_7__["default"])(content)}\n`;
+  /**
+   * Not very accurate at the moment.
+   */
+
+  const paragraphs = text.replace(/\n$/gm, '').split(/\n/g).filter(line => line.length);
+  const {
+    sentences,
+    words
+  } = (0,_tokenizer__WEBPACK_IMPORTED_MODULE_8__.tokenize)(paragraphs.join(' '));
+  const wordCount = (0,_wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__.count)(text, 'words');
+  const characterCount = (0,_wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__.count)(text, 'characters_including_spaces');
+  const alphaNumericCharacters = text.match(/[a-zA-Z0-9]/g);
+  const letters = text.match(/[a-zA-Z]/g)?.length || 0;
+  const score = (0,automated_readability__WEBPACK_IMPORTED_MODULE_9__.automatedReadability)({
+    sentence: sentences.length,
+    word: wordCount,
+    character: alphaNumericCharacters?.length || 0
+  });
+  const {
+    polarity: polarityScore
+  } = (0,polarity__WEBPACK_IMPORTED_MODULE_10__.polarity)(words);
+  const {
+    minutes
+  } = reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2___default()(text, {
+    wordsPerMinute: 275
+  });
+  return {
+    paragraphs: paragraphs.length,
+    sentences: sentences.length,
+    words: words.length,
+    characters: characterCount,
+    score: Math.round(score),
+    letters,
+    polarity: polarityScore,
+    readingTime: minutes
+  };
+};
+
+/***/ }),
+
 /***/ "./src/js/store/actions.js":
 /*!*********************************!*\
   !*** ./src/js/store/actions.js ***!
@@ -1438,7 +1550,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 function addProblems(problems) {
   return {
-    type: 'ADD_PROBLEMS',
+    type: 'UPDATE_PROBLEMS',
     problems
   };
 }
@@ -1512,9 +1624,9 @@ function problems() {
   let action = arguments.length > 1 ? arguments[1] : undefined;
 
   switch (action.type) {
-    case 'ADD_PROBLEMS':
+    case 'UPDATE_PROBLEMS':
       return { ...state,
-        problems: [...state.problems, ...(Array.isArray(action.problems) ? action.problems : [action.problems]).map(problem => ({ ...problem,
+        problems: [...(Array.isArray(action.problems) ? action.problems : [action.problems]).map(problem => ({ ...problem,
           id: btoa(`${problem.blockId}-${problem.type}-${problem.index}-${problem.offset}`)
         }))]
       };
@@ -1547,91 +1659,41 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getProblem": function() { return /* binding */ getProblem; },
 /* harmony export */   "getBlockProblems": function() { return /* binding */ getBlockProblems; }
 /* harmony export */ });
-const getProblems = state => state.problems;
-const getProblem = (state, id) => state.problems.find(problem => problem.id === id);
-const getBlockProblems = (state, blockId) => state.problems.filter(problem => problem.blockId === blockId);
+const getProblems = state => state.problems.problems;
+const getProblem = (state, id) => state.problems.problems.find(problem => problem.id === id);
+const getBlockProblems = (state, blockId) => state.problems.problems.filter(problem => problem.blockId === blockId);
 
 /***/ }),
 
-/***/ "./src/js/utils/reading-score.js":
-/*!***************************************!*\
-  !*** ./src/js/utils/reading-score.js ***!
-  \***************************************/
+/***/ "./src/js/tokenizer.js":
+/*!*****************************!*\
+  !*** ./src/js/tokenizer.js ***!
+  \*****************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "readingScore": function() { return /* binding */ readingScore; }
+/* harmony export */   "tokenize": function() { return /* binding */ tokenize; }
 /* harmony export */ });
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "lodash");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/wordcount */ "@wordpress/wordcount");
-/* harmony import */ var _wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! reading-time/lib/reading-time */ "./node_modules/reading-time/lib/reading-time.js");
-/* harmony import */ var reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var automated_readability__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! automated-readability */ "./node_modules/automated-readability/index.js");
-/* harmony import */ var polarity__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! polarity */ "./node_modules/polarity/index.js");
-/* harmony import */ var _strip_astrals__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./strip-astrals */ "./src/js/utils/strip-astrals.js");
-/* harmony import */ var _strip_html_comments__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./strip-html-comments */ "./src/js/utils/strip-html-comments.js");
-/* harmony import */ var _strip_spaces__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./strip-spaces */ "./src/js/utils/strip-spaces.js");
-/* harmony import */ var _strip_tags__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./strip-tags */ "./src/js/utils/strip-tags.js");
-/* harmony import */ var _strip_html_entities__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./strip-html-entities */ "./src/js/utils/strip-html-entities.js");
-/* harmony import */ var _tokenizer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./tokenizer */ "./src/js/utils/tokenizer.js");
+/* harmony import */ var sentence_tokenizer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sentence-tokenizer */ "./node_modules/sentence-tokenizer/lib/tokenizer.js");
+/* harmony import */ var sentence_tokenizer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sentence_tokenizer__WEBPACK_IMPORTED_MODULE_0__);
 
+const tokenize = text => {
+  const tokenizer = new (sentence_tokenizer__WEBPACK_IMPORTED_MODULE_0___default())();
+  tokenizer.setEntry(text);
 
-
-
-
-
-
-
-
-
-
-/**
- * 
- * @param {string} text
- */
-
-const readingScore = content => {
-  const text = `${(0,lodash__WEBPACK_IMPORTED_MODULE_0__.flow)(_strip_tags__WEBPACK_IMPORTED_MODULE_6__["default"], _strip_html_comments__WEBPACK_IMPORTED_MODULE_4__["default"], _strip_astrals__WEBPACK_IMPORTED_MODULE_3__["default"], _strip_spaces__WEBPACK_IMPORTED_MODULE_5__["default"], _strip_html_entities__WEBPACK_IMPORTED_MODULE_7__["default"])(content)}\n`;
-  /**
-   * Not very accurate at the moment.
-   */
-
-  const paragraphs = text.replace(/\n$/gm, '').split(/\n/g).filter(line => line.length);
-  const {
-    sentences,
-    words
-  } = (0,_tokenizer__WEBPACK_IMPORTED_MODULE_8__.tokenize)(paragraphs.join(' '));
-  const wordCount = (0,_wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__.count)(text, 'words');
-  const characterCount = (0,_wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__.count)(text, 'characters_including_spaces');
-  const alphaNumericCharacters = text.match(/[a-zA-Z0-9]/g);
-  const letters = text.match(/[a-zA-Z]/g)?.length || 0;
-  const score = (0,automated_readability__WEBPACK_IMPORTED_MODULE_9__.automatedReadability)({
-    sentence: sentences.length,
-    word: wordCount,
-    character: alphaNumericCharacters?.length || 0
-  });
-  const {
-    polarity: polarityScore
-  } = (0,polarity__WEBPACK_IMPORTED_MODULE_10__.polarity)(words);
-  const {
-    minutes
-  } = reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2___default()(text, {
-    wordsPerMinute: 275
-  });
-  return {
-    paragraphs: paragraphs.length,
-    sentences: sentences.length,
-    words: words.length,
-    characters: characterCount,
-    score: Math.round(score),
-    letters,
-    polarity: polarityScore,
-    readingTime: minutes
-  };
+  try {
+    return {
+      sentences: tokenizer.getSentences(),
+      words: tokenizer.getTokens()
+    };
+  } catch (error) {
+    return {
+      sentences: 0,
+      words: 0
+    };
+  }
 };
 
 /***/ }),
@@ -1753,39 +1815,6 @@ __webpack_require__.r(__webpack_exports__);
 function stripTags(text) {
   return text.replace(/<\/?[a-z][^>]*?>/gi, '\n');
 }
-
-/***/ }),
-
-/***/ "./src/js/utils/tokenizer.js":
-/*!***********************************!*\
-  !*** ./src/js/utils/tokenizer.js ***!
-  \***********************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "tokenize": function() { return /* binding */ tokenize; }
-/* harmony export */ });
-/* harmony import */ var sentence_tokenizer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sentence-tokenizer */ "./node_modules/sentence-tokenizer/lib/tokenizer.js");
-/* harmony import */ var sentence_tokenizer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sentence_tokenizer__WEBPACK_IMPORTED_MODULE_0__);
-
-const tokenize = text => {
-  const tokenizer = new (sentence_tokenizer__WEBPACK_IMPORTED_MODULE_0___default())();
-  tokenizer.setEntry(text);
-
-  try {
-    return {
-      sentences: tokenizer.getSentences(),
-      words: tokenizer.getTokens()
-    };
-  } catch (error) {
-    return {
-      sentences: 0,
-      words: 0
-    };
-  }
-};
 
 /***/ }),
 
@@ -7043,7 +7072,9 @@ var __webpack_exports__ = {};
   \**************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_sidebar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/sidebar */ "./src/js/components/sidebar.js");
-
+ // import './hoc/add-classes';
+// import './format-types/highlight';
+// import './hooks/subscribe';
 }();
 /******/ })()
 ;

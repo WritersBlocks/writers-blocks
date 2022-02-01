@@ -7,11 +7,10 @@ const { btoa } = window;
 
 export function problems(state = { problems: [] }, action) {
 	switch (action.type) {
-		case 'ADD_PROBLEMS':
+		case 'UPDATE_PROBLEMS':
 			return {
 				...state,
 				problems: [
-					...state.problems,
 					...(Array.isArray(action.problems) ? action.problems : [action.problems]).map((problem) => ({
 						...problem,
 						id: btoa(`${problem.blockId}-${problem.type}-${problem.index}-${problem.offset}`),

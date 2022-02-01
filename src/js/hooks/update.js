@@ -1,4 +1,4 @@
-import { dispatch } from '@wordpress/data';
+import { dispatch, select } from '@wordpress/data';
 
 import { store } from '../store';
 
