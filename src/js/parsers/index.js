@@ -6,6 +6,9 @@ import readability from "./readability";
 import simpler from "./simpler";
 import so from "./so";
 import weasel from "./weasel";
+import sensitivity from "./sensitivity";
+import fillers from "./fillers";
+import cliches from './cliches';
 
 import stripTags from "../utils/strip-tags";
 import stripAstrals from '../utils/strip-astrals';
@@ -33,5 +36,8 @@ export default (text) => {
 		...simpler(stripped),
 		...hedges(stripped),
 		...weasel(stripped),
+		...sensitivity(stripped),
+		...fillers(stripped),
+		...cliches(stripped),
 	].filter(Boolean);
 };

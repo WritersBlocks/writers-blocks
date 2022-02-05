@@ -1,10 +1,10 @@
-import { debounce } from 'lodash';
+import { debounce, update } from 'lodash';
 import { __ } from '@wordpress/i18n';
 import { PluginSidebar } from '@wordpress/edit-post';
 import { PanelBody, PanelRow } from '@wordpress/components';
 import { registerPlugin } from '@wordpress/plugins';
 import { dispatch, useSelect } from '@wordpress/data';
-import { useEffect, useMemo, useCallback } from '@wordpress/element';
+import { useEffect, useCallback, useState } from '@wordpress/element';
 
 import { addProblems } from '../hooks';
 import check from '../parsers';
@@ -21,17 +21,6 @@ const ALLOWED_BLOCKS = [
 	'core/preformatted',
 ];
 
-const TYPES = [
-	'simpler',
-	'adverbs',
-	'hedges',
-	'weasel',
-	'passive',
-	'readability-hard',
-	'readability-very-hard',
-	'so',
-];
-
 const AccessPanel = () => {
 	const blocks = useSelect( (select) =>
 		select('core/block-editor').getBlocks()
@@ -40,58 +29,49 @@ const AccessPanel = () => {
 		select('core/editor').getEditedPostAttribute('content')
 	);
 
-	const { score, sentences, words, characters, paragraphs, letters, polarity, readingTime } = useMemo( () => readingScore(content), [ content ] );
-	const contentBlocks = useMemo( () => blocks.filter((block) => ALLOWED_BLOCKS.includes(block.name)), [ blocks ] );
-	const blocksWithProblems = useMemo( () => {
-		const blockData = contentBlocks.map((block) => ({
-			blockId: block.clientId,
-			...(block?.attributes?.content?.length ? {
-				problems: check(block.attributes.content),
-			} : {}),
-		}));
+	const [stats, setStats] = useState({});
+	const [problems, setProblems] = useState({});
 
-		return blockData.filter((block) => block?.problems?.length);
-	}, [ contentBlocks ] );
-	const { adverbs, passive, simpler, weasels, hedges, readability } = useMemo( () => blocksWithProblems.reduce( (acc, block) => {
-		acc.adverbs = acc.adverbs.concat(block.problems.filter(({ type }) => type === 'adverbs'));
-		acc.passive = acc.passive.concat(block.problems.filter(({ type }) => type === 'passive'));
-		acc.simpler = acc.simpler.concat(block.problems.filter(({ type }) => type === 'simpler'));
-		acc.weasels = acc.weasels.concat(block.problems.filter(({ type }) => type === 'weasels'));
-		acc.hedges = acc.hedges.concat(block.problems.filter(({ type }) => type === 'hedges'));
-		acc.readability = acc.readability.concat(block.problems.filter(({ type }) => type.includes('readability')));
-
-		return acc;
-	}, { adverbs: [], passive: [], simpler: [], weasels: [], hedges: [], readability: [] } ), [ blocksWithProblems ] );
-
-	const updateProblems = useCallback( debounce((problems) => {
-		if (problems.length) {
-			addProblems(problems);
-		}
+	const updateReadability = useCallback( debounce( (content) => {
+		setStats(readingScore(content));
 	}, 500), [] );
 
-	useEffect(() => {
-		TYPES.forEach((type) => {
-			dispatch( "core/annotations" ).__experimentalRemoveAnnotationsBySource( `writers-blocks--${type}` );
-		});
+	const updateProblems = useCallback( debounce( (blocks) => {
+		const allowedBlocks = blocks.filter( (block) => ALLOWED_BLOCKS.includes(block.name) );
+		const blocksWithProblems = allowedBlocks.map((block) => ({
+			blockId: block.clientId,
+			blockName: block.name,
+			...(block?.attributes?.content?.length || block?.attributes?.values?.length ? {
+				problems: check(block.attributes.content || block.attributes.values),
+			} : {}),
+		})).filter((block) => block?.problems?.length);
 
-		if (blocksWithProblems.length) {
-			updateProblems(blocksWithProblems);
+		addProblems(blocksWithProblems);
+		setProblems(
+			blocksWithProblems.reduce( (acc, block) => {
+				acc.adverbs = acc.adverbs.concat(block.problems.filter(({ type }) => type === 'adverbs'));
+				acc.passive = acc.passive.concat(block.problems.filter(({ type }) => type === 'passive'));
+				acc.simpler = acc.simpler.concat(block.problems.filter(({ type }) => type === 'simpler'));
+				acc.weasels = acc.weasels.concat(block.problems.filter(({ type }) => type === 'weasels'));
+				acc.hedges = acc.hedges.concat(block.problems.filter(({ type }) => type === 'hedges'));
+				acc.readability = acc.readability.concat(block.problems.filter(({ type }) => type.includes('readability')));
+	
+				return acc;
+			}, { adverbs: [], passive: [], simpler: [], weasels: [], hedges: [], readability: [] } )
+		);
+	}, 500), [] );
 
-			blocksWithProblems.forEach(({ blockId, problems }) => {
-				problems.forEach(({ type, index, offset }) => {
-					dispatch('core/annotations').__experimentalAddAnnotation({
-						source: `writers-blocks--${type}`,
-						blockClientId: blockId,
-						richTextIdentifier: 'content',
-						range: {
-							start: index,
-							end: offset,
-						},
-					});
-				});
-			});
+	useEffect(( ) => {
+		if (content) {
+			updateReadability(content);
 		}
-	}, [ blocksWithProblems ]);
+	}, [ content ] );
+
+	useEffect(() => {
+		if (blocks.length) {
+			updateProblems(blocks);
+		}
+	}, [ blocks ]);
 
 	return (
 		<>
@@ -102,55 +82,55 @@ const AccessPanel = () => {
 			>
 				<PanelBody title={__('Readability', 'yext')}>
 					<PanelRow>
-						<h2>Grade {score}</h2>
+						<h2>Grade {stats.score || 0}</h2>
 					</PanelRow>
 					<PanelRow>
-						<h2>Polarity {polarity}</h2>
+						<h2>Polarity {stats.polarity || 0}</h2>
 					</PanelRow>
 				</PanelBody>
 				<PanelBody title={__('Stats', 'yext')} initialOpen={false}>
 					<PanelRow>
-						<p><strong>Reading time:</strong> {readingTime >= 1 ? `${
-							Math.round(readingTime)} minute${Math.round(readingTime) > 1 ? 's' : ''
+						<p><strong>Reading time:</strong> {(stats.readingTime || 0) >= 1 ? `${
+							Math.round(stats.readingTime)} minute${Math.round((stats.readingTime || 0)) > 1 ? 's' : ''
 						}` : 'Less than a minute'}</p>
 					</PanelRow>
 					<PanelRow>
-						<p><strong>Paragraphs:</strong> {paragraphs}</p>
+						<p><strong>Paragraphs:</strong> {stats?.paragraphs || 0}</p>
 					</PanelRow>
 					<PanelRow>
-						<p><strong>Sentences:</strong> {sentences}</p>
+						<p><strong>Sentences:</strong> {stats.sentences || 0}</p>
 					</PanelRow>
 					<PanelRow>
-						<p><strong>Words:</strong> {words}</p>
+						<p><strong>Words:</strong> {stats.words || 0}</p>
 					</PanelRow>
 					<PanelRow>
-						<p><strong>Characters:</strong> {characters}</p>
+						<p><strong>Characters:</strong> {stats.characters || 0}</p>
 					</PanelRow>
 					<PanelRow>
-						<p><strong>Letters:</strong> {letters}</p>
+						<p><strong>Letters:</strong> {stats.letters || 0}</p>
 					</PanelRow>
 				</PanelBody>
 				<PanelBody title={__('Suggestions', 'yext')}>
 					<PanelRow>
-						<p>{adverbs.length} adverbs</p>
+						<p>{problems?.adverbs?.length || 0} adverbs</p>
 					</PanelRow>
 					<PanelRow>
-						<p>{weasels.length} weasel words</p>
+						<p>{problems?.weasels?.length || 0} weasel words</p>
 					</PanelRow>
 					<PanelRow>
-						<p>{hedges.length} hedge words</p>
+						<p>{problems?.hedges?.length || 0} hedge words</p>
 					</PanelRow>
 					<PanelRow>
-						<p>{passive.length} uses of passive voice.</p>
+						<p>{problems?.passive?.length || 0} uses of passive voice.</p>
 					</PanelRow>
 					<PanelRow>
-						<p>{simpler.length} phrases have simpler alternatives.</p>
+						<p>{problems?.simpler?.length || 0} phrases have simpler alternatives.</p>
 					</PanelRow>
 					<PanelRow>
-						<p>{readability.filter(({ level }) => level === 'suggestion').length} of {sentences} are hard to read.</p>
+						<p>{problems?.readability?.filter(({ level }) => level === 'suggestion').length || 0} of {stats?.sentences || 0} are hard to read.</p>
 					</PanelRow>
 					<PanelRow>
-						<p>{readability.filter(({ level }) => level === 'warning').length} of {sentences} are very hard to read.</p>
+						<p>{problems?.readability?.filter(({ level }) => level === 'warning').length || 0} of {stats?.sentences || 0} are very hard to read.</p>
 					</PanelRow>
 				</PanelBody>
 			</PluginSidebar>

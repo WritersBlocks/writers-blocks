@@ -25,11 +25,8 @@ export const readingScore = (content) => {
             stripHTMLEntities,
         )(content)
     }\n`;
-    const stripped = text.split(' ').filter(Boolean).join(' ');
 
-    /**
-     * Not very accurate at the moment.
-     */
+    const stripped = text.split(' ').filter(Boolean).join(' ');
     const paragraphs = stripped.replace(/\n$/gm, '').split(/\n/g).filter((line) => line.length);
     const { sentences } = tokenize(paragraphs.join(' '));
     const words = sentences.reduce((accumulator, sentence) => {
@@ -50,8 +47,6 @@ export const readingScore = (content) => {
     });
     const { polarity: polarityScore } = polarity(words);
     const { minutes } = readingTime(stripped, { wordsPerMinute: 275 });
-
-    console.log({sentences, words});
 
     return {
         paragraphs: paragraphs.length,

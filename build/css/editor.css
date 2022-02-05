@@ -1,7 +1,7 @@
 /*!************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./src/css/editor.css ***!
   \************************************************************************************************************************************************************************/
-.annotation-text-writers-blocks--adverbs {
+.annotation-text-writers-blocks--adverb {
     background-color: #c4e3f3;
 }
 
@@ -13,7 +13,7 @@
     background-color: #c4e3f3;
 }
 
-.annotation-text-writers-blocks--hedges {
+.annotation-text-writers-blocks--hedge {
     background-color: #c4e3f3;
 }
 
@@ -31,6 +31,22 @@
 
 .annotation-text-writers-blocks--simpler {
     background-color: #e3b7e8;
+}
+
+.annotation-text-writers-blocks--profanity {
+    background-color: #c4e3f3;
+}
+
+.annotation-text-writers-blocks--equality {
+    background-color: #c4e3f3;
+}
+
+.annotation-text-writers-blocks--filler {
+    background-color: #c4e3f3;
+}
+
+.annotation-text-writers-blocks--cliche {
+    background-color: #c4e3f3;
 }
 
 

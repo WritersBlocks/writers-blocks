@@ -19,7 +19,9 @@
 		"webpack-remove-empty-scripts": "^0.7.2"
 	},
 	"dependencies": {
+		"alex": "^10.0.0",
 		"automated-readability": "^2.0.0",
+		"fillers": "^2.0.0",
 		"flesch-kincaid": "^2.0.0",
 		"hedges": "^2.0.0",
 		"lodash": "^4.17.21",

@@ -13,7 +13,7 @@ export default function adverbs(text) {
 
         return {
             value,
-            type: 'adverbs',
+            type: 'adverb',
             level: 'warning',
             message: 'adverbs can weaken meaning',
             index: match.index,
