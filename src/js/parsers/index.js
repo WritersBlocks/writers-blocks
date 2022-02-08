@@ -4,7 +4,6 @@ import hedges from "./hedges";
 import passive from "./passive";
 import readability from "./readability";
 import simpler from "./simpler";
-import so from "./so";
 import weasel from "./weasel";
 import sensitivity from "./sensitivity";
 import fillers from "./fillers";
@@ -16,28 +15,26 @@ import stripHTMComments from '../utils/strip-html-comments';
 import stripSpaces from '../utils/strip-spaces';
 import stripHTMLEntities from '../utils/strip-html-entities';
 
-export default (text) => {
+export default (text, { preserveWhiteSpace = true } = {}) => {
     const content = `${
         flow(
-            stripTags,
-            stripHTMComments,
+			stripHTMComments,
             stripAstrals,
             stripSpaces,
             stripHTMLEntities,
-        )(text)
+            stripTags,
+        )(text, preserveWhiteSpace)
     }\n`;
-	const stripped = content.split(' ').filter(Boolean).join(' ');
 
 	return [
-		...passive(stripped),
-		...so(stripped),
-		...adverbs(stripped),
-		...readability(stripped),
-		...simpler(stripped),
-		...hedges(stripped),
-		...weasel(stripped),
-		...sensitivity(stripped),
-		...fillers(stripped),
-		...cliches(stripped),
+		...passive(content),
+		...adverbs(content),
+		...readability(content),
+		...simpler(content),
+		...hedges(content),
+		...weasel(content),
+		...sensitivity(content),
+		...fillers(content),
+		...cliches(content),
 	].filter(Boolean);
 };

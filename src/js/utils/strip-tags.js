@@ -5,6 +5,14 @@
  *
  * @return {string} The manipulated text.
  */
-export default function stripTags(text) {
-	return text.replace( /<\/?[a-z][^>]*?>/gi, ' ' );
+// export default function stripTags(text, preserveWhiteSpace) {
+// 	return text.split( /<\/?[a-z][^>]*?>/gi ).filter(Boolean).join(preserveWhiteSpace ? '' : ' ');
+// }
+
+export default function stripTags(text, preserveWhiteSpace) {
+	return text
+		.replaceAll( '</li><li>', ' ' )
+		.replace( /<\/?[li][^>]*?>/gi, '' )
+		.replace( /<\/?[br][^>]*?>/gi, ' ' )
+		.split( /<\/?[a-z][^>]*?>/gi ).filter(Boolean).join(preserveWhiteSpace ? ' ' : '');
 }

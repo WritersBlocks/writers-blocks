@@ -26,8 +26,7 @@ export const readingScore = (content) => {
         )(content)
     }\n`;
 
-    const stripped = text.split(' ').filter(Boolean).join(' ');
-    const paragraphs = stripped.replace(/\n$/gm, '').split(/\n/g).filter((line) => line.length);
+    const paragraphs = text.replace(/\n$/gm, '').split(/\n/g).filter((line) => line.length);
     const { sentences } = tokenize(paragraphs.join(' '));
     const words = sentences.reduce((accumulator, sentence) => {
         const { words } = tokenize(sentence);
@@ -36,17 +35,17 @@ export const readingScore = (content) => {
         return accumulator;
     }, []);
 
-    const wordCount = characterCounter(stripped, 'words');
-    const characterCount = characterCounter(stripped, 'characters_including_spaces');
-    const alphaNumericCharacters = stripped.match(/[a-zA-Z0-9]/g);
-    const letters = stripped.match(/[a-zA-Z]/g)?.length || 0;
+    const wordCount = characterCounter(text, 'words');
+    const characterCount = characterCounter(text, 'characters_including_spaces');
+    const alphaNumericCharacters = text.match(/[a-zA-Z0-9]/g);
+    const letters = text.match(/[a-zA-Z]/g)?.length || 0;
     const score = automatedReadability({
         sentence: sentences.length,
         word: wordCount,
         character: alphaNumericCharacters?.length || 0,
     });
     const { polarity: polarityScore } = polarity(words);
-    const { minutes } = readingTime(stripped, { wordsPerMinute: 275 });
+    const { minutes } = readingTime(text, { wordsPerMinute: 250 });
 
     return {
         paragraphs: paragraphs.length,

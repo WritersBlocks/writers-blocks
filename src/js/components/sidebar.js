@@ -1,137 +1,101 @@
-import { debounce, update } from 'lodash';
 import { __ } from '@wordpress/i18n';
 import { PluginSidebar } from '@wordpress/edit-post';
-import { PanelBody, PanelRow } from '@wordpress/components';
+import { PanelBody, PanelRow, ToggleControl } from '@wordpress/components';
 import { registerPlugin } from '@wordpress/plugins';
-import { dispatch, useSelect } from '@wordpress/data';
-import { useEffect, useCallback, useState } from '@wordpress/element';
+import { useSelect, select, dispatch } from '@wordpress/data';
 
-import { addProblems } from '../hooks';
-import check from '../parsers';
-import { readingScore } from '../reading-score';
-
-const ALLOWED_BLOCKS = [
-	'core/paragraph',
-	'core/heading',
-	'core/list',
-	'core/quote',
-	'core/pullquote',
-	'core/verse',
-	'core/media-text',
-	'core/preformatted',
-];
+import {
+	PROBLEM_TYPES_TO_LABEL,
+	BLOCK_TYPE_CONTENT_ATTRIBUTE,
+} from '../constants';
 
 const AccessPanel = () => {
-	const blocks = useSelect( (select) =>
-		select('core/block-editor').getBlocks()
-	);
-	const content = useSelect( (select) =>
-		select('core/editor').getEditedPostAttribute('content')
-	);
+	const {
+		readingTime,
+		score,
+		polarity,
+	} = useSelect((select) => select('writers-blocks/editor').getReadability());
+	const problems = useSelect((select) => {
+		const currentProblems = select('writers-blocks/editor').getProblems();
 
-	const [stats, setStats] = useState({});
-	const [problems, setProblems] = useState({});
-
-	const updateReadability = useCallback( debounce( (content) => {
-		setStats(readingScore(content));
-	}, 500), [] );
-
-	const updateProblems = useCallback( debounce( (blocks) => {
-		const allowedBlocks = blocks.filter( (block) => ALLOWED_BLOCKS.includes(block.name) );
-		const blocksWithProblems = allowedBlocks.map((block) => ({
-			blockId: block.clientId,
-			blockName: block.name,
-			...(block?.attributes?.content?.length || block?.attributes?.values?.length ? {
-				problems: check(block.attributes.content || block.attributes.values),
-			} : {}),
-		})).filter((block) => block?.problems?.length);
-
-		addProblems(blocksWithProblems);
-		setProblems(
-			blocksWithProblems.reduce( (acc, block) => {
-				acc.adverbs = acc.adverbs.concat(block.problems.filter(({ type }) => type === 'adverbs'));
-				acc.passive = acc.passive.concat(block.problems.filter(({ type }) => type === 'passive'));
-				acc.simpler = acc.simpler.concat(block.problems.filter(({ type }) => type === 'simpler'));
-				acc.weasels = acc.weasels.concat(block.problems.filter(({ type }) => type === 'weasels'));
-				acc.hedges = acc.hedges.concat(block.problems.filter(({ type }) => type === 'hedges'));
-				acc.readability = acc.readability.concat(block.problems.filter(({ type }) => type.includes('readability')));
-	
-				return acc;
-			}, { adverbs: [], passive: [], simpler: [], weasels: [], hedges: [], readability: [] } )
-		);
-	}, 500), [] );
-
-	useEffect(( ) => {
-		if (content) {
-			updateReadability(content);
-		}
-	}, [ content ] );
-
-	useEffect(() => {
-		if (blocks.length) {
-			updateProblems(blocks);
-		}
-	}, [ blocks ]);
+		return {
+			adverb: currentProblems.filter(({ type }) => type === 'adverb'),
+			weasel: currentProblems.filter(({ type }) => type === 'weasel'),
+			hedge: currentProblems.filter(({ type }) => type === 'hedge'),
+			filler: currentProblems.filter(({ type }) => type === 'filler'),
+			profanity: currentProblems.filter(({ type }) => type === 'profanity'),
+			equality: currentProblems.filter(({ type }) => type === 'equality'),
+			cliche: currentProblems.filter(({ type }) => type === 'cliche'),
+			passive: currentProblems.filter(({ type }) => type === 'passive'),
+			readability: currentProblems.filter(({ type }) => type.includes('readability')),
+			simpler: currentProblems.filter(({ type }) => type === 'simpler'),
+		};
+	});
+	const { typesToShow: SHOWN_ANNOTATION_TYPES } = useSelect((select) => select('writers-blocks/editor').getUserSettings());
 
 	return (
 		<>
 			<PluginSidebar
-				name="syntax-highlighter"
+				name="writers-blocks"
 				icon="text"
-				title={__('Syntax Highlighter', 'syntax')}
+				title={__('Writer\'s Blocks', 'writers-blocks')}
 			>
-				<PanelBody title={__('Readability', 'yext')}>
+				<PanelBody title={__('Readability', 'writers-blocks')}>
 					<PanelRow>
-						<h2>Grade {stats.score || 0}</h2>
+						<span>Reading time</span>
+						<h2 style={{margin: 0}}>{(readingTime || 0) >= 1 ? `${
+							Math.round(readingTime)} minute${Math.round((readingTime || 0)) > 1 ? 's' : ''
+						}` : 'Less than a minute'}</h2>
 					</PanelRow>
 					<PanelRow>
-						<h2>Polarity {stats.polarity || 0}</h2>
-					</PanelRow>
-				</PanelBody>
-				<PanelBody title={__('Stats', 'yext')} initialOpen={false}>
-					<PanelRow>
-						<p><strong>Reading time:</strong> {(stats.readingTime || 0) >= 1 ? `${
-							Math.round(stats.readingTime)} minute${Math.round((stats.readingTime || 0)) > 1 ? 's' : ''
-						}` : 'Less than a minute'}</p>
+						<span>Grade</span>
+						<h2 style={{margin: 0}}>{score || 0}</h2>
 					</PanelRow>
 					<PanelRow>
-						<p><strong>Paragraphs:</strong> {stats?.paragraphs || 0}</p>
-					</PanelRow>
-					<PanelRow>
-						<p><strong>Sentences:</strong> {stats.sentences || 0}</p>
-					</PanelRow>
-					<PanelRow>
-						<p><strong>Words:</strong> {stats.words || 0}</p>
-					</PanelRow>
-					<PanelRow>
-						<p><strong>Characters:</strong> {stats.characters || 0}</p>
-					</PanelRow>
-					<PanelRow>
-						<p><strong>Letters:</strong> {stats.letters || 0}</p>
+						<span>Polarity</span>
+						<h2 style={{margin: 0}}>{polarity || 0}</h2>
 					</PanelRow>
 				</PanelBody>
-				<PanelBody title={__('Suggestions', 'yext')}>
-					<PanelRow>
-						<p>{problems?.adverbs?.length || 0} adverbs</p>
-					</PanelRow>
-					<PanelRow>
-						<p>{problems?.weasels?.length || 0} weasel words</p>
-					</PanelRow>
-					<PanelRow>
-						<p>{problems?.hedges?.length || 0} hedge words</p>
-					</PanelRow>
-					<PanelRow>
-						<p>{problems?.passive?.length || 0} uses of passive voice.</p>
-					</PanelRow>
-					<PanelRow>
-						<p>{problems?.simpler?.length || 0} phrases have simpler alternatives.</p>
-					</PanelRow>
-					<PanelRow>
-						<p>{problems?.readability?.filter(({ level }) => level === 'suggestion').length || 0} of {stats?.sentences || 0} are hard to read.</p>
-					</PanelRow>
-					<PanelRow>
-						<p>{problems?.readability?.filter(({ level }) => level === 'warning').length || 0} of {stats?.sentences || 0} are very hard to read.</p>
-					</PanelRow>
+				<PanelBody title={__('Suggestions', 'writers-blocks')}>
+					{
+						Object.keys(PROBLEM_TYPES_TO_LABEL).map((type) => (
+							<PanelRow key={type}>
+								<ToggleControl
+									label={PROBLEM_TYPES_TO_LABEL[type].label}
+									help={PROBLEM_TYPES_TO_LABEL[type].help(problems[type].length)}
+									checked={SHOWN_ANNOTATION_TYPES[type]}
+									onChange={(checked) => {
+										dispatch('writers-blocks/editor').updateUserSettings({
+											typesToShow: {
+												...SHOWN_ANNOTATION_TYPES,
+												[type]: checked,
+											},
+										});
+
+										(PROBLEM_TYPES_TO_LABEL[type].source || [type]).forEach((source) => {
+											if (checked) {
+												const problems = select('writers-blocks/editor').getProblemsByType(source);
+			
+												problems.forEach(({ blockId, blockName, type, index, offset }) => {
+													dispatch('core/annotations').__experimentalAddAnnotation({
+														source: `writers-blocks--${type}`,
+														blockClientId: blockId,
+														richTextIdentifier: BLOCK_TYPE_CONTENT_ATTRIBUTE[blockName],
+														range: {
+															start: index,
+															end: offset,
+														},
+													});
+												});
+											} else {
+												dispatch( "core/annotations" ).__experimentalRemoveAnnotationsBySource( `writers-blocks--${source}` );
+											}
+										});
+									}}
+								/>
+							</PanelRow>
+						))
+					}
 				</PanelBody>
 			</PluginSidebar>
 		</>
@@ -141,6 +105,6 @@ const AccessPanel = () => {
 /**
  * Register Access Panel Plugin
  */
-registerPlugin('syntax-highlighter', {
+registerPlugin('writers-blocks', {
 	render: AccessPanel,
 });

@@ -7,7 +7,7 @@ import reducer from './reducer';
 import * as selectors from './selectors';
 import * as actions from './actions';
 
-const STORE_NAME = 'writers-blocks/syntax';
+const STORE_NAME = 'writers-blocks/editor';
 
 export const store = createReduxStore(STORE_NAME, {
 	reducer,

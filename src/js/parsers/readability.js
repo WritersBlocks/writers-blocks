@@ -8,14 +8,28 @@ export default (text) => {
     return !sentences ? [] : sentences.map((sentence, index) => {
         const { score, words } = readingScore(sentence);
         const level = score > 9 && score <= 16 ? 'suggestion' : score > 16 ? 'warning' : null;
+        const start = index === 0 ? 0 : sentences.reduce((accumulator, currentValue, currentIndex) => {
+            return currentIndex < index ? accumulator + currentValue.length + 1 : accumulator;
+        }, 0);
+        let end = sentences.reduce(
+            (accumulator, currentValue, currentIndex) =>
+                currentIndex <= index ? accumulator + currentValue.length : accumulator,
+                0
+            );
+        
+        if (index - 1 > 0) {
+            end += index - 1;
+        }
 
-        return words > 14 && level ? {
+        const response = words > 14 && level ? {
             value: sentence,
             type: `readability-${level === 'warning' ? 'very-' : ''}hard`,
             level,
             message: `sentence is${level ===  'warning' ? ' very' : ''} hard to read`,
-            index: index === 0 ? 0 : sentences[index - 1].length + 1,
-            offset: sentences.reduce((accumulator, currentValue, currentIndex) => currentIndex <= index ? accumulator + currentValue.length : accumulator, 0),
+            index: start,
+            offset: end,
         } : null;
+
+        return response;
     }).filter(Boolean);
 };
