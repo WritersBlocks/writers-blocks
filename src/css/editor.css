@@ -45,3 +45,8 @@
 .annotation-text-writers-blocks--cliche {
     background-color: #c4e3f3;
 }
+
+[data-block].is-blurred {
+    color: transparent;
+    text-shadow: #111 0 0 15px;
+}

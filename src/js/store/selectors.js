@@ -9,4 +9,3 @@ export const getProblemsByType = (state, type) => state.problems.list.filter((pr
 export const getReadability = (state) => state.readability.stats;
 
 export const getUserSettings = (state) => state.user.settings;
-

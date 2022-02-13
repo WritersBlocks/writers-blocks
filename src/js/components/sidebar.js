@@ -8,15 +8,16 @@ import {
 	PROBLEM_TYPES_TO_LABEL,
 	BLOCK_TYPE_CONTENT_ATTRIBUTE,
 } from '../constants';
+import { store } from '../store';
 
 const AccessPanel = () => {
 	const {
 		readingTime,
 		score,
 		polarity,
-	} = useSelect((select) => select('writers-blocks/editor').getReadability());
+	} = useSelect((select) => select(store).getReadability());
 	const problems = useSelect((select) => {
-		const currentProblems = select('writers-blocks/editor').getProblems();
+		const currentProblems = select(store).getProblems();
 
 		return {
 			adverb: currentProblems.filter(({ type }) => type === 'adverb'),
@@ -31,7 +32,7 @@ const AccessPanel = () => {
 			simpler: currentProblems.filter(({ type }) => type === 'simpler'),
 		};
 	});
-	const { typesToShow: SHOWN_ANNOTATION_TYPES } = useSelect((select) => select('writers-blocks/editor').getUserSettings());
+	const { suggestionsToShow: SHOWN_ANNOTATION_TYPES = {} } = useSelect((select) => select(store).getUserSettings());
 
 	return (
 		<>
@@ -63,18 +64,18 @@ const AccessPanel = () => {
 								<ToggleControl
 									label={PROBLEM_TYPES_TO_LABEL[type].label}
 									help={PROBLEM_TYPES_TO_LABEL[type].help(problems[type].length)}
-									checked={SHOWN_ANNOTATION_TYPES[type]}
+									checked={SHOWN_ANNOTATION_TYPES[type] ?? true}
 									onChange={(checked) => {
-										dispatch('writers-blocks/editor').updateUserSettings({
-											typesToShow: {
-												...SHOWN_ANNOTATION_TYPES,
+										dispatch(store).updateUserSettings({
+											suggestionsToShow: {
+												...SHOWN_ANNOTATION_TYPES ?? {},
 												[type]: checked,
 											},
 										});
 
 										(PROBLEM_TYPES_TO_LABEL[type].source || [type]).forEach((source) => {
 											if (checked) {
-												const problems = select('writers-blocks/editor').getProblemsByType(source);
+												const problems = select(store).getProblemsByType(source);
 			
 												problems.forEach(({ blockId, blockName, type, index, offset }) => {
 													dispatch('core/annotations').__experimentalAddAnnotation({

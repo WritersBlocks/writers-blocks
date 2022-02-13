@@ -1,2 +1,3 @@
-import './components/sidebar';
+import './hoc';
+import './components';
 import './subscribers';

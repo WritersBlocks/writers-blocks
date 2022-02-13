@@ -9,10 +9,11 @@ const { btoa } = window;
 
 const DEFAULT_USER_SETTINGS = {
 	showProblems: true,
-	typesToShow: Object.keys(PROBLEM_TYPES_TO_LABEL).reduce((accumulator, type) => {
+	suggestionsToShow: Object.keys(PROBLEM_TYPES_TO_LABEL).reduce((accumulator, type) => {
 		accumulator[type] = true;
 		return accumulator;
 	}, {}),
+	blocks: [],
 };
 
 export function readability(state = { stats: {} }, action) {

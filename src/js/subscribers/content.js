@@ -1,6 +1,10 @@
 import { subscribe, select, dispatch } from '@wordpress/data';
-import { debounce } from 'lodash';
+import domReady from '@wordpress/dom-ready';
 
+// The WP annotations package isn't loaded by default so force loading it.
+import "@wordpress/annotations";
+
+import { debounce } from 'lodash';
 import check from '../parsers';
 import { readingScore } from '../reading-score';
 import { store } from '../store';
@@ -13,12 +17,10 @@ import {
 let _content = '';
 let isUpdatingProblems = false;
 
-const { btoa } = window;
-
 let queue = [];
 
 const getProblemsFromBlock = (block) => {
-    const { clientId: blockId, name: blockName } = block;
+    const { clientId: blockId, name: blockName, attributes: blockAttributes } = block;
 
     const isAllowed = ALLOWED_BLOCKS.includes(blockName);
     const attribute = BLOCK_TYPE_CONTENT_ATTRIBUTE[blockName];
@@ -28,7 +30,7 @@ const getProblemsFromBlock = (block) => {
     }
 	
 	const problems = check(
-		block.attributes[attribute],
+		blockAttributes[attribute],
 		{
 			preserveWhiteSpace: blockName !== 'core/list',
 		}
@@ -41,7 +43,7 @@ const getProblemsFromBlock = (block) => {
     return problems.map((problem) => ({
         blockId,
         blockName,
-        id: btoa(`${blockId}-${problem.type}-${problem.index}-${problem.offset}`),
+		blockAttributes,
         ...problem,
     }));
 };
@@ -53,7 +55,7 @@ const getProblems = (blocks) => {
 };
 
 const addAnnotations = (blockProblems, { clientId } = {}) => {
-	const { typesToShow: SHOWN_ANNOTATION_TYPES } = select('writers-blocks/editor').getUserSettings();
+	const { suggestionsToShow: SHOWN_ANNOTATION_TYPES = {} } = select('writers-blocks/editor').getUserSettings();
 
 	if (clientId) {
 		const annotationsInBlock = select('core/annotations')
@@ -65,11 +67,11 @@ const addAnnotations = (blockProblems, { clientId } = {}) => {
 		} );
 	}
 
-	blockProblems.forEach(({ blockId, blockName, type, index, offset }) => {
+	blockProblems.forEach(({ blockId, blockName, blockAttributes, type, index, offset }) => {
 		const [name] = type.split('-');
 
-		if (SHOWN_ANNOTATION_TYPES[name]) {
-			dispatch('core/annotations').__experimentalAddAnnotation({
+		if ((SHOWN_ANNOTATION_TYPES[name] ?? true) && (blockAttributes[type] ?? true) && blockAttributes.isHighlighted === true) {
+			wp.data.dispatch('core/annotations').__experimentalAddAnnotation({
 				source: `writers-blocks--${type}`,
 				blockClientId: blockId,
 				richTextIdentifier: BLOCK_TYPE_CONTENT_ATTRIBUTE[blockName],
@@ -120,36 +122,40 @@ const scheduleReadingScoreUpdate = debounce((content) => {
 	dispatch(store).updateReadability(readingScore(content));
 }, 500);
 
-subscribe( () => {
-	const content = select('core/editor').getEditedPostAttribute('content');
-	const blocks = select('core/block-editor').getBlocks();
-	const problems = select(store).getProblems();
-
-	if (!content || (content === _content && problems.length)) {
-		return;
-	}
-
-	if (!problems.length && blocks.length) {
-		const blockProblems = getProblems(blocks);
-		
-		if (blockProblems.length) {
-			dispatch(store).addProblems(blockProblems);
-			addAnnotations(blockProblems);
+domReady(() => {
+	subscribe( () => {
+		const content = select('core/editor').getEditedPostAttribute('content');
+		const strippedContent = content.replace(/<!--(.*?)-->/g, '');
+		const problems = select(store).getProblems();
+	
+		if (!strippedContent || (strippedContent === _content && problems.length)) {
+			return;
 		}
-	}
-
-	const selectedBlock = select('core/block-editor').getSelectedBlock();
-
-	if (selectedBlock) {
-		queue = queue.filter( (block) => block.clientId !== selectedBlock.clientId );
-		queue.push(selectedBlock);
-	}
-
-	if (queue.length) {
-		scheduleBlockProblemsUpdate();
-	}
-
-	scheduleReadingScoreUpdate(content);
-
-	_content = content;
+	
+		const blocks = select('core/block-editor').getBlocks();
+	
+		if (!problems.length && blocks.length) {
+			const blockProblems = getProblems(blocks);
+			
+			if (blockProblems.length) {
+				dispatch(store).addProblems(blockProblems);
+				addAnnotations(blockProblems);
+			}
+		}
+	
+		const selectedBlock = select('core/block-editor').getSelectedBlock();
+	
+		if (selectedBlock) {
+			queue = queue.filter( (block) => block.clientId !== selectedBlock.clientId );
+			queue.push(selectedBlock);
+		}
+	
+		if (queue.length) {
+			scheduleBlockProblemsUpdate();
+		}
+	
+		scheduleReadingScoreUpdate(content);
+	
+		_content = strippedContent;
+	});
 });
