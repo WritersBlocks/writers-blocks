@@ -40,5 +40,9 @@ if ( file_exists( SYNTAX_PLUGIN_PATH . 'vendor/autoload.php' ) ) {
 require_once SYNTAX_PLUGIN_PATH_INC . '/core.php';
 require_once SYNTAX_PLUGIN_PATH_INC . '/utility.php';
 
+// Activation/Deactivation.
+register_activation_hook( __FILE__, '\SyntaxPlugin\Core\activate' );
+register_deactivation_hook( __FILE__, '\SyntaxPlugin\Core\deactivate' );
+
 // Bootstrap.
 SyntaxPlugin\Core\setup();

@@ -5,7 +5,7 @@ import { __ } from '@wordpress/i18n';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { Fragment } from '@wordpress/element';
 import { BlockControls, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, PanelRow, ToggleControl, ToolbarGroup, Toolbar, IconButton, Modal, Spinner, Flex } from '@wordpress/components';
+import { PanelBody, PanelRow, ToggleControl, ToolbarGroup, Toolbar, IconButton, Modal, Spinner, Flex, __experimentalVStack as VStack } from '@wordpress/components';
 import { addFilter } from '@wordpress/hooks';
 import { useState, useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
@@ -13,6 +13,7 @@ import { select, dispatch } from '@wordpress/data';
 
 import { strip } from '../utils/strip';
 import { Confirm } from '../components/confirm';
+import { CopyButton } from '../components/copy-button';
 
 /**
  * Internal dependencies
@@ -31,6 +32,10 @@ const addPanel = createHigherOrderComponent((BlockEdit) => {
 		const [isSearchModalLoading, setIsSearchModalLoading] = useState(false);
 		const [selectedWord, setSelectedWord] = useState('');
 		const [selectedWordData, setSelectedWordData] = useState(null);
+		const [selectedSentence, setSelectedSentence] = useState('');
+		const [selectedSentenceData, setSelectedSentenceData] = useState(null);
+		const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
+		const [isSuggestionModalLoading, setIsSuggestionModalLoading] = useState(false);
 		const {
 			clientId,
 			name,
@@ -66,6 +71,26 @@ const addPanel = createHigherOrderComponent((BlockEdit) => {
 					});
 			}
 		}, [selectedWord]);
+
+		useEffect(async () => {
+			if (selectedSentence) {
+				setIsSuggestionModalOpen(true);
+				setIsSuggestionModalLoading(true);
+				apiFetch({
+					path: `/writers-blocks/v1/suggestions`,
+					method: 'POST',
+					data: { text: selectedSentence },
+				})
+					.then((response) => {
+						const data = JSON.parse(response);
+
+						if (data?.results?.length) {
+							setSelectedSentenceData({ results: data.results });
+						}
+						setIsSuggestionModalLoading(false);
+					});
+			}
+		}, [selectedSentence]);
 
 		if (!ALLOWED_BLOCKS.includes(name)) {
 			return <BlockEdit {...props} />;
@@ -118,7 +143,7 @@ const addPanel = createHigherOrderComponent((BlockEdit) => {
 						<Toolbar>
 							<IconButton
 								className="components-toolbar__control"
-								label={ __( 'Get synonyms', 'writers-blocks' ) }
+								label={ __( 'Dictionary', 'writers-blocks' ) }
 								icon="search"
 								onClick={ () => {
 									const { offset: selectionStart } = select('core/block-editor').getSelectionStart();
@@ -132,6 +157,24 @@ const addPanel = createHigherOrderComponent((BlockEdit) => {
 											setIsConfirmModalOpen(true);
 										else if (word) {
 											setSelectedWord(word);
+										}
+									}
+								} }
+							/>
+							<IconButton
+								className="components-toolbar__control"
+								label={ __( 'Suggestions', 'writers-blocks' ) }
+								icon="lightbulb"
+								onClick={ () => {
+									const { offset: selectionStart } = select('core/block-editor').getSelectionStart();
+									const { offset: selectionEnd, attributeKey: content } = select('core/block-editor').getSelectionEnd();
+									
+									if (selectionStart !== selectionEnd) {
+										const text = strip(attributes[content]);
+										const sentence = text.slice(selectionStart, selectionEnd).trim();
+										
+										if (sentence) {
+											setSelectedSentence(sentence);
 										}
 									}
 								} }
@@ -189,7 +232,14 @@ const addPanel = createHigherOrderComponent((BlockEdit) => {
 																Object.keys(selectedWordData.results).map((key, index) => {
 																	return (
 																		<Fragment key={index}>
-																			<p>{ key }</p>
+																			<Flex justify="flex-start">
+																				<p><em>{ key }</em></p>
+																				{
+																					selectedWordData?.pronunciation?.[key] ? (
+																						<small>{ selectedWordData.pronunciation[key] }</small>
+																					) : null
+																				}
+																			</Flex>
 																			<ol className="wp-block-writers-blocks-word__modal-definition-list">
 																				{
 																					selectedWordData.results[key].map((result, index) => {
@@ -209,7 +259,7 @@ const addPanel = createHigherOrderComponent((BlockEdit) => {
 																															className="wp-block-writers-blocks-word__modal-example"
 																															key={ index }
 																														>
-																															<em>{ example }</em>
+																															<p><em>{ example }</em></p>
 																														</li>
 																													);
 																												})
@@ -219,20 +269,24 @@ const addPanel = createHigherOrderComponent((BlockEdit) => {
 																								}
 																								{
 																									result.synonyms && result.synonyms.length ? (
-																										<ul className="wp-block-writers-blocks-word__modal-synonyms-list">
+																										<Flex
+																											className="wp-block-writers-blocks-word__modal-synonyms-list"
+																											justify="flex-start"
+																										>
 																											{
 																												result.synonyms.map((synonym, index) => {
 																													return (
-																														<li
-																															className="wp-block-writers-blocks-word__modal-synonym"
+																														<CopyButton
 																															key={ index }
-																														>
-																															{ synonym }
-																														</li>
+																															text={ synonym }
+																															onClick={ () => {
+																																setIsSearchModalOpen(false);
+																															} }
+																														/>
 																													);
 																												})
 																											}
-																										</ul>
+																										</Flex>
 																									) : null
 																								}
 																							</li>
@@ -241,6 +295,59 @@ const addPanel = createHigherOrderComponent((BlockEdit) => {
 																				}
 																			</ol>
 																		</Fragment>
+																	)
+																})
+															}
+														</div>
+													) : (
+													<p>{ __( 'No results found', 'writers-blocks' ) }</p>
+												)
+											}
+										</div>
+									)
+								}
+							</Modal>
+						) : null}
+						{isSuggestionModalOpen ? (
+							<Modal
+								className="wp-block-writers-blocks-suggestion__modal"
+								title={ __( 'Suggestions', 'writers-blocks' ) }
+								onRequestClose={ () => {
+									setIsSuggestionModalOpen( false );
+									setSelectedSentenceData( null );
+								} }
+								isFullScreen
+							>
+								{
+									isSuggestionModalLoading ? (
+										<div className="wp-block-writers-blocks-word__modal-loading">
+											<Spinner />
+										</div>
+									) : (
+										<div className="wp-block-writers-blocks-word__modal-content">
+											<Flex className="wp-block-writers-blocks-word__modal-title" justify="flex-start" direction="column">
+												<h2>{ __( 'Original', 'writers-blocks' ) }</h2>
+												<p>{ selectedSentence }</p>
+											</Flex>
+											{
+												selectedSentenceData && selectedSentenceData?.results?.length ?
+													(
+														<div>
+															{
+																selectedSentenceData.results.map((suggestion, index) => {
+																	return (
+																		<VStack key={ index } spacing={ 8 }>
+																			<div>
+																				<p>{ suggestion }</p>
+																				<CopyButton
+																					text={ suggestion }
+																					buttonText={ __( 'Copy', 'writers-blocks' ) }
+																					onClick={ () => {
+																						setIsSuggestionModalOpen(false);
+																					} }
+																				/>
+																			</div>
+																		</VStack>
 																	)
 																})
 															}

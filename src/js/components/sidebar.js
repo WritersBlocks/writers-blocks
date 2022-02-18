@@ -3,6 +3,7 @@ import { PluginSidebar } from '@wordpress/edit-post';
 import { PanelBody, PanelRow, ToggleControl } from '@wordpress/components';
 import { registerPlugin } from '@wordpress/plugins';
 import { useSelect, select, dispatch } from '@wordpress/data';
+import { useEffect } from '@wordpress/element';
 
 import {
 	PROBLEM_TYPES_TO_LABEL,
@@ -11,11 +12,22 @@ import {
 import { store } from '../store';
 
 const AccessPanel = () => {
+	const siteSettings = useSelect((select) => {
+		return select('core').getEntityRecord('root', 'site');
+	}, []);
+
+	useEffect(() => {
+		if (siteSettings) {
+			console.log(siteSettings);
+		}
+	}, [siteSettings]);
+
 	const {
 		readingTime,
 		score,
 		polarity,
 	} = useSelect((select) => select(store).getReadability());
+
 	const problems = useSelect((select) => {
 		const currentProblems = select(store).getProblems();
 
@@ -32,6 +44,7 @@ const AccessPanel = () => {
 			simpler: currentProblems.filter(({ type }) => type === 'simpler'),
 		};
 	});
+
 	const { suggestionsToShow: SHOWN_ANNOTATION_TYPES = {} } = useSelect((select) => select(store).getUserSettings());
 
 	return (
