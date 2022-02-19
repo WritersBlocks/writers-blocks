@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+        "checkJs": true,
+	},
+	"exclude": [
+		"build",
+		"node_modules",
+		"vendor"
+	]
+}

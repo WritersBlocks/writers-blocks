@@ -14,6 +14,7 @@ export const ALLOWED_BLOCKS = [
 export const BLOCK_TYPE_CONTENT_ATTRIBUTE = {
 	'core/paragraph': 'content',
 	'core/list': 'values',
+	'core/quote': 'value',
 };
 
 export const PROBLEM_TYPES = [
@@ -34,27 +35,27 @@ export const PROBLEM_TYPES = [
 export const PROBLEM_TYPES_TO_LABEL = {
 	simpler: {
 		label: __('Simpler Words', 'writers-blocks'),
-		help: (number) => `Found ${number} simpler words`,
+		help: (number) => `${number} simpler words`,
 	},
 	adverb: {
 		label: __('Adverbs', 'writers-blocks'),
-		help: (number) => `Found ${number} adverbs`,
+		help: (number) => `${number} adverbs`,
 	},
 	hedge: {
 		label: __('Hedge Words', 'writers-blocks'),
-		help: (number) => `Found ${number} hedge words`,
+		help: (number) => `${number} hedge words`,
 	},
 	weasel: {
 		label: __('Weasel Words', 'writers-blocks'),
-		help: (number) => `Found ${number} weasel words`,
+		help: (number) => `${number} weasel words`,
 	},
 	passive: {
 		label: __('Passive Voice', 'writers-blocks'),
-		help: (number) => `Found ${number} uses of passive voice`,
+		help: (number) => `${number} uses of passive voice`,
 	},
 	readability: {
 		label: __('Readability', 'writers-blocks'),
-		help: (number) => `Found ${number} difficult to read sentences`,
+		help: (number) => `${number} difficult to read sentences`,
 		source: [
 			'readability-hard',
 			'readability-very-hard',
@@ -62,18 +63,26 @@ export const PROBLEM_TYPES_TO_LABEL = {
 	},
 	filler: {
 		label: __('Filler Words', 'writers-blocks'),
-		help: (number) => `Found ${number} filler words`,
+		help: (number) => `${number} filler words`,
 	},
 	cliche: {
 		label: __('Cliché Phrases', 'writers-blocks'),
-		help: (number) => `Found ${number} cliché phrases`,
+		help: (number) => `${number} cliché phrases`,
 	},
 	equality: {
 		label: __('Inclusive Language', 'writers-blocks'),
-		help: (number) => `Found ${number} uses of non-inclusive language`,
+		help: (number) => `${number} uses of non-inclusive language`,
 	},
 	profanity: {
 		label: __('Profanity', 'writers-blocks'),
-		help: (number) => `Found ${number} uses of profanity`,
+		help: (number) => `${number} uses of profanity`,
 	},
+};
+
+export const DEFAULT_STATE = {
+	isHighlighted: false,
+	isBlurred: false,
+	...Object.keys( PROBLEM_TYPES_TO_LABEL ).map( ( type ) => ( {
+		[ type ]: true,
+	} ) ),
 };

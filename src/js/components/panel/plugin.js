@@ -1,17 +1,16 @@
 import { __ } from '@wordpress/i18n';
 import { PluginSidebar } from '@wordpress/edit-post';
-import { PanelBody, PanelRow, ToggleControl } from '@wordpress/components';
-import { registerPlugin } from '@wordpress/plugins';
+import { Fragment, PanelBody, PanelRow, ToggleControl, Spinner } from '@wordpress/components';
 import { useSelect, select, dispatch } from '@wordpress/data';
 import { useEffect } from '@wordpress/element';
 
 import {
 	PROBLEM_TYPES_TO_LABEL,
 	BLOCK_TYPE_CONTENT_ATTRIBUTE,
-} from '../constants';
-import { store } from '../store';
+} from '../../constants';
+import { store } from '../../store';
 
-const AccessPanel = () => {
+export const PluginPanel = () => {
 	const siteSettings = useSelect((select) => {
 		return select('core').getEntityRecord('root', 'site');
 	}, []);
@@ -48,31 +47,39 @@ const AccessPanel = () => {
 	const { suggestionsToShow: SHOWN_ANNOTATION_TYPES = {} } = useSelect((select) => select(store).getUserSettings());
 
 	return (
-		<>
-			<PluginSidebar
-				name="writers-blocks"
-				icon="text"
-				title={__('Writer\'s Blocks', 'writers-blocks')}
-			>
-				<PanelBody title={__('Readability', 'writers-blocks')}>
-					<PanelRow>
-						<span>Reading time</span>
-						<h2 style={{margin: 0}}>{(readingTime || 0) >= 1 ? `${
-							Math.round(readingTime)} minute${Math.round((readingTime || 0)) > 1 ? 's' : ''
-						}` : 'Less than a minute'}</h2>
-					</PanelRow>
-					<PanelRow>
-						<span>Grade</span>
-						<h2 style={{margin: 0}}>{score || 0}</h2>
-					</PanelRow>
-					<PanelRow>
-						<span>Polarity</span>
-						<h2 style={{margin: 0}}>{polarity || 0}</h2>
-					</PanelRow>
-				</PanelBody>
-				<PanelBody title={__('Suggestions', 'writers-blocks')}>
-					{
-						Object.keys(PROBLEM_TYPES_TO_LABEL).map((type) => (
+		<PluginSidebar
+			name="writers-blocks"
+			icon="text"
+			title={__('Writer\'s Blocks', 'writers-blocks')}
+		>
+			<PanelBody title={__('Readability', 'writers-blocks')}>
+				{/* {
+					readingTime && score && polarity ? (
+						<Fragment>
+							<PanelRow>
+								<span>Reading time</span>
+								<h2 style={{margin: 0}}>{(readingTime || 0) >= 1 ? `${
+									Math.round(readingTime)} minute${Math.round((readingTime || 0)) > 1 ? 's' : ''
+								}` : 'Less than a minute'}</h2>
+							</PanelRow>
+							<PanelRow>
+								<span>Grade</span>
+								<h2 style={{margin: 0}}>{score || 0}</h2>
+							</PanelRow>
+							<PanelRow>
+								<span>Polarity</span>
+								<h2 style={{margin: 0}}>{polarity || 0}</h2>
+							</PanelRow>
+						</Fragment>
+					) : (
+						<Spinner />
+					)
+				} */}
+			</PanelBody>
+			<PanelBody title={__('Suggestions', 'writers-blocks')}>
+				{
+					Object.keys(PROBLEM_TYPES_TO_LABEL).map((type) =>
+						problems[type].length ? (
 							<PanelRow key={type}>
 								<ToggleControl
 									label={PROBLEM_TYPES_TO_LABEL[type].label}
@@ -108,17 +115,10 @@ const AccessPanel = () => {
 									}}
 								/>
 							</PanelRow>
-						))
-					}
-				</PanelBody>
-			</PluginSidebar>
-		</>
+						) : null
+					)
+				}
+			</PanelBody>
+		</PluginSidebar>
 	);
 };
-
-/**
- * Register Access Panel Plugin
- */
-registerPlugin('writers-blocks', {
-	render: AccessPanel,
-});

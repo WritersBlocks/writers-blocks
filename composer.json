@@ -1,0 +1,27 @@
+{
+    "name": "writers-blocks/writers-blocks",
+    "authors": [
+        {
+            "name": "Writer's Blocks",
+            "email": "info@usewritersblocks.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "10up/phpcs-composer": "dev-master"
+    },
+    "scripts": {
+        "lint": "phpcs .",
+        "lint-fix": "phpcbf .",
+		"post-install-cmd": [
+      		"cd packages/dictionary && composer install -o",
+			"cd packages/hemingway && composer install -o",
+      		"cd packages/openai && composer install -o",
+            "cd packages/toolkit && composer install -o"
+    	]
+    }
+}

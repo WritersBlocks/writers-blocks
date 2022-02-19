@@ -1,0 +1,4 @@
+[data-block].is-blurred {
+	color: transparent;
+	text-shadow: #111 0 0 15px;
+}

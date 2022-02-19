@@ -1,5 +1,5 @@
-import { readingScore } from "../reading-score";
-import { tokenize } from '../tokenizer';
+import { readingScore } from "../utils/reading-score";
+import { tokenize } from '../utils/tokenizer';
 
 export default (text) => {
     const paragraphs = text.replace(/\n$/gm, '').split(/\n/g).filter((line) => line.length);

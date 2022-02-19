@@ -1,12 +1,15 @@
 import { subscribe, select, dispatch } from '@wordpress/data';
 import domReady from '@wordpress/dom-ready';
+import { debounce } from 'lodash';
 
 // The WP annotations package isn't loaded by default so force loading it.
 import "@wordpress/annotations";
 
-import { debounce } from 'lodash';
+/**
+ * Internal depenedencies
+ */
 import check from '../parsers';
-import { readingScore } from '../reading-score';
+import { readingScore } from '../utils/reading-score';
 import { store } from '../store';
 import {
 	PROBLEM_TYPES,

@@ -7,7 +7,7 @@ import weasel from "./weasel";
 import sensitivity from "./sensitivity";
 import fillers from "./fillers";
 import cliches from './cliches';
-import { strip } from '../utils/strip';
+import { strip } from '../utils/strip-text';
 
 export default (text, { preserveWhiteSpace = true } = {}) => {
     const content = strip(text, { preserveWhiteSpace });

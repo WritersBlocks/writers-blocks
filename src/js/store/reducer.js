@@ -3,6 +3,9 @@
  */
 import { combineReducers } from '@wordpress/data';
 
+/**
+ * Internal dependencies
+ */
 import { PROBLEM_TYPES_TO_LABEL } from '../constants';
 
 const { btoa } = window;
