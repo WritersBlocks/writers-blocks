@@ -49,7 +49,8 @@ domReady(() => {
 			
 			if (blockProblems.length) {
 				dispatch(store).addProblems(blockProblems);
-				addAnnotations(blockProblems);
+				const annotations = addAnnotations(blockProblems);
+				dispatch(store).addAnnotations(annotations);
 			}
 		}
 

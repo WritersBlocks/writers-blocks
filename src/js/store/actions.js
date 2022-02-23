@@ -1,3 +1,10 @@
+export function addAnnotations(annotations) {
+	return {
+		type: 'ADD_ANNOTATIONS',
+		annotations,
+	};
+};
+
 export function addProblem(problem) {
 	return {
 		type: 'ADD_PROBLEM',

@@ -31,6 +31,18 @@ export function readability(state = { stats: {} }, action) {
 	}
 }
 
+export function annotations(state = { list: [] }, action) {
+	switch (action.type) {
+		case 'ADD_ANNOTATIONS':
+			return {
+				...state,
+				list: action.annotations,
+			};
+		default:
+			return state;
+	}
+}
+
 export function problems(state = { list: [] }, action) {
 	switch (action.type) {
 		case 'ADD_PROBLEM':
@@ -80,5 +92,6 @@ export function user(state = { settings: DEFAULT_USER_SETTINGS }, action) {
 export default combineReducers({
 	problems,
 	readability,
+	annotations,
 	user,
 });

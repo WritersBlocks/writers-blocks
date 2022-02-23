@@ -7890,9 +7890,9 @@ const addAnnotations = function (blockProblems) {
 
   if (clientId) {
     removeAnnotations(clientId);
-  } // const problemsWithAnnotations = [];
+  }
 
-
+  const problemsWithAnnotations = [];
   const readabilityProblems = blockProblems.filter(problem => problem.type.includes('readability'));
   readabilityProblems.forEach(problem => {
     const {
@@ -7916,10 +7916,10 @@ const addAnnotations = function (blockProblems) {
           start: index,
           end: offset
         }
-      }).then(annotation => {// problemsWithAnnotations.push({
-        // 	...problem,
-        // 	annotationId: annotation.id,
-        // });
+      }).then(annotation => {
+        problemsWithAnnotations.push({ ...problem,
+          annotationId: annotation.id
+        });
       });
     }
   });
@@ -7945,15 +7945,16 @@ const addAnnotations = function (blockProblems) {
           start: index,
           end: offset
         }
-      }).then(annotation => {// problemsWithAnnotations.push({
-        // 	...problem,
-        // 	annotationId: annotation.id,
-        // });				
+      }).then(annotation => {
+        problemsWithAnnotations.push({ ...problem,
+          annotationId: annotation.id
+        });
       });
 
       ;
     }
-  }); // return problemsWithAnnotations;
+  });
+  return problemsWithAnnotations;
 };
 const scheduleAnnotations = (0,lodash__WEBPACK_IMPORTED_MODULE_1__.debounce)(() => {
   if (isUpdatingProblems) {
@@ -7976,9 +7977,10 @@ const scheduleAnnotations = (0,lodash__WEBPACK_IMPORTED_MODULE_1__.debounce)(() 
     } = block;
     const problems = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.select)(_store__WEBPACK_IMPORTED_MODULE_4__.store).getProblems();
     (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_4__.store).addProblems([...problems.filter(problem => problem.blockId !== clientId), ...blockProblems]);
-    addAnnotations(blockProblems, {
+    const annotations = addAnnotations(blockProblems, {
       clientId
-    }); // console.log(annotations);
+    });
+    (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_4__.store).addAnnotations(annotations);
   }
 
   isUpdatingProblems = false;
@@ -8449,12 +8451,20 @@ function weasel(text) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "addAnnotations": function() { return /* binding */ addAnnotations; },
 /* harmony export */   "addProblem": function() { return /* binding */ addProblem; },
 /* harmony export */   "addProblems": function() { return /* binding */ addProblems; },
 /* harmony export */   "removeProblem": function() { return /* binding */ removeProblem; },
 /* harmony export */   "updateReadability": function() { return /* binding */ updateReadability; },
 /* harmony export */   "updateUserSettings": function() { return /* binding */ updateUserSettings; }
 /* harmony export */ });
+function addAnnotations(annotations) {
+  return {
+    type: 'ADD_ANNOTATIONS',
+    annotations
+  };
+}
+;
 function addProblem(problem) {
   return {
     type: 'ADD_PROBLEM',
@@ -8537,6 +8547,7 @@ const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)(
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "readability": function() { return /* binding */ readability; },
+/* harmony export */   "annotations": function() { return /* binding */ annotations; },
 /* harmony export */   "problems": function() { return /* binding */ problems; },
 /* harmony export */   "user": function() { return /* binding */ user; }
 /* harmony export */ });
@@ -8573,6 +8584,22 @@ function readability() {
     case 'UPDATE_READABILITY':
       return { ...state,
         stats: action.stats
+      };
+
+    default:
+      return state;
+  }
+}
+function annotations() {
+  let state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+    list: []
+  };
+  let action = arguments.length > 1 ? arguments[1] : undefined;
+
+  switch (action.type) {
+    case 'ADD_ANNOTATIONS':
+      return { ...state,
+        list: action.annotations
       };
 
     default:
@@ -8636,6 +8663,7 @@ function user() {
 /* harmony default export */ __webpack_exports__["default"] = ((0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.combineReducers)({
   problems,
   readability,
+  annotations,
   user
 }));
 
@@ -8651,6 +8679,7 @@ function user() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getProblems": function() { return /* binding */ getProblems; },
+/* harmony export */   "getAnnotations": function() { return /* binding */ getAnnotations; },
 /* harmony export */   "getProblem": function() { return /* binding */ getProblem; },
 /* harmony export */   "getBlockProblems": function() { return /* binding */ getBlockProblems; },
 /* harmony export */   "getProblemsByType": function() { return /* binding */ getProblemsByType; },
@@ -8658,6 +8687,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getUserSettings": function() { return /* binding */ getUserSettings; }
 /* harmony export */ });
 const getProblems = state => state.problems.list;
+const getAnnotations = state => state.annotations.list;
 const getProblem = (state, id) => state.problems.list.find(problem => problem.id === id);
 const getBlockProblems = (state, blockId) => state.problems.list.filter(problem => problem.blockId === blockId);
 const getProblemsByType = (state, type) => state.problems.list.filter(problem => problem.type === type);
@@ -8723,7 +8753,8 @@ _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_2___default()(() => {
 
       if (blockProblems.length) {
         (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_4__.store).addProblems(blockProblems);
-        (0,_decorators_gutenberg__WEBPACK_IMPORTED_MODULE_5__.addAnnotations)(blockProblems);
+        const annotations = (0,_decorators_gutenberg__WEBPACK_IMPORTED_MODULE_5__.addAnnotations)(blockProblems);
+        (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_4__.store).addAnnotations(annotations);
       }
     }
 

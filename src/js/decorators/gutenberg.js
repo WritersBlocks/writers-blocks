@@ -91,7 +91,7 @@ export const addAnnotations = (blockProblems, { clientId = null } = {}) => {
 		removeAnnotations(clientId);
 	}
 
-	// const problemsWithAnnotations = [];
+	const problemsWithAnnotations = [];
 	const readabilityProblems = blockProblems.filter( (problem) => problem.type.includes('readability') );
 
 	readabilityProblems
@@ -115,10 +115,10 @@ export const addAnnotations = (blockProblems, { clientId = null } = {}) => {
 						end: offset,
 					},
 				}).then( (annotation) => {
-					// problemsWithAnnotations.push({
-					// 	...problem,
-					// 	annotationId: annotation.id,
-					// });
+					problemsWithAnnotations.push({
+						...problem,
+						annotationId: annotation.id,
+					});
 				});
 			}
 		});
@@ -145,15 +145,15 @@ export const addAnnotations = (blockProblems, { clientId = null } = {}) => {
 						end: offset,
 					},
 				}).then( (annotation) => {
-					// problemsWithAnnotations.push({
-					// 	...problem,
-					// 	annotationId: annotation.id,
-					// });				
+					problemsWithAnnotations.push({
+						...problem,
+						annotationId: annotation.id,
+					});
 				});;
 			}
 		});
 
-	// return problemsWithAnnotations;
+	return problemsWithAnnotations;
 };
 
 export const scheduleAnnotations = debounce(() => {
@@ -180,8 +180,8 @@ export const scheduleAnnotations = debounce(() => {
 			...blockProblems,
 		]);
 
-		addAnnotations(blockProblems, { clientId });
-		// console.log(annotations);
+		const annotations = addAnnotations(blockProblems, { clientId });
+		dispatch(store).addAnnotations(annotations);
 	}
 
 	isUpdatingProblems = false;
