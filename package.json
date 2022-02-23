@@ -1,9 +1,23 @@
 {
-	"name": "syntax",
+	"name": "writers-blocks",
 	"version": "",
 	"description": "",
 	"author": "",
 	"main": "build/index.js",
+	"files": [
+		"admin/**",
+		"build/**",
+		"includes/**",
+		"languages/**",
+		"public/**",
+		"writers-blocks.php",
+		"config.php",
+		"uninstall.php",
+		"block.json",
+		"changelog.*",
+		"license.*",
+		"readme.*"
+	],
 	"scripts": {
 		"build": "wp-scripts build",
 		"format": "wp-scripts format",
@@ -12,10 +26,12 @@
 		"lint:js:src": "wp-scripts lint-js ./src",
 		"lint:js:src:fix": "wp-scripts lint-js ./src --fix",
 		"start": "wp-scripts start",
-		"packages-update": "wp-scripts packages-update"
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts plugin-zip"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^19.2.3",
+		"@wordpress/icons": "^6.3.0",
+		"@wordpress/scripts": "^21.0.2",
 		"lerna": "^4.0.0",
 		"webpack-remove-empty-scripts": "^0.7.2"
 	},

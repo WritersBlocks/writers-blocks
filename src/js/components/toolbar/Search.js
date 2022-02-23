@@ -1,13 +1,21 @@
 /**
+ * External dependencies
+ */
+ import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
-import { Toolbar, IconButton, Modal, Spinner, Flex } from '@wordpress/components';
+import { ToolbarButton, Modal, Spinner, Flex } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { select } from '@wordpress/data';
 
+/**
+ * Internal dependencies
+ */
 import { strip } from '../../utils/strip-text';
 import { Confirm } from '../Confirm';
 import { CopyButton } from '../CopyButton';
@@ -45,28 +53,26 @@ export const SearchToolbarButton = ({ attributes }) => {
 
     return (
         <Fragment>
-            <Toolbar>
-                <IconButton
-                    className="components-toolbar__control"
-                    label={ __( 'Dictionary', 'writers-blocks' ) }
-                    icon="search"
-                    onClick={ () => {
-                        const { offset: selectionStart } = select('core/block-editor').getSelectionStart();
-                        const { offset: selectionEnd, attributeKey: content } = select('core/block-editor').getSelectionEnd();
+            <ToolbarButton
+                className={ classnames( 'components-toolbar__control', { 'is-pressed': isSearchModalOpen } ) }
+                label={ __( 'Dictionary', 'writers-blocks' ) }
+                icon="search"
+                onClick={ () => {
+                    const { offset: selectionStart } = select('core/block-editor').getSelectionStart();
+                    const { offset: selectionEnd, attributeKey: content } = select('core/block-editor').getSelectionEnd();
+                    
+                    if (selectionStart !== selectionEnd) {
+                        const text = strip(attributes[content]);
+                        const word = text.slice(selectionStart, selectionEnd).trim();
                         
-                        if (selectionStart !== selectionEnd) {
-                            const text = strip(attributes[content]);
-                            const word = text.slice(selectionStart, selectionEnd).trim();
-                            
-                            if (word.includes(' '))
-                                setIsConfirmModalOpen(true);
-                            else if (word) {
-                                setSelectedWord(word);
-                            }
+                        if (word.includes(' '))
+                            setIsConfirmModalOpen(true);
+                        else if (word) {
+                            setSelectedWord(word);
                         }
-                    } }
-                />
-            </Toolbar>
+                    }
+                } }
+            />
             {
                 isConfirmModalOpen ? (
                     <Confirm

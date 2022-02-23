@@ -80,7 +80,7 @@ export const PROBLEM_TYPES_TO_LABEL = {
 };
 
 export const DEFAULT_STATE = {
-	isHighlighted: false,
+	isHighlighted: true,
 	isBlurred: false,
 	...Object.keys( PROBLEM_TYPES_TO_LABEL ).map( ( type ) => ( {
 		[ type ]: true,

@@ -2,10 +2,10 @@
 /**
  * Utility Functions
  *
- * @package SyntaxPlugin
+ * @package WritersBlocks
  */
 
-namespace SyntaxPlugin\Utility;
+namespace WritersBlocks\Utility;
 
 /**
  * Get asset info from extracted asset files
@@ -15,8 +15,8 @@ namespace SyntaxPlugin\Utility;
  * @return string|array
  */
 function get_asset_info( $slug, $type, $attribute = null ) {
-	if ( file_exists( SYNTAX_PLUGIN_PATH . 'build/' . $type . '/' . $slug . '.asset.php' ) ) {
-		$asset = require SYNTAX_PLUGIN_PATH . 'build/' . $type . '/' . $slug . '.asset.php';
+	if ( file_exists( WRITERS_BLOCKS_PATH . 'build/' . $type . '/' . $slug . '.asset.php' ) ) {
+		$asset = require WRITERS_BLOCKS_PATH . 'build/' . $type . '/' . $slug . '.asset.php';
 	}else {
 		return null;
 	}

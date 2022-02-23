@@ -2,30 +2,33 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { ToolbarGroup } from '@wordpress/components';
+import { Toolbar as BlockToolbar, ToolbarGroup } from '@wordpress/components';
+import { useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { SearchToolbarButton } from './Search';
-import { BlurToolbarButton } from './Blur';
+// import { SearchToolbarButton } from './Search';
+// import { BlurToolbarButton } from './Blur';
 import { EditToolbarButton } from './Edit';
 
 export const Toolbar = (props) => {
     const {
-        blockProblems,
+        // blockProblems,
         setAttributes,
         attributes: {
             isHighlighted,
-            isBlurred,
+            // isBlurred,
         },
     } = props;
 
     return (
-        <ToolbarGroup>
-            <EditToolbarButton setAttributes={setAttributes} isHighlighted={isHighlighted} problems={blockProblems} />
-            <BlurToolbarButton setAttributes={setAttributes} isBlurred={isBlurred} problems={blockProblems} />
-            <SearchToolbarButton />
-        </ToolbarGroup>
+        <BlockToolbar>
+            <ToolbarGroup>
+                <EditToolbarButton setAttributes={setAttributes} isHighlighted={isHighlighted} />
+                {/* <BlurToolbarButton setAttributes={setAttributes} isBlurred={isBlurred} /> */}
+                {/* <SearchToolbarButton /> */}
+            </ToolbarGroup>
+        </BlockToolbar>
     );
 };

@@ -2,12 +2,12 @@
 /**
  * Core plugin functionality
  *
- * @package SyntaxPlugin
+ * @package WritersBlocks
  */
 
-namespace SyntaxPlugin\Core;
+namespace WritersBlocks\Core;
 
-use SyntaxPlugin\Utility;
+use WritersBlocks\Utility;
 
 /**
  * Default setup routine
@@ -19,324 +19,10 @@ function setup() {
 		return __NAMESPACE__ . "\\$function";
 	};
 
-	add_action( 'admin_menu', $n( 'admin_menu' ), 20 );
-	add_action( 'admin_init', $n( 'setup_fields_sections' ) );
-	add_action( 'admin_init', $n( 'register_settings' ) );
 	add_action( 'admin_enqueue_scripts', $n( 'admin_scripts' ) );
-    add_action( 'enqueue_block_editor_assets', $n( 'syntax_editor_scripts' ) );
+    add_action( 'enqueue_block_editor_assets', $n( 'editor_scripts' ) );
 	add_action( 'rest_api_init', $n( 'rest_api_init' ) );
 	add_action( 'rest_api_init', $n( 'register_settings' ) );
-}
-
-/**
- * Output setting menu option
- *
- * @since  1.0
- */
-function admin_menu() {
-	add_options_page(
-		"Writer's Blocks Settings",
-		"Writer's Blocks ",
-		'manage_options',
-		'writers-blocks',
-		__NAMESPACE__ . '\settings_screen'
-	);
-}
-
-/**
- * Output setting screen
- *
- * @since  1.0
- */
-function settings_screen() {
-	?>
-	<div class="wrap">
-		<h1><?php esc_html_e( "Writer's Blocks Settings", 'writers-blocks' ); ?></h1>
-
-		<div class="writers-blocks-settings">
-			<form action="options.php" method="post">
-				<?php settings_fields( 'writers-blocks' ); ?>
-				<?php do_settings_sections( 'writers-blocks' ); ?>
-				<?php submit_button( esc_html__( 'Save Changes', 'writers-blocks' ) ); ?>
-			</form>
-		</div>
-	</div>
-	<?php
-}
-
-/**
- * Register setting fields and sections
- *
- * @since  1.0.0
- */
-function setup_fields_sections() {
-
-	add_settings_section(
-		'writers-blocks-instructions',
-		'',
-		__NAMESPACE__ . '\render_instructions',
-		'writers-blocks'
-	);
-
-	add_settings_section(
-		'writers-blocks-crendentials',
-		'',
-		'',
-		'writers-blocks'
-	);
-
-	add_settings_section(
-		'writers-blocks-suggestions',
-		'',
-		'',
-		'writers-blocks'
-	);
-
-	add_settings_field(
-		'writers_blocks_license_key',
-		esc_html__( 'License Key', 'writers-blocks' ),
-		__NAMESPACE__ . '\render_license_key_field',
-		'writers-blocks',
-		'writers-blocks-crendentials',
-		[
-			'label_for' => 'license_key',
-		]
-	);
-
-	add_settings_field(
-		'writers_blocks_license_verified',
-		'',
-		__NAMESPACE__ . '\render_license_verified_field',
-		'writers-blocks',
-		'writers-blocks-crendentials',
-		[
-			'class' => 'hidden',
-		]
-	);
-
-	add_settings_field(
-		'writers_blocks_simpler',
-		'',
-		__NAMESPACE__ . '\render_simpler_field',
-		'writers-blocks',
-		'writers-blocks-suggestions',
-		[
-			'class' => 'hidden',
-		]
-	);
-
-	add_settings_field(
-		'writers_blocks_adverb',
-		'',
-		__NAMESPACE__ . '\render_adverb_field',
-		'writers-blocks',
-		'writers-blocks-suggestions',
-		[
-			'class' => 'hidden',
-		]
-	);
-
-	add_settings_field(
-		'writers_blocks_hedge',
-		'',
-		__NAMESPACE__ . '\render_hedge_field',
-		'writers-blocks',
-		'writers-blocks-suggestions',
-		[
-			'class' => 'hidden',
-		]
-	);
-
-	add_settings_field(
-		'writers_blocks_weasel',
-		'',
-		__NAMESPACE__ . '\render_weasel_field',
-		'writers-blocks',
-		'writers-blocks-suggestions',
-		[
-			'class' => 'hidden',
-		]
-	);
-
-	add_settings_field(
-		'writers_blocks_passive',
-		'',
-		__NAMESPACE__ . '\render_passive_field',
-		'writers-blocks',
-		'writers-blocks-suggestions',
-		[
-			'class' => 'hidden',
-		]
-	);
-
-	add_settings_field(
-		'writers_blocks_readability',
-		'',
-		__NAMESPACE__ . '\render_readability_field',
-		'writers-blocks',
-		'writers-blocks-suggestions',
-		[
-			'class' => 'hidden',
-		]
-	);
-
-	add_settings_field(
-		'writers_blocks_filler',
-		'',
-		__NAMESPACE__ . '\render_filler_field',
-		'writers-blocks',
-		'writers-blocks-suggestions',
-		[
-			'class' => 'hidden',
-		]
-	);
-
-	add_settings_field(
-		'writers_blocks_cliche',
-		'',
-		__NAMESPACE__ . '\render_cliche_field',
-		'writers-blocks',
-		'writers-blocks-suggestions',
-		[
-			'class' => 'hidden',
-		]
-	);
-
-	add_settings_field(
-		'writers_blocks_equality',
-		'',
-		__NAMESPACE__ . '\render_equality_field',
-		'writers-blocks',
-		'writers-blocks-suggestions',
-		[
-			'class' => 'hidden',
-		]
-	);
-
-	add_settings_field(
-		'writers_blocks_profanity',
-		'',
-		__NAMESPACE__ . '\render_profanity_field',
-		'writers-blocks',
-		'writers-blocks-suggestions',
-		[
-			'class' => 'hidden',
-		]
-	);
-}
-
-/**
- * Display instructions for setting fields and sections
- *
- * @since  1.0.0
- */
-function render_instructions() {
-	?>
-	<section class="credentials-instructions">
-	</section>
-	<?php
-}
-
-/**
- * Render the Private Key field.
- */
-function render_license_key_field() {
-	$key  = 'license_key';
-	$name = "writers-blocks[$key]";
-	?>
-	<div id="authkey-container">
-		<textarea name="<?php echo esc_attr( $name ); ?>" class="large-text" rows="4" id="license_key" placeholder="<?php esc_html_e( 'Paste your License Key here' ); ?>"><?php echo esc_attr( get_setting( $key ) ); ?></textarea>
-		<button type="button" class="button button-secondary" id="verify-license"><?php echo esc_html( 'Verify License', 'writers-blocks' ); ?></button>
-	</div>
-	<?php
-}
-
-function render_license_verified_field() {
-	$key  = 'license_verified';
-	$name = "writers-blocks[$key]";
-	?>
-	<input name="<?php echo esc_attr( $name ); ?>" type="hidden" value="<?php echo esc_attr( get_setting( $key ) ); ?>" />
-	<?php
-}
-
-function render_simpler_field() {
-	$key  = 'simpler';
-	$name = "writers-blocks[suggestions][$key]";
-	?>
-	<input name="<?php echo esc_attr( $name ); ?>" type="hidden" value="<?php echo esc_attr( get_setting( $key, 'suggestions' ) ); ?>" />
-	<?php
-}
-
-function render_adverb_field() {
-	$key  = 'adverb';
-	$name = "writers-blocks[suggestions][$key]";
-	?>
-	<input name="<?php echo esc_attr( $name ); ?>" type="hidden" value="<?php echo esc_attr( get_setting( $key, 'suggestions' ) ); ?>" />
-	<?php
-}
-
-function render_hedge_field() {
-	$key  = 'hedge';
-	$name = "writers-blocks[suggestions][$key]";
-	?>
-	<input name="<?php echo esc_attr( $name ); ?>" type="hidden" value="<?php echo esc_attr( get_setting( $key, 'suggestions' ) ); ?>" />
-	<?php
-}
-
-function render_weasel_field() {
-	$key  = 'weasel';
-	$name = "writers-blocks[suggestions][$key]";
-	?>
-	<input name="<?php echo esc_attr( $name ); ?>" type="hidden" value="<?php echo esc_attr( get_setting( $key, 'suggestions' ) ); ?>" />
-	<?php
-}
-
-function render_passive_field() {
-	$key  = 'passive';
-	$name = "writers-blocks[suggestions][$key]";
-	?>
-	<input name="<?php echo esc_attr( $name ); ?>" type="hidden" value="<?php echo esc_attr( get_setting( $key, 'suggestions' ) ); ?>" />
-	<?php
-}
-
-function render_readability_field() {
-	$key  = 'readability';
-	$name = "writers-blocks[suggestions][$key]";
-	?>
-	<input name="<?php echo esc_attr( $name ); ?>" type="hidden" value="<?php echo esc_attr( get_setting( $key, 'suggestions' ) ); ?>" />
-	<?php
-}
-
-function render_filler_field() {
-	$key  = 'filler';
-	$name = "writers-blocks[suggestions][$key]";
-	?>
-	<input name="<?php echo esc_attr( $name ); ?>" type="hidden" value="<?php echo esc_attr( get_setting( $key, 'suggestions' ) ); ?>" />
-	<?php
-}
-
-function render_cliche_field() {
-	$key  = 'cliche';
-	$name = "writers-blocks[suggestions][$key]";
-	?>
-	<input name="<?php echo esc_attr( $name ); ?>" type="hidden" value="<?php echo esc_attr( get_setting( $key, 'suggestions' ) ); ?>" />
-	<?php
-}
-
-function render_equality_field() {
-	$key  = 'equality';
-	$name = "writers-blocks[suggestions][$key]";
-	?>
-	<input name="<?php echo esc_attr( $name ); ?>" type="hidden" value="<?php echo esc_attr( get_setting( $key, 'suggestions' ) ); ?>" />
-	<?php
-}
-
-function render_profanity_field() {
-	$key  = 'profanity';
-	$name = "writers-blocks[suggestions][$key]";
-	?>
-	<input name="<?php echo esc_attr( $name ); ?>" type="hidden" value="<?php echo esc_attr( get_setting( $key, 'suggestions' ) ); ?>" />
-	<?php
 }
 
 /**
@@ -346,7 +32,7 @@ function render_profanity_field() {
  * @return mixed
  */
 function get_setting( $setting, $parent = false ) {
-	$settings = get_option( 'writers-blocks', [] );
+	$settings = get_option( 'writers_blocks', [] );
 
 	if ( $parent ) {
 		$settings = $settings[ $parent ];
@@ -362,8 +48,8 @@ function get_setting( $setting, $parent = false ) {
  */
 function register_settings() {
 	register_setting(
-		'writers-blocks',
-		'writers-blocks',
+		'writers_blocks',
+		'writers_blocks',
 		array(
 			'show_in_rest'      => array(
 				'schema' => array(
@@ -375,10 +61,43 @@ function register_settings() {
 						'license_verified' => array(
 							'type' => 'string',
 						),
+						'editing_mode' => array(
+							'type' => 'string',
+						),
+						'simpler' => array(
+							'type' => 'string',
+						),
+						'adverb' => array(
+							'type' => 'string',
+						),
+						'hedge' => array(
+							'type' => 'string',
+						),
+						'weasel' => array(
+							'type' => 'string',
+						),
+						'passive' => array(
+							'type' => 'string',
+						),
+						'filler' => array(
+							'type' => 'string',
+						),
+						'cliche' => array(
+							'type' => 'string',
+						),
+						'equality' => array(
+							'type' => 'string',
+						),
+						'profanity' => array(
+							'type' => 'string',
+						),
+						'readability' => array(
+							'type' => 'string',
+						),
 					),
 				),
 			),
-			'default'           => [],
+			'default'      => [],
 			'sanitize_callback' => __NAMESPACE__ . '\sanitize_settings',
 		)
 	);
@@ -403,19 +122,48 @@ function sanitize_settings( $settings ) {
 		$new_settings['license_verified'] = $settings['license_verified'];
 	}
 
-	if ( isset( $settings['suggestions'] ) ) {
-		$new_settings['suggestions'] = [
-			'simpler'     => isset( $settings['suggestions']['simpler'] ) ? '1' : '0',
-			'adverb'      => isset( $settings['suggestions']['adverb'] ) ? '1' : '0',
-			'hedge'       => isset( $settings['suggestions']['hedge'] ) ? '1' : '0',
-			'weasel'      => isset( $settings['suggestions']['weasel'] ) ? '1' : '0',
-			'passive'     => isset( $settings['suggestions']['passive'] ) ? '1' : '0',
-			'readability' => isset( $settings['suggestions']['readability'] ) ? '1' : '0',
-			'filler'      => isset( $settings['suggestions']['filler'] ) ? '1' : '0',
-			'cliche'      => isset( $settings['suggestions']['cliche'] ) ? '1' : '0',
-			'equality'    => isset( $settings['suggestions']['equality'] ) ? '1' : '0',
-			'profanity'   => isset( $settings['suggestions']['profanity'] ) ? '1' : '0',
-		];
+	if ( isset( $settings['editing_mode'] ) ) {
+		$new_settings['editing_mode'] = $settings['editing_mode'];
+	}
+
+	if ( isset( $settings['simpler'] ) ) {
+		$new_settings['simpler'] = $settings['simpler'];
+	}
+
+	if ( isset( $settings['adverb'] ) ) {
+		$new_settings['adverb'] = $settings['adverb'];
+	}
+
+	if ( isset( $settings['hedge'] ) ) {
+		$new_settings['hedge'] = $settings['hedge'];
+	}
+
+	if ( isset( $settings['weasel'] ) ) {
+		$new_settings['weasel'] = $settings['weasel'];
+	}
+
+	if ( isset( $settings['passive'] ) ) {
+		$new_settings['passive'] = $settings['passive'];
+	}
+
+	if ( isset( $settings['filler'] ) ) {
+		$new_settings['filler'] = $settings['filler'];
+	}
+
+	if ( isset( $settings['cliche'] ) ) {
+		$new_settings['cliche'] = $settings['cliche'];
+	}
+
+	if ( isset( $settings['equality'] ) ) {
+		$new_settings['equality'] = $settings['equality'];
+	}
+
+	if ( isset( $settings['profanity'] ) ) {
+		$new_settings['profanity'] = $settings['profanity'];
+	}
+
+	if ( isset( $settings['readability'] ) ) {
+		$new_settings['readability'] = $settings['readability'];
 	}
 
 	return $new_settings;
@@ -426,10 +174,10 @@ function sanitize_settings( $settings ) {
  * file. Behind the scenes, it registers also all assets so they can be enqueued
  * through the block editor in the corresponding context.
  */
-function syntax_editor_scripts() {
+function editor_scripts() {
 	wp_enqueue_script(
 		'writers-blocks',
-		SYNTAX_PLUGIN_URL . './build/js/editor.js',
+		WRITERS_BLOCKS_URL . './build/js/editor.js',
 		Utility\get_asset_info( 'editor', 'js', 'dependencies' ),
 		Utility\get_asset_info( 'editor', 'js', 'version' ),
 		false
@@ -438,13 +186,13 @@ function syntax_editor_scripts() {
 		'writers-blocks',
 		'WB_SETTINGS',
 		[
-			'settings' => get_option( 'writers-blocks', [] ),
+			'settings' => get_option( 'writers_blocks', [] ),
 		]
 	);
 
 	wp_enqueue_style(
 		'writers-blocks-style',
-		SYNTAX_PLUGIN_URL . './build/css/editor.css',
+		WRITERS_BLOCKS_URL . './build/css/editor.css',
 		Utility\get_asset_info( 'editor', 'css', 'dependencies' ),
 		Utility\get_asset_info( 'editor', 'css', 'version' )
 	);
@@ -454,7 +202,7 @@ function admin_scripts( $page ) {
 	if ( strpos( $page, 'writers-blocks' ) !== false ) {
 		wp_enqueue_script(
 			'writers-blocks-admin',
-			SYNTAX_PLUGIN_URL . './build/js/admin.js',
+			WRITERS_BLOCKS_URL . './build/js/admin.js',
 			Utility\get_asset_info( 'admin', 'js', 'dependencies' ),
 			Utility\get_asset_info( 'admin', 'js', 'version' ),
 			false
@@ -463,13 +211,13 @@ function admin_scripts( $page ) {
 			'writers-blocks-admin',
 			'WB_SETTINGS',
 			[
-				'settings' => get_option( 'writers-blocks', [] ),
+				'settings' => get_option( 'writers_blocks', [] ),
 			]
 		);
 
 		wp_enqueue_style(
 			'writers-blocks-admin',
-			SYNTAX_PLUGIN_URL . './build/css/admin.css',
+			WRITERS_BLOCKS_URL . './build/css/admin.css',
 			Utility\get_asset_info( 'admin', 'css', 'dependencies' ),
 			Utility\get_asset_info( 'admin', 'css', 'version' )
 		);
@@ -611,7 +359,7 @@ function get_sentence_suggestions( $text, $tone ) {
 }
 
 function handle_verification_request( $request ) {
-	$settings = get_option( 'writers-blocks', [] );
+	$settings = get_option( 'writers_blocks', [] );
 	$has_license_been_verified = isset( $settings['license_verified'] ) ? $settings['license_verified'] : "0";
 	$license = $request->get_param( 'license' ) ?? $settings['license_key'];
 
@@ -650,7 +398,7 @@ function get_verification_status( $license, $is_verified ) {
 
 	if ( $response_body['success'] ) {
 		$settings['license_verified'] = "1";
-		update_option( 'writers-blocks', $settings );
+		update_option( 'writers_blocks', $settings );
 	}
 
 	return $response_body;
@@ -658,32 +406,31 @@ function get_verification_status( $license, $is_verified ) {
 
 function activate() {
 	// Do not override existing settings
-	if ( ! empty( get_option( 'writers-blocks' ) ) ) {
-		return;
-	}
+	// if ( ! empty( get_option( 'writers-blocks' ) ) ) {
+	// 	return;
+	// }
 
 	update_option(
-		'writers-blocks',
+		'writers_blocks',
 		[
 			'license_key'      => '',
 			'license_verified' => '0',
-			'suggestions'      => [
-				'simpler'     => '1',
-				'adverb'      => '1',
-				'hedge'       => '1',
-				'weasel'      => '1',
-				'passive'     => '1',
-				'readability' => '1',
-				'filler'      => '1',
-				'cliche'      => '1',
-				'equality'    => '1',
-				'profanity'   => '1',
-			],
+			'editing_mode' => '1',
+			'simpler'     => '1',
+			'adverb'      => '1',
+			'hedge'       => '1',
+			'weasel'      => '1',
+			'passive'     => '1',
+			'readability' => '1',
+			'filler'      => '1',
+			'cliche'      => '1',
+			'equality'    => '1',
+			'profanity'   => '1',
 		],
 		false
 	);
 }
 
 function deactivate() {
-	delete_option( 'writers-blocks' );
+	delete_option( 'writers_blocks' );
 }

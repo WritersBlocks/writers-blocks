@@ -16,12 +16,6 @@
     },
     "scripts": {
         "lint": "phpcs .",
-        "lint-fix": "phpcbf .",
-		"post-install-cmd": [
-      		"cd packages/dictionary && composer install -o",
-			"cd packages/hemingway && composer install -o",
-      		"cd packages/openai && composer install -o",
-            "cd packages/toolkit && composer install -o"
-    	]
+        "lint-fix": "phpcbf ."
     }
 }
