@@ -46,8 +46,6 @@ domReady(() => {
 
 		if (!problems.length && blocks.length) {
 			const blockProblems = getAnnotatableText(blocks);
-
-			console.log(blockProblems);
 			
 			if (blockProblems.length) {
 				const ignoredAnnotations = select(store).getIgnoredAnnotations();

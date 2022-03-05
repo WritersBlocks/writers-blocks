@@ -50,7 +50,7 @@ export const getAnnotatableTextFromBlock = (block) => {
     if (!isAllowed) {
         return [];
     }
-	
+
 	const problems = check(
 		blockAttributes[attribute],
 		{

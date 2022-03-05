@@ -8774,7 +8774,6 @@ _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_2___default()(() => {
 
     if (!problems.length && blocks.length) {
       const blockProblems = (0,_decorators_gutenberg__WEBPACK_IMPORTED_MODULE_5__.getAnnotatableText)(blocks);
-      console.log(blockProblems);
 
       if (blockProblems.length) {
         const ignoredAnnotations = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.select)(_store__WEBPACK_IMPORTED_MODULE_4__.store).getIgnoredAnnotations();
@@ -9052,46 +9051,46 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "readingScore": function() { return /* binding */ readingScore; }
 /* harmony export */ });
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "lodash");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! reading-time/lib/reading-time */ "./node_modules/reading-time/lib/reading-time.js");
+/* harmony import */ var reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var automated_readability__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! automated-readability */ "./node_modules/automated-readability/index.js");
+/* harmony import */ var polarity__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! polarity */ "./node_modules/polarity/index.js");
 /* harmony import */ var _wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/wordcount */ "@wordpress/wordcount");
 /* harmony import */ var _wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! reading-time/lib/reading-time */ "./node_modules/reading-time/lib/reading-time.js");
-/* harmony import */ var reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var automated_readability__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! automated-readability */ "./node_modules/automated-readability/index.js");
-/* harmony import */ var polarity__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! polarity */ "./node_modules/polarity/index.js");
-/* harmony import */ var _strip_astrals__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./strip-astrals */ "./src/js/utils/strip-astrals.js");
-/* harmony import */ var _strip_html_comments__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./strip-html-comments */ "./src/js/utils/strip-html-comments.js");
-/* harmony import */ var _strip_spaces__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./strip-spaces */ "./src/js/utils/strip-spaces.js");
-/* harmony import */ var _strip_tags__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./strip-tags */ "./src/js/utils/strip-tags.js");
-/* harmony import */ var _strip_html_entities__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./strip-html-entities */ "./src/js/utils/strip-html-entities.js");
-/* harmony import */ var _tokenizer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./tokenizer */ "./src/js/utils/tokenizer.js");
-
-
-
-
-
-
-
-
+/* harmony import */ var _strip_text__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./strip-text */ "./src/js/utils/strip-text.js");
+/* harmony import */ var _tokenizer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./tokenizer */ "./src/js/utils/tokenizer.js");
+/**
+ * 
+ */
 
 
 
 /**
  * 
- * @param {string} text
+ */
+
+
+/**
+ * Internal dependencies
+ */
+
+
+
+/**
+ * 
+ * @param {string} content
  */
 
 const readingScore = content => {
-  const text = `${(0,lodash__WEBPACK_IMPORTED_MODULE_0__.flow)(_strip_tags__WEBPACK_IMPORTED_MODULE_6__["default"], _strip_html_comments__WEBPACK_IMPORTED_MODULE_4__["default"], _strip_astrals__WEBPACK_IMPORTED_MODULE_3__["default"], _strip_spaces__WEBPACK_IMPORTED_MODULE_5__["default"], _strip_html_entities__WEBPACK_IMPORTED_MODULE_7__["default"])(content)}\n`;
+  const text = (0,_strip_text__WEBPACK_IMPORTED_MODULE_2__.strip)(content);
   const paragraphs = text.replace(/\n$/gm, '').split(/\n/g).filter(line => line.length);
   const {
     sentences
-  } = (0,_tokenizer__WEBPACK_IMPORTED_MODULE_8__.tokenize)(paragraphs.join(' '));
+  } = (0,_tokenizer__WEBPACK_IMPORTED_MODULE_3__.tokenize)(paragraphs.join(' '));
   const words = sentences.reduce((accumulator, sentence) => {
     const {
       words
-    } = (0,_tokenizer__WEBPACK_IMPORTED_MODULE_8__.tokenize)(sentence);
+    } = (0,_tokenizer__WEBPACK_IMPORTED_MODULE_3__.tokenize)(sentence);
     accumulator.push(...words);
     return accumulator;
   }, []);
@@ -9099,17 +9098,17 @@ const readingScore = content => {
   const characterCount = (0,_wordpress_wordcount__WEBPACK_IMPORTED_MODULE_1__.count)(text, 'characters_including_spaces');
   const alphaNumericCharacters = text.match(/[a-zA-Z0-9]/g);
   const letters = text.match(/[a-zA-Z]/g)?.length || 0;
-  const score = (0,automated_readability__WEBPACK_IMPORTED_MODULE_9__.automatedReadability)({
+  const score = (0,automated_readability__WEBPACK_IMPORTED_MODULE_4__.automatedReadability)({
     sentence: sentences.length,
     word: wordCount,
     character: alphaNumericCharacters?.length || 0
   });
   const {
     polarity: polarityScore
-  } = (0,polarity__WEBPACK_IMPORTED_MODULE_10__.polarity)(words);
+  } = (0,polarity__WEBPACK_IMPORTED_MODULE_5__.polarity)(words);
   const {
     minutes
-  } = reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_2___default()(text, {
+  } = reading_time_lib_reading_time__WEBPACK_IMPORTED_MODULE_0___default()(text, {
     wordsPerMinute: 250
   });
   return {

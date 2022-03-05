@@ -1,30 +1,27 @@
-import { flow } from 'lodash';
-import { count as characterCounter } from '@wordpress/wordcount';
+/**
+ * 
+ */
 import readingTime from 'reading-time/lib/reading-time';
 import { automatedReadability } from 'automated-readability';
 import { polarity } from 'polarity';
 
-import stripAstrals from './strip-astrals';
-import stripHTMComments from './strip-html-comments';
-import stripSpaces from './strip-spaces';
-import stripTags from './strip-tags';
-import stripHTMLEntities from './strip-html-entities';
+/**
+ * 
+ */
+import { count as characterCounter } from '@wordpress/wordcount';
+
+/**
+ * Internal dependencies
+ */
+import { strip } from './strip-text';
 import { tokenize } from './tokenizer';
 
 /**
  * 
- * @param {string} text
+ * @param {string} content
  */
 export const readingScore = (content) => {
-    const text = `${
-        flow(
-            stripTags,
-            stripHTMComments,
-            stripAstrals,
-            stripSpaces,
-            stripHTMLEntities,
-        )(content)
-    }\n`;
+    const text = strip(content);
 
     const paragraphs = text.replace(/\n$/gm, '').split(/\n/g).filter((line) => line.length);
     const { sentences } = tokenize(paragraphs.join(' '));
