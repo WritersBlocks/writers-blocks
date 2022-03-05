@@ -17,7 +17,7 @@ export default function simpler(text) {
             value,
             type: 'simpler',
             level: 'suggestion',
-            message: `"${value}" has a simpler alternative`,
+            message: `"${ value }" has a simpler alternative.`,
             index: match.index,
             offset: value.length + match.index,
             replacements: replacement?.replace ? replacement.replace.split(', ').map((value) => ({ value: value.toLocaleLowerCase(), action: 'replace' })) : [],

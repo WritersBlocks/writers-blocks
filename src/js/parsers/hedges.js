@@ -16,7 +16,7 @@ export default function hedges(text) {
 			value,
 			type: 'hedge',
 			level: 'warning',
-			message: `"${value}" is a hedge word`,
+			message: `"${value}" is a hedge word.`,
 			index: match.index,
 			offset: value.length + match.index,
 			replacements: [{

@@ -6527,18 +6527,14 @@ const EditorToolbarButton = props => {
         writers_blocks: { ...settings,
           editing_mode: settings.editing_mode === "1" ? "0" : "1"
         }
-      }).then(_ref => {
-        let {
-          writers_blocks
-        } = _ref;
-
-        if (writers_blocks.editing_mode === "0") {
-          (0,_decorators_gutenberg__WEBPACK_IMPORTED_MODULE_4__.removeAnnotations)();
-        } else {
-          const blockProblems = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.select)('writers-blocks/editor').getProblems();
-          (0,_decorators_gutenberg__WEBPACK_IMPORTED_MODULE_4__.addAnnotations)(blockProblems);
-        }
       });
+
+      if (settings.editing_mode === "1") {
+        (0,_decorators_gutenberg__WEBPACK_IMPORTED_MODULE_4__.removeAnnotations)();
+      } else {
+        const blockProblems = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.select)('writers-blocks/editor').getProblems();
+        (0,_decorators_gutenberg__WEBPACK_IMPORTED_MODULE_4__.addAnnotations)(blockProblems);
+      }
     }
   });
 };
@@ -7804,6 +7800,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "addAnnotations": function() { return /* binding */ addAnnotations; },
 /* harmony export */   "scheduleAnnotations": function() { return /* binding */ scheduleAnnotations; }
 /* harmony export */ });
+/* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! uuid */ "./node_modules/uuid/dist/esm-browser/v4.js");
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash */ "lodash");
@@ -7813,6 +7810,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _parsers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../parsers */ "./src/js/parsers/index.js");
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../store */ "./src/js/store/index.js");
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../constants */ "./src/js/constants.js");
+/**
+ * External dependencies
+ */
+
 
  // The WP annotations package isn't loaded by default so force loading it.
 
@@ -7867,6 +7868,8 @@ const getAnnotatableTextFromBlock = block => {
     blockId,
     blockName,
     blockAttributes,
+    annotationId: (0,uuid__WEBPACK_IMPORTED_MODULE_6__["default"])(),
+    id: btoa(`${problem.type}_${problem.index}_${problem.offset}_${problem.value}`),
     ...problem
   }));
 };
@@ -7885,29 +7888,28 @@ const getAnnotatableText = blocks => {
 };
 const addAnnotations = function (blockProblems) {
   let {
-    clientId = null
+    clientId = null,
+    ignore = []
   } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   if (clientId) {
     removeAnnotations(clientId);
   }
 
-  const problemsWithAnnotations = [];
-  const readabilityProblems = blockProblems.filter(problem => problem.type.includes('readability'));
-  readabilityProblems.forEach(problem => {
+  const annotations = blockProblems.filter(problem => problem.state !== 'ignored' && !ignore.includes(problem.id));
+  const readabilityAnnotations = annotations.filter(problem => problem.type.includes('readability'));
+  readabilityAnnotations.forEach(annotation => {
     const {
       blockId,
       blockName,
-      blockAttributes,
+      annotationId,
       type,
       index,
       offset
-    } = problem;
-    const [name] = type.split('-'); // const { isHighlighted } = select('core/block-editor').getBlockAttributes(blockId);
+    } = annotation;
+    const [name] = type.split('-');
 
-    if (SHOWN_ANNOTATION_TYPES[name] ? SHOWN_ANNOTATION_TYPES[name] === '1' : true // (blockAttributes[type] ?? true) &&
-    // isHighlighted === true
-    ) {
+    if (SHOWN_ANNOTATION_TYPES[name] ? SHOWN_ANNOTATION_TYPES[name] === '1' : true) {
       (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.dispatch)('core/annotations').__experimentalAddAnnotation({
         source: `writers-blocks--${type}`,
         blockClientId: blockId,
@@ -7915,28 +7917,23 @@ const addAnnotations = function (blockProblems) {
         range: {
           start: index,
           end: offset
-        }
-      }).then(annotation => {
-        problemsWithAnnotations.push({ ...problem,
-          annotationId: annotation.id
-        });
+        },
+        id: annotationId
       });
     }
   });
-  blockProblems.filter(problem => !problem.type.includes('readability')).forEach(problem => {
+  annotations.filter(annotation => !annotation.type.includes('readability')).forEach(annotation => {
     const {
       blockId,
       blockName,
-      blockAttributes,
+      annotationId,
       type,
       index,
       offset
-    } = problem;
-    const [name] = type.split('-'); // const { isHighlighted } = select('core/block-editor').getBlockAttributes(blockId);
+    } = annotation;
+    const [name] = type.split('-');
 
-    if (SHOWN_ANNOTATION_TYPES[name] ? SHOWN_ANNOTATION_TYPES[name] === '1' : true // (blockAttributes[type] ?? true) &&
-    // isHighlighted === true
-    ) {
+    if (SHOWN_ANNOTATION_TYPES[name] ? SHOWN_ANNOTATION_TYPES[name] === '1' : true) {
       (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.dispatch)('core/annotations').__experimentalAddAnnotation({
         source: `writers-blocks--${type}`,
         blockClientId: blockId,
@@ -7944,17 +7941,11 @@ const addAnnotations = function (blockProblems) {
         range: {
           start: index,
           end: offset
-        }
-      }).then(annotation => {
-        problemsWithAnnotations.push({ ...problem,
-          annotationId: annotation.id
-        });
+        },
+        id: annotationId
       });
-
-      ;
     }
   });
-  return problemsWithAnnotations;
 };
 const scheduleAnnotations = (0,lodash__WEBPACK_IMPORTED_MODULE_1__.debounce)(() => {
   if (isUpdatingProblems) {
@@ -7977,10 +7968,9 @@ const scheduleAnnotations = (0,lodash__WEBPACK_IMPORTED_MODULE_1__.debounce)(() 
     } = block;
     const problems = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.select)(_store__WEBPACK_IMPORTED_MODULE_4__.store).getProblems();
     (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_4__.store).addProblems([...problems.filter(problem => problem.blockId !== clientId), ...blockProblems]);
-    const annotations = addAnnotations(blockProblems, {
+    addAnnotations(blockProblems, {
       clientId
     });
-    (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_4__.store).addAnnotations(annotations);
   }
 
   isUpdatingProblems = false;
@@ -8019,7 +8009,7 @@ function adverbs(text) {
       value,
       type: 'adverb',
       level: 'warning',
-      message: 'adverbs can weaken meaning',
+      message: `"${value}" is an adverb and can weaken meaning.`,
       index: match.index,
       offset: value.length + match.index
     };
@@ -8071,7 +8061,7 @@ function cliches(text) {
       value,
       type: 'cliche',
       level: 'warning',
-      message: `"${value}" is a cliche`,
+      message: `"${value}" is a cliche.`,
       index: match.index,
       offset: value.length + match.index,
       replacements: []
@@ -8109,7 +8099,7 @@ function fillers(text) {
       value,
       type: 'filler',
       level: 'warning',
-      message: `"${value}" is a filler word`,
+      message: `"${value}" is a filler word.`,
       index: match.index,
       offset: value.length + match.index,
       replacements: [{
@@ -8150,7 +8140,7 @@ function hedges(text) {
       value,
       type: 'hedge',
       level: 'warning',
-      message: `"${value}" is a hedge word`,
+      message: `"${value}" is a hedge word.`,
       index: match.index,
       offset: value.length + match.index,
       replacements: [{
@@ -8237,7 +8227,7 @@ function passive(text) {
       value,
       type: 'passive',
       level: 'warning',
-      message: `"${value}" may be passive voice`,
+      message: `"${value}" may be passive voice.`,
       index: match.index,
       offset: value.length + match.index,
       replacements: replacement?.replace ? replacement.replace.split(', ').map(value => ({
@@ -8286,7 +8276,7 @@ __webpack_require__.r(__webpack_exports__);
       value: sentence,
       type: `readability-${level === 'warning' ? 'very-' : ''}hard`,
       level,
-      message: `sentence is${level === 'warning' ? ' very' : ''} hard to read`,
+      message: `This sentence is${level === 'warning' ? ' very' : ''} hard to read.`,
       index: start,
       offset: end
     } : null;
@@ -8341,7 +8331,7 @@ function sensitivity(content) {
       value,
       type: typeMap[source],
       level: fatal ? 'warning' : 'suggestion',
-      message,
+      message: `${message.split(', use')[0].replaceAll('`', '"')}.`,
       index,
       offset
     };
@@ -8388,7 +8378,7 @@ function simpler(text) {
       value,
       type: 'simpler',
       level: 'suggestion',
-      message: `"${value}" has a simpler alternative`,
+      message: `"${value}" has a simpler alternative.`,
       index: match.index,
       offset: value.length + match.index,
       replacements: replacement?.replace ? replacement.replace.split(', ').map(value => ({
@@ -8428,7 +8418,7 @@ function weasel(text) {
       value,
       type: 'weasel',
       level: 'warning',
-      message: `"${value}" is a weasel word`,
+      message: `"${value}" is a weasel word.`,
       index: match.index,
       offset: value.length + match.index,
       replacements: [{
@@ -8455,6 +8445,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "addProblem": function() { return /* binding */ addProblem; },
 /* harmony export */   "addProblems": function() { return /* binding */ addProblems; },
 /* harmony export */   "removeProblem": function() { return /* binding */ removeProblem; },
+/* harmony export */   "ignoreProblem": function() { return /* binding */ ignoreProblem; },
 /* harmony export */   "updateReadability": function() { return /* binding */ updateReadability; },
 /* harmony export */   "updateUserSettings": function() { return /* binding */ updateUserSettings; }
 /* harmony export */ });
@@ -8482,6 +8473,13 @@ function addProblems(problems) {
 function removeProblem(name) {
   return {
     type: 'REMOVE_PROBLEM',
+    name
+  };
+}
+;
+function ignoreProblem(name) {
+  return {
+    type: 'IGNORE_PROBLEM',
     name
   };
 }
@@ -8547,7 +8545,6 @@ const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)(
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "readability": function() { return /* binding */ readability; },
-/* harmony export */   "annotations": function() { return /* binding */ annotations; },
 /* harmony export */   "problems": function() { return /* binding */ problems; },
 /* harmony export */   "user": function() { return /* binding */ user; }
 /* harmony export */ });
@@ -8563,9 +8560,6 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 
-const {
-  btoa
-} = window;
 const DEFAULT_USER_SETTINGS = {
   showProblems: true,
   suggestionsToShow: Object.keys(_constants__WEBPACK_IMPORTED_MODULE_1__.PROBLEM_TYPES_TO_LABEL).reduce((accumulator, type) => {
@@ -8590,22 +8584,6 @@ function readability() {
       return state;
   }
 }
-function annotations() {
-  let state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-    list: []
-  };
-  let action = arguments.length > 1 ? arguments[1] : undefined;
-
-  switch (action.type) {
-    case 'ADD_ANNOTATIONS':
-      return { ...state,
-        list: action.annotations
-      };
-
-    default:
-      return state;
-  }
-}
 function problems() {
   let state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
     list: []
@@ -8613,29 +8591,22 @@ function problems() {
   let action = arguments.length > 1 ? arguments[1] : undefined;
 
   switch (action.type) {
-    case 'ADD_PROBLEM':
-      const id = btoa(`${action.problem.blockId}-${action.problem.type}-${action.problem.index}-${action.problem.offset}`);
-
-      if (state.list.find(p => p.id === id)) {
-        return state;
-      }
-
-      return { ...state,
-        list: [...state.list, { ...action.problem,
-          id
-        }]
-      };
-
     case 'ADD_PROBLEMS':
       return { ...state,
-        list: action.problems.map(problem => ({ ...problem,
-          id: btoa(`${problem.blockId}-${problem.type}-${problem.index}-${problem.offset}`)
-        }))
+        list: action.problems
       };
 
     case 'REMOVE_PROBLEM':
       return { ...state,
         list: state.list.filter(problem => problem.id !== action.name)
+      };
+
+    case 'IGNORE_PROBLEM':
+      const problem = state.list.find(problem => problem.annotationId === action.name);
+      return { ...state,
+        list: [...state.list.filter(problem => problem.annotationId !== action.name), { ...problem,
+          state: 'ignored'
+        }]
       };
 
     default:
@@ -8663,7 +8634,6 @@ function user() {
 /* harmony default export */ __webpack_exports__["default"] = ((0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.combineReducers)({
   problems,
   readability,
-  annotations,
   user
 }));
 
@@ -8679,18 +8649,72 @@ function user() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getProblems": function() { return /* binding */ getProblems; },
-/* harmony export */   "getAnnotations": function() { return /* binding */ getAnnotations; },
 /* harmony export */   "getProblem": function() { return /* binding */ getProblem; },
+/* harmony export */   "getAnnotations": function() { return /* binding */ getAnnotations; },
+/* harmony export */   "getAnnotation": function() { return /* binding */ getAnnotation; },
+/* harmony export */   "getIgnoredAnnotations": function() { return /* binding */ getIgnoredAnnotations; },
 /* harmony export */   "getBlockProblems": function() { return /* binding */ getBlockProblems; },
 /* harmony export */   "getProblemsByType": function() { return /* binding */ getProblemsByType; },
 /* harmony export */   "getReadability": function() { return /* binding */ getReadability; },
 /* harmony export */   "getUserSettings": function() { return /* binding */ getUserSettings; }
 /* harmony export */ });
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_0__);
+
+const {
+  btoa
+} = window;
 const getProblems = state => state.problems.list;
+const getProblem = (state, id) => state.problems.list.find(_ref => {
+  let {
+    annotationId: problemId
+  } = _ref;
+  return problemId === id;
+});
 const getAnnotations = state => state.annotations.list;
-const getProblem = (state, id) => state.problems.list.find(problem => problem.id === id);
-const getBlockProblems = (state, blockId) => state.problems.list.filter(problem => problem.blockId === blockId);
-const getProblemsByType = (state, type) => state.problems.list.filter(problem => problem.type === type);
+const getAnnotation = (state, id) => state.annotations.list.find(_ref2 => {
+  let {
+    annotationId
+  } = _ref2;
+  return annotationId === id;
+});
+const getIgnoredAnnotations = state => {
+  const annotations = state?.annotations?.list;
+
+  if (!annotations?.length) {
+    const {
+      wb_ignored
+    } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.select)('core/editor').getEditedPostAttribute('meta') || {};
+
+    if (!wb_ignored) {
+      return [];
+    }
+
+    return wb_ignored;
+  }
+
+  return annotations.filter(annotation => annotation.state === 'ignored').map(_ref3 => {
+    let {
+      type,
+      index,
+      offset,
+      value
+    } = _ref3;
+    return btoa(`${type}_${index}_${offset}_${value}`);
+  });
+};
+const getBlockProblems = (state, blockId) => state.problems.list.filter(_ref4 => {
+  let {
+    blockId
+  } = _ref4;
+  return blockId === blockId;
+});
+const getProblemsByType = (state, type) => state.problems.list.filter(_ref5 => {
+  let {
+    type
+  } = _ref5;
+  return type === type;
+});
 const getReadability = state => state.readability.stats;
 const getUserSettings = state => state.user.settings;
 
@@ -8750,11 +8774,14 @@ _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_2___default()(() => {
 
     if (!problems.length && blocks.length) {
       const blockProblems = (0,_decorators_gutenberg__WEBPACK_IMPORTED_MODULE_5__.getAnnotatableText)(blocks);
+      console.log(blockProblems);
 
       if (blockProblems.length) {
+        const ignoredAnnotations = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.select)(_store__WEBPACK_IMPORTED_MODULE_4__.store).getIgnoredAnnotations();
         (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_4__.store).addProblems(blockProblems);
-        const annotations = (0,_decorators_gutenberg__WEBPACK_IMPORTED_MODULE_5__.addAnnotations)(blockProblems);
-        (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_4__.store).addAnnotations(annotations);
+        (0,_decorators_gutenberg__WEBPACK_IMPORTED_MODULE_5__.addAnnotations)(blockProblems, {
+          ignore: ignoredAnnotations
+        });
       }
     }
 
@@ -8878,35 +8905,114 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/dom-ready */ "@wordpress/dom-ready");
-/* harmony import */ var _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/dom-ready */ "@wordpress/dom-ready");
+/* harmony import */ var _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../store */ "./src/js/store/index.js");
+
+
+/**
+ * WordPress depenedencies
+ */
 
 
 
 
 
+/**
+ * Internal depenedencies
+ */
+// import { BLOCK_TYPE_CONTENT_ATTRIBUTE } from '../constants';
+
+ // import { strip } from '../utils/strip-text';
+
+const {
+  btoa
+} = window;
+/**
+ * 
+ * @param {*} element 
+ * @returns 
+ */
 
 const getPopoverPosition = element => element.getBoundingClientRect();
+/**
+ * 
+ * @param {*} param0 
+ * @returns 
+ */
+
 
 const Tooltip = _ref => {
   let {
     isShown,
-    target
+    target,
+    annotationId
   } = _ref;
-  return isShown ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Popover, {
+  const [ignoredAnnotations, setIgnoredAnnotations] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
+  const {
+    wb_ignored
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select('core/editor').getEditedPostAttribute('meta') || {});
+  const selectedAnnotation = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select('writers-blocks/editor').getProblem(annotationId));
+  const {
+    editPost
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useDispatch)('core/editor');
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    if (wb_ignored) {
+      setIgnoredAnnotations(wb_ignored);
+    }
+  }, [wb_ignored]);
+  const {
+    // blockId,
+    // blockName,
+    index,
+    offset,
+    message,
+    type,
+    value // replacements: [ { action, value } = {} ] = [ {} ],
+
+  } = selectedAnnotation || {};
+  const [title] = type?.split('-') || []; // const { attributes } = useSelect(
+  // 	( select ) => select( 'core/block-editor' ).getBlock( blockId ) || {},
+  // );
+  // const { updateBlockAttributes } = useDispatch( 'core/block-editor' );
+
+  return isShown && message ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Popover, {
+    className: `writers-blocks-annotation-popover is-type-${type}`,
     position: "top center",
     getAnchorRect: () => getPopoverPosition(target)
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h1", null, "Hello World")) : null;
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h5", null, title), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, message), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Flex, {
+    justify: "end"
+  },  true ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
+    variant: "tertiary",
+    onClick: () => {
+      console.log((0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.select)(_store__WEBPACK_IMPORTED_MODULE_5__.store).getProblem(annotationId));
+    }
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Inspect', 'writers-blocks')) : 0, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
+    variant: "secondary",
+    onClick: () => {
+      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_5__.store).ignoreProblem(annotationId);
+
+      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.dispatch)('core/annotations').__experimentalRemoveAnnotation(annotationId);
+
+      editPost({
+        meta: {
+          wb_ignored: [...ignoredAnnotations, btoa(`${type}_${index}_${offset}_${value}`)]
+        }
+      });
+    }
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Ignore', 'writers-blocks')))) : null;
 };
 
-(0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.subscribe)(() => {
-  _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_2___default()(() => {
+(0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.subscribe)(() => {
+  _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_3___default()(() => {
     const editorWrapper = document.querySelector('.edit-post-visual-editor');
-    const isTyping = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.select)('core/block-editor').isTyping();
+    const isTyping = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.select)('core/block-editor').isTyping();
 
     if (!editorWrapper) {
       return;
@@ -8927,7 +9033,8 @@ const Tooltip = _ref => {
 
     (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.render)((0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(Tooltip, {
       isShown: !!selectedAnnotation && !isTyping,
-      target: selectedAnnotation
+      target: selectedAnnotation,
+      annotationId: selectedAnnotation?.id?.replace('annotation-text-', '')
     }), document.getElementById("writers-blocks-popover-wrapper"));
   });
 });
@@ -19947,6 +20054,149 @@ function visitChildren(callback) {
   }
 }
 
+
+/***/ }),
+
+/***/ "./node_modules/uuid/dist/esm-browser/regex.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/uuid/dist/esm-browser/regex.js ***!
+  \*****************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (/^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i);
+
+/***/ }),
+
+/***/ "./node_modules/uuid/dist/esm-browser/rng.js":
+/*!***************************************************!*\
+  !*** ./node_modules/uuid/dist/esm-browser/rng.js ***!
+  \***************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ rng; }
+/* harmony export */ });
+// Unique ID creation requires a high quality random # generator. In the browser we therefore
+// require the crypto API and do not support built-in fallback to lower quality random number
+// generators (like Math.random()).
+var getRandomValues;
+var rnds8 = new Uint8Array(16);
+function rng() {
+  // lazy load so that environments that need to polyfill have a chance to do so
+  if (!getRandomValues) {
+    // getRandomValues needs to be invoked in a context where "this" is a Crypto implementation. Also,
+    // find the complete implementation of crypto (msCrypto) on IE11.
+    getRandomValues = typeof crypto !== 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto) || typeof msCrypto !== 'undefined' && typeof msCrypto.getRandomValues === 'function' && msCrypto.getRandomValues.bind(msCrypto);
+
+    if (!getRandomValues) {
+      throw new Error('crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported');
+    }
+  }
+
+  return getRandomValues(rnds8);
+}
+
+/***/ }),
+
+/***/ "./node_modules/uuid/dist/esm-browser/stringify.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/uuid/dist/esm-browser/stringify.js ***!
+  \*********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _validate_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./validate.js */ "./node_modules/uuid/dist/esm-browser/validate.js");
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+
+var byteToHex = [];
+
+for (var i = 0; i < 256; ++i) {
+  byteToHex.push((i + 0x100).toString(16).substr(1));
+}
+
+function stringify(arr) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  // Note: Be careful editing this code!  It's been tuned for performance
+  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+  var uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+  // of the following:
+  // - One or more input array values don't map to a hex octet (leading to
+  // "undefined" in the uuid)
+  // - Invalid input values for the RFC `version` or `variant` fields
+
+  if (!(0,_validate_js__WEBPACK_IMPORTED_MODULE_0__["default"])(uuid)) {
+    throw TypeError('Stringified UUID is invalid');
+  }
+
+  return uuid;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (stringify);
+
+/***/ }),
+
+/***/ "./node_modules/uuid/dist/esm-browser/v4.js":
+/*!**************************************************!*\
+  !*** ./node_modules/uuid/dist/esm-browser/v4.js ***!
+  \**************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _rng_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./rng.js */ "./node_modules/uuid/dist/esm-browser/rng.js");
+/* harmony import */ var _stringify_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./stringify.js */ "./node_modules/uuid/dist/esm-browser/stringify.js");
+
+
+
+function v4(options, buf, offset) {
+  options = options || {};
+  var rnds = options.random || (options.rng || _rng_js__WEBPACK_IMPORTED_MODULE_0__["default"])(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+
+  rnds[6] = rnds[6] & 0x0f | 0x40;
+  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
+
+  if (buf) {
+    offset = offset || 0;
+
+    for (var i = 0; i < 16; ++i) {
+      buf[offset + i] = rnds[i];
+    }
+
+    return buf;
+  }
+
+  return (0,_stringify_js__WEBPACK_IMPORTED_MODULE_1__["default"])(rnds);
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (v4);
+
+/***/ }),
+
+/***/ "./node_modules/uuid/dist/esm-browser/validate.js":
+/*!********************************************************!*\
+  !*** ./node_modules/uuid/dist/esm-browser/validate.js ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./regex.js */ "./node_modules/uuid/dist/esm-browser/regex.js");
+
+
+function validate(uuid) {
+  return typeof uuid === 'string' && _regex_js__WEBPACK_IMPORTED_MODULE_0__["default"].test(uuid);
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (validate);
 
 /***/ }),
 

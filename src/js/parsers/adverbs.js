@@ -15,7 +15,7 @@ export default function adverbs(text) {
             value,
             type: 'adverb',
             level: 'warning',
-            message: 'adverbs can weaken meaning',
+            message: `"${ value }" is an adverb and can weaken meaning.`,
             index: match.index,
             offset: value.length + match.index,
         };

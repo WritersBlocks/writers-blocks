@@ -2,15 +2,76 @@
 @import url("blur.css");
 
 .components-panel__body-static {
-    padding: 16px;
+	padding: 16px;
 }
 
 .components-panel__body-static span {
-    font-weight: 500;
-    color: #1e1e1e;
+	font-weight: 500;
+	color: #1e1e1e;
 }
 
 .components-panel__body-static .components-button.has-icon {
-    padding: 0px;
-    min-width: 24px;
+	padding: 0px;
+	min-width: 24px;
+}
+
+.writers-blocks-annotation-popover.is-type-adverb .components-popover__content {
+	border-left: 4px solid #c4e3f3;
+}
+
+.writers-blocks-annotation-popover.is-type-passive .components-popover__content {
+	border-left: 4px solid #c4ed9d;
+}
+
+.writers-blocks-annotation-popover.is-type-weasel .components-popover__content {
+	border-left: 4px solid #c4e3f3;
+}
+
+.writers-blocks-annotation-popover.is-type-hedge .components-popover__content {
+	border-left: 4px solid #c4e3f3;
+}
+
+.writers-blocks-annotation-popover.is-type-so .components-popover__content {
+	border-left: 4px solid #c4e3f3;
+}
+
+.writers-blocks-annotation-popover.is-type-profanity .components-popover__content {
+	border-left: 4px solid #c4e3f3;
+}
+
+.writers-blocks-annotation-popover.is-type-equality .components-popover__content {
+	border-left: 4px solid #c4e3f3;
+}
+
+.writers-blocks-annotation-popover.is-type-filler .components-popover__content {
+	border-left: 4px solid #c4e3f3;
+}
+
+.writers-blocks-annotation-popover.is-type-cliche .components-popover__content {
+	border-left: 4px solid #c4e3f3;
+}
+
+.writers-blocks-annotation-popover.is-type-simpler .components-popover__content {
+	border-left: 4px solid #e3b7e8;
+}
+
+.writers-blocks-annotation-popover.is-type-readability-hard .components-popover__content {
+	border-left: 4px solid #f7ecb5;
+}
+
+.writers-blocks-annotation-popover.is-type-readability-very-hard .components-popover__content {
+	border-left: 4px solid #e4b9b9;
+}
+
+.writers-blocks-annotation-popover .components-popover__content > div {
+	padding: 16px;
+	min-width: 200px;
+}
+
+.writers-blocks-annotation-popover .components-popover__content > div h5 {
+	font-size: 8px;
+	font-weight: 700;
+	letter-spacing: 0.5px;
+	margin-top: 0;
+	text-transform: uppercase;
 }

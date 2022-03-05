@@ -19,8 +19,9 @@ function setup() {
 		return __NAMESPACE__ . "\\$function";
 	};
 
+	add_action( 'init', $n( 'init' ) );
 	add_action( 'admin_enqueue_scripts', $n( 'admin_scripts' ) );
-    add_action( 'enqueue_block_editor_assets', $n( 'editor_scripts' ) );
+	add_action( 'enqueue_block_editor_assets', $n( 'editor_scripts' ) );
 	add_action( 'rest_api_init', $n( 'rest_api_init' ) );
 	add_action( 'rest_api_init', $n( 'register_settings' ) );
 }
@@ -222,6 +223,40 @@ function admin_scripts( $page ) {
 			Utility\get_asset_info( 'admin', 'css', 'version' )
 		);
 	}
+}
+
+function init() {
+	register_post_meta( 'post', 'wb_ignored', [
+		'type' => 'array',
+		'single' => true,
+		'show_in_rest' => [
+			'schema' => [
+				'type' => 'array',
+				'items' => [
+					'type' => 'string',
+				],
+			],
+		],
+		'auth_callback' => function() {
+			return current_user_can( 'edit_posts' );
+		}
+	] );
+
+	register_post_meta( 'page', 'wb_ignored', [
+		'type' => 'array',
+		'single' => true,
+		'show_in_rest' => [
+			'schema' => [
+				'type' => 'array',
+				'items' => [
+					'type' => 'string',
+				],
+			],
+		],
+		'auth_callback' => function() {
+			return current_user_can( 'edit_posts' );
+		}
+	] );
 }
 
 /**

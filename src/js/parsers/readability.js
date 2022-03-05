@@ -25,7 +25,7 @@ export default (text) => {
             value: sentence,
             type: `readability-${level === 'warning' ? 'very-' : ''}hard`,
             level,
-            message: `sentence is${level ===  'warning' ? ' very' : ''} hard to read`,
+            message: `This sentence is${level ===  'warning' ? ' very' : ''} hard to read.`,
             index: start,
             offset: end,
         } : null;

@@ -26,6 +26,13 @@ export function removeProblem(name) {
 	};
 };
 
+export function ignoreProblem(name) {
+	return {
+		type: 'IGNORE_PROBLEM',
+		name,
+	};
+};
+
 export function updateReadability(stats) {
 	return {
 		type: 'UPDATE_READABILITY',

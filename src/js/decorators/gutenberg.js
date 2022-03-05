@@ -1,3 +1,7 @@
+/**
+ * External dependencies
+ */
+import { v4 as uuid } from 'uuid';
 import { select, dispatch } from '@wordpress/data';
 import { debounce } from 'lodash';
 
@@ -62,6 +66,10 @@ export const getAnnotatableTextFromBlock = (block) => {
         blockId,
         blockName,
 		blockAttributes,
+		annotationId: uuid(),
+		id: btoa(
+			`${problem.type}_${problem.index}_${problem.offset}_${ problem.value }`
+		),
         ...problem,
     }));
 };
@@ -86,26 +94,22 @@ export const getAnnotatableText = (blocks) => {
 	return allowedBlocks.flatMap(getAnnotatableTextFromBlock);
 };
 
-export const addAnnotations = (blockProblems, { clientId = null } = {}) => {
+export const addAnnotations = (blockProblems, { clientId = null, ignore = [] } = {}) => {
 	if (clientId) {
 		removeAnnotations(clientId);
 	}
 
-	const problemsWithAnnotations = [];
-	const readabilityProblems = blockProblems.filter( (problem) => problem.type.includes('readability') );
+	const annotations = blockProblems.filter( (problem) =>
+		problem.state !== 'ignored' && !ignore.includes(problem.id),
+	);
+	const readabilityAnnotations = annotations.filter( (problem) => problem.type.includes('readability') );
 
-	readabilityProblems
-		.forEach((problem) => {
-			const { blockId, blockName, blockAttributes, type, index, offset } = problem;
+	readabilityAnnotations
+		.forEach((annotation) => {
+			const { blockId, blockName, annotationId, type, index, offset } = annotation;
 			const [name] = type.split('-');
 
-			// const { isHighlighted } = select('core/block-editor').getBlockAttributes(blockId);
-
-			if (
-				(SHOWN_ANNOTATION_TYPES[name] ? SHOWN_ANNOTATION_TYPES[name] === '1' : true)
-				// (blockAttributes[type] ?? true) &&
-				// isHighlighted === true
-			) {
+			if ( ( SHOWN_ANNOTATION_TYPES[name] ? SHOWN_ANNOTATION_TYPES[name] === '1' : true ) ) {
 				dispatch('core/annotations').__experimentalAddAnnotation({
 					source: `writers-blocks--${type}`,
 					blockClientId: blockId,
@@ -114,28 +118,18 @@ export const addAnnotations = (blockProblems, { clientId = null } = {}) => {
 						start: index,
 						end: offset,
 					},
-				}).then( (annotation) => {
-					problemsWithAnnotations.push({
-						...problem,
-						annotationId: annotation.id,
-					});
+					id: annotationId,
 				});
 			}
 		});
 
-	blockProblems
-		.filter( (problem) => ! problem.type.includes('readability') )
-		.forEach((problem) => {
-			const { blockId, blockName, blockAttributes, type, index, offset } = problem;
+	annotations
+		.filter( (annotation) => ! annotation.type.includes('readability') )
+		.forEach((annotation) => {
+			const { blockId, blockName, annotationId, type, index, offset } = annotation;
 			const [name] = type.split('-');
 
-			// const { isHighlighted } = select('core/block-editor').getBlockAttributes(blockId);
-
-			if (
-				(SHOWN_ANNOTATION_TYPES[name] ? SHOWN_ANNOTATION_TYPES[name] === '1' : true)
-				// (blockAttributes[type] ?? true) &&
-				// isHighlighted === true
-			) {
+			if ( ( SHOWN_ANNOTATION_TYPES[name] ? SHOWN_ANNOTATION_TYPES[name] === '1' : true ) ) {
 				dispatch('core/annotations').__experimentalAddAnnotation({
 					source: `writers-blocks--${type}`,
 					blockClientId: blockId,
@@ -144,16 +138,10 @@ export const addAnnotations = (blockProblems, { clientId = null } = {}) => {
 						start: index,
 						end: offset,
 					},
-				}).then( (annotation) => {
-					problemsWithAnnotations.push({
-						...problem,
-						annotationId: annotation.id,
-					});
-				});;
+					id: annotationId,
+				});
 			}
 		});
-
-	return problemsWithAnnotations;
 };
 
 export const scheduleAnnotations = debounce(() => {
@@ -180,8 +168,7 @@ export const scheduleAnnotations = debounce(() => {
 			...blockProblems,
 		]);
 
-		const annotations = addAnnotations(blockProblems, { clientId });
-		dispatch(store).addAnnotations(annotations);
+		addAnnotations(blockProblems, { clientId });
 	}
 
 	isUpdatingProblems = false;

@@ -33,7 +33,7 @@ export default function cliches(text) {
 			value,
 			type: 'cliche',
 			level: 'warning',
-			message: `"${value}" is a cliche`,
+			message: `"${value}" is a cliche.`,
 			index: match.index,
 			offset: value.length + match.index,
 			replacements: [],

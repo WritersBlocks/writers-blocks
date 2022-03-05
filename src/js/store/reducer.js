@@ -8,8 +8,6 @@ import { combineReducers } from '@wordpress/data';
  */
 import { PROBLEM_TYPES_TO_LABEL } from '../constants';
 
-const { btoa } = window;
-
 const DEFAULT_USER_SETTINGS = {
 	showProblems: true,
 	suggestionsToShow: Object.keys(PROBLEM_TYPES_TO_LABEL).reduce((accumulator, type) => {
@@ -31,43 +29,30 @@ export function readability(state = { stats: {} }, action) {
 	}
 }
 
-export function annotations(state = { list: [] }, action) {
-	switch (action.type) {
-		case 'ADD_ANNOTATIONS':
-			return {
-				...state,
-				list: action.annotations,
-			};
-		default:
-			return state;
-	}
-}
-
 export function problems(state = { list: [] }, action) {
 	switch (action.type) {
-		case 'ADD_PROBLEM':
-			const id = btoa(`${action.problem.blockId}-${action.problem.type}-${action.problem.index}-${action.problem.offset}`);
-
-			if (state.list.find((p) => p.id === id)) {
-				return state;
-			}
-
-			return {
-				...state,
-				list: [...state.list, { ...action.problem, id }],
-			};
 		case 'ADD_PROBLEMS':
 			return {
 				...state,
-				list: action.problems.map((problem) => ({
-					...problem,
-					id: btoa(`${problem.blockId}-${problem.type}-${problem.index}-${problem.offset}`),
-				})),
+				list: action.problems,
 			};
 		case 'REMOVE_PROBLEM':
 			return {
 				...state,
 				list: state.list.filter((problem) => problem.id !== action.name),
+			};
+		case 'IGNORE_PROBLEM':
+			const problem = state.list.find((problem) => problem.annotationId === action.name);
+
+			return {
+				...state,
+				list: [
+					...state.list.filter((problem) => problem.annotationId !== action.name),
+					{
+						...problem,
+						state: 'ignored',
+					},
+				],
 			};
 		default:
 			return state;
@@ -92,6 +77,5 @@ export function user(state = { settings: DEFAULT_USER_SETTINGS }, action) {
 export default combineReducers({
 	problems,
 	readability,
-	annotations,
 	user,
 });

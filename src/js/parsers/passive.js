@@ -17,7 +17,7 @@ export default function passive(text) {
             value,
             type: 'passive',
             level: 'warning',
-            message: `"${value}" may be passive voice`,
+            message: `"${value}" may be passive voice.`,
             index: match.index,
             offset: value.length + match.index,
             replacements: replacement?.replace ? replacement.replace.split(', ').map((value) => ({ value: value.toLocaleLowerCase(), action: 'replace' })) : [],

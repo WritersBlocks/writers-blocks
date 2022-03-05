@@ -19,7 +19,7 @@ export default function sensitivity(content) {
             value,
             type: typeMap[source],
             level: fatal ? 'warning' : 'suggestion',
-            message,
+            message: `${ message.split( ', use' )[0].replaceAll( '`', '"' ) }.`,
             index,
             offset,
         };

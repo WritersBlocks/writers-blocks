@@ -16,7 +16,7 @@ export default function weasel(text) {
 			value,
 			type: 'weasel',
 			level: 'warning',
-			message: `"${value}" is a weasel word`,
+			message: `"${value}" is a weasel word.`,
 			index: match.index,
 			offset: value.length + match.index,
 			replacements: [{

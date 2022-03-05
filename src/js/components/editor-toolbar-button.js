@@ -37,14 +37,14 @@ export const EditorToolbarButton = (props) => {
                         ...settings,
                         editing_mode: settings.editing_mode === "1" ? "0" : "1",
                     }
-                } ).then(({ writers_blocks }) => {
-                    if (writers_blocks.editing_mode === "0") {
-                        removeAnnotations();
-                    } else {
-                        const blockProblems = select('writers-blocks/editor').getProblems();
-                        addAnnotations(blockProblems);
-                    }
-                });
+                } );
+
+                if (settings.editing_mode === "1") {
+                    removeAnnotations();
+                } else {
+                    const blockProblems = select('writers-blocks/editor').getProblems();
+                    addAnnotations(blockProblems);
+                }
             } }
         />
     );
