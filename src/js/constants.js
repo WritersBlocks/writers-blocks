@@ -34,48 +34,45 @@ export const PROBLEM_TYPES = [
 
 export const PROBLEM_TYPES_TO_LABEL = {
 	simpler: {
-		label: __('Simpler Words', 'writers-blocks'),
-		help: (number) => `${number} simpler words`,
+		label: __( 'Simpler Words', 'writers-blocks' ),
+		help: ( number ) => `${ number } simpler words`,
 	},
 	adverb: {
-		label: __('Adverbs', 'writers-blocks'),
-		help: (number) => `${number} adverbs`,
+		label: __( 'Adverbs', 'writers-blocks' ),
+		help: ( number ) => `${ number } adverbs`,
 	},
 	hedge: {
-		label: __('Hedge Words', 'writers-blocks'),
-		help: (number) => `${number} hedge words`,
+		label: __( 'Hedge Words', 'writers-blocks' ),
+		help: ( number ) => `${ number } hedge words`,
 	},
 	weasel: {
-		label: __('Weasel Words', 'writers-blocks'),
-		help: (number) => `${number} weasel words`,
+		label: __( 'Weasel Words', 'writers-blocks' ),
+		help: ( number ) => `${ number } weasel words`,
 	},
 	passive: {
-		label: __('Passive Voice', 'writers-blocks'),
-		help: (number) => `${number} uses of passive voice`,
+		label: __( 'Passive Voice', 'writers-blocks' ),
+		help: ( number ) => `${ number } uses of passive voice`,
 	},
 	readability: {
-		label: __('Readability', 'writers-blocks'),
-		help: (number) => `${number} difficult to read sentences`,
-		source: [
-			'readability-hard',
-			'readability-very-hard',
-		],
+		label: __( 'Readability', 'writers-blocks' ),
+		help: ( number ) => `${ number } difficult to read sentences`,
+		source: [ 'readability-hard', 'readability-very-hard' ],
 	},
 	filler: {
-		label: __('Filler Words', 'writers-blocks'),
-		help: (number) => `${number} filler words`,
+		label: __( 'Filler Words', 'writers-blocks' ),
+		help: ( number ) => `${ number } filler words`,
 	},
 	cliche: {
-		label: __('Cliché Phrases', 'writers-blocks'),
-		help: (number) => `${number} cliché phrases`,
+		label: __( 'Cliché Phrases', 'writers-blocks' ),
+		help: ( number ) => `${ number } cliché phrases`,
 	},
 	equality: {
-		label: __('Inclusive Language', 'writers-blocks'),
-		help: (number) => `${number} uses of non-inclusive language`,
+		label: __( 'Inclusive Language', 'writers-blocks' ),
+		help: ( number ) => `${ number } uses of non-inclusive language`,
 	},
 	profanity: {
-		label: __('Profanity', 'writers-blocks'),
-		help: (number) => `${number} uses of profanity`,
+		label: __( 'Profanity', 'writers-blocks' ),
+		help: ( number ) => `${ number } uses of profanity`,
 	},
 };
 

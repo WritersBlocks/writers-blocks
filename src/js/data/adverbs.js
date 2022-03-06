@@ -194,5 +194,5 @@ export default [
 	'wildl',
 	'wisel',
 	'worldl',
-	'wrinkl'
+	'wrinkl',
 ];

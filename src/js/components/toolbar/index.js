@@ -12,23 +12,26 @@ import { useRef } from '@wordpress/element';
 // import { BlurToolbarButton } from './Blur';
 import { EditToolbarButton } from './Edit';
 
-export const Toolbar = (props) => {
-    const {
-        // blockProblems,
-        setAttributes,
-        attributes: {
-            isHighlighted,
-            // isBlurred,
-        },
-    } = props;
+export const Toolbar = ( props ) => {
+	const {
+		// blockProblems,
+		setAttributes,
+		attributes: {
+			isHighlighted,
+			// isBlurred,
+		},
+	} = props;
 
-    return (
-        <BlockToolbar>
-            <ToolbarGroup>
-                <EditToolbarButton setAttributes={setAttributes} isHighlighted={isHighlighted} />
-                {/* <BlurToolbarButton setAttributes={setAttributes} isBlurred={isBlurred} /> */}
-                {/* <SearchToolbarButton /> */}
-            </ToolbarGroup>
-        </BlockToolbar>
-    );
+	return (
+		<BlockToolbar>
+			<ToolbarGroup>
+				<EditToolbarButton
+					setAttributes={ setAttributes }
+					isHighlighted={ isHighlighted }
+				/>
+				{ /* <BlurToolbarButton setAttributes={setAttributes} isBlurred={isBlurred} /> */ }
+				{ /* <SearchToolbarButton /> */ }
+			</ToolbarGroup>
+		</BlockToolbar>
+	);
 };

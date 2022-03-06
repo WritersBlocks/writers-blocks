@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
- import { debounce } from 'lodash';
+import { debounce } from 'lodash';
 
 import { subscribe, select, dispatch } from '@wordpress/data';
 import domReady from '@wordpress/dom-ready';
@@ -22,51 +22,61 @@ import {
 
 let _content = '';
 
-const scheduleReadingScoreUpdate = debounce((content) => {
-	dispatch(store).updateReadability(readingScore(content));
-}, 500);
+const scheduleReadingScoreUpdate = debounce( ( content ) => {
+	dispatch( store ).updateReadability( readingScore( content ) );
+}, 500 );
 
-domReady(() => {
+domReady( () => {
 	subscribe( () => {
-		const content = select('core/editor').getEditedPostAttribute('content');
-		const strippedContent = typeof content === 'string' ? content.replace(/<!--(.*?)-->/g, '') : '';
-		const problems = select(store).getProblems();
+		const content = select( 'core/editor' ).getEditedPostAttribute(
+			'content'
+		);
+		const strippedContent =
+			typeof content === 'string'
+				? content.replace( /<!--(.*?)-->/g, '' )
+				: '';
+		const problems = select( store ).getProblems();
 
-		if (!strippedContent || (strippedContent === _content && problems.length)) {
+		if (
+			! strippedContent ||
+			( strippedContent === _content && problems.length )
+		) {
 			return;
 		}
 
-		scheduleReadingScoreUpdate(content);
+		scheduleReadingScoreUpdate( content );
 
-		if (!isAnnotationAvailable()) {
+		if ( ! isAnnotationAvailable() ) {
 			return;
 		}
 
-		const blocks = select('core/block-editor').getBlocks();
+		const blocks = select( 'core/block-editor' ).getBlocks();
 
-		if (!problems.length && blocks.length) {
-			const blockProblems = getAnnotatableText(blocks);
-			
-			if (blockProblems.length) {
-				const ignoredAnnotations = select(store).getIgnoredAnnotations();
+		if ( ! problems.length && blocks.length ) {
+			const blockProblems = getAnnotatableText( blocks );
 
-				dispatch(store).addProblems(blockProblems);
-				addAnnotations(blockProblems, {
+			if ( blockProblems.length ) {
+				const ignoredAnnotations = select(
+					store
+				).getIgnoredAnnotations();
+
+				dispatch( store ).addProblems( blockProblems );
+				addAnnotations( blockProblems, {
 					ignore: ignoredAnnotations,
-				});
+				} );
 			}
 		}
 
-		const selectedBlock = select('core/block-editor').getSelectedBlock();
+		const selectedBlock = select( 'core/block-editor' ).getSelectedBlock();
 
-		if (selectedBlock) {
-			addBlockToQueue(selectedBlock);
+		if ( selectedBlock ) {
+			addBlockToQueue( selectedBlock );
 		}
 
-		if (getQueueLength() > 0) {
+		if ( getQueueLength() > 0 ) {
 			scheduleAnnotations();
 		}
 
 		_content = strippedContent;
-	});
-});
+	} );
+} );

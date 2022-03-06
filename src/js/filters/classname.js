@@ -12,22 +12,29 @@ import { ALLOWED_BLOCKS } from '../constants';
 /**
  * Add the vertical spacing class to the wrapping block element
  */
- const addClassName = createHigherOrderComponent((BlockEdit) => {
-    return (props) => {
-        const { name, attributes } = props;
+const addClassName = createHigherOrderComponent( ( BlockEdit ) => {
+	return ( props ) => {
+		const { name, attributes } = props;
 
-        if (!ALLOWED_BLOCKS.includes(name)) {
-            return <BlockEdit {...props} />;
-        }
+		if ( ! ALLOWED_BLOCKS.includes( name ) ) {
+			return <BlockEdit { ...props } />;
+		}
 
-        const { className, isBlurred } = attributes;
+		const { className, isBlurred } = attributes;
 
-        return <BlockEdit {...props} className={`${className || ''}${isBlurred ? 'is-blurred' : ''}`} />;
-    };
-}, 'addClassName');
+		return (
+			<BlockEdit
+				{ ...props }
+				className={ `${ className || '' }${
+					isBlurred ? 'is-blurred' : ''
+				}` }
+			/>
+		);
+	};
+}, 'addClassName' );
 
 addFilter(
-    'editor.BlockListBlock',
-    'writers-blocks/border-filter/add-classname',
-    addClassName,
+	'editor.BlockListBlock',
+	'writers-blocks/border-filter/add-classname',
+	addClassName
 );

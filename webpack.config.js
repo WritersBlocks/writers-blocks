@@ -9,13 +9,9 @@ module.exports = {
 	...defaultConfig,
 
 	entry: {
-		'js/editor' : path.resolve( process.cwd(), 'src/js/editor.js' ),
+		'js/editor': path.resolve( process.cwd(), 'src/js/editor.js' ),
 		'css/editor': path.resolve( process.cwd(), 'src/css/editor.css' ),
 	},
 
-	plugins: [
-		...defaultConfig.plugins,
-
-		new RemoveEmptyScriptsPlugin(),
-	],
+	plugins: [ ...defaultConfig.plugins, new RemoveEmptyScriptsPlugin() ],
 };
