@@ -1,4 +1,4 @@
-import words from '../data/passive';
+import words from '../../data/passive';
 
 const expression = new RegExp('\\b(am|are|were|being|is|been|was|be)\\b\\s*([\\w]+ed|' + words.map((word) => word.value).join('|') + ')\\b', 'gi');
 

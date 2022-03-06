@@ -10,42 +10,30 @@
     background-color: #c4ed9d !important;
 }
 
-.annotation-text-writers-blocks--weasel {
-    background-color: #c4e3f3 !important;
-}
-
-.annotation-text-writers-blocks--hedge {
-    background-color: #c4e3f3 !important;
-}
-
-.annotation-text-writers-blocks--so {
-    background-color: #c4e3f3 !important;
-}
-
-.annotation-text-writers-blocks--readability-hard {
+.annotation-text-writers-blocks--readability {
     background-color: #f7ecb5 !important;
 }
 
-.annotation-text-writers-blocks--readability-very-hard {
-    background-color: #e4b9b9 !important;
-}
-
-.annotation-text-writers-blocks--simpler {
+.annotation-text-writers-blocks--simplify {
     background-color: #e3b7e8 !important;
 }
 
-.annotation-text-writers-blocks--profanity {
-    background-color: #c4e3f3 !important;
+.annotation-text-writers-blocks--profanities {
+    background-color: #e4b9b9 !important;
 }
 
 .annotation-text-writers-blocks--equality {
+    background-color: #e3b7e8 !important;
+}
+
+.annotation-text-writers-blocks--intensify {
     background-color: #c4e3f3 !important;
 }
 
-.annotation-text-writers-blocks--filler {
+.annotation-text-writers-blocks--contractions {
     background-color: #c4e3f3 !important;
 }
 
-.annotation-text-writers-blocks--cliche {
+.annotation-text-writers-blocks--sentence-spacing {
     background-color: #c4e3f3 !important;
 }

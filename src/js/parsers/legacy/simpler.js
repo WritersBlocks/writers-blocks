@@ -1,4 +1,4 @@
-import words from '../data/simpler';
+import words from '../../data/simpler';
 
 const expression = new RegExp('\\b(' + words.map(({ value }) => value).join('|') + ')\\b', 'gi');
 

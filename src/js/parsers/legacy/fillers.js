@@ -1,8 +1,8 @@
-import words from '../data/weasel';
+import words from '../../data/fillers';
 
-const expression = new RegExp('\\b(' + words.list.join('|') + ')\\b', 'gi');
+const expression = new RegExp('\\b(' + words.join('|') + ')\\b', 'gi');
 
-export default function weasel(text) {
+export default function fillers(text) {
 	const matches = [...text.matchAll(expression)];
 	
 	if (!matches) {
@@ -14,9 +14,9 @@ export default function weasel(text) {
 
 		return {
 			value,
-			type: 'weasel',
+			type: 'filler',
 			level: 'warning',
-			message: `"${value}" is a weasel word.`,
+			message: `"${value}" is a filler word.`,
 			index: match.index,
 			offset: value.length + match.index,
 			replacements: [{

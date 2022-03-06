@@ -1,4 +1,4 @@
-import phrases from '../data/cliches';
+import phrases from '../../data/cliches';
 
 function normalizeText(string = '') {
     // replace conjunctives, trim whitespace

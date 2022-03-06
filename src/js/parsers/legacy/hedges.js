@@ -1,8 +1,8 @@
-import words from '../data/fillers';
+import words from '../../data/hedges';
 
-const expression = new RegExp('\\b(' + words.join('|') + ')\\b', 'gi');
+const expression = new RegExp('\\b(' + words.list.join('|') + ')\\b', 'gi');
 
-export default function fillers(text) {
+export default function hedges(text) {
 	const matches = [...text.matchAll(expression)];
 	
 	if (!matches) {
@@ -14,9 +14,9 @@ export default function fillers(text) {
 
 		return {
 			value,
-			type: 'filler',
+			type: 'hedge',
 			level: 'warning',
-			message: `"${value}" is a filler word.`,
+			message: `"${value}" is a hedge word.`,
 			index: match.index,
 			offset: value.length + match.index,
 			replacements: [{
