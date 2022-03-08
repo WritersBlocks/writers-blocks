@@ -112,11 +112,11 @@ const EditorToolbarButton = props => {
     onClick: () => {
       (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.dispatch)('core').saveEntityRecord('root', 'site', {
         writers_blocks: { ...settings,
-          editing_mode: settings.editing_mode === "1" ? "0" : "1"
+          editing_mode: settings.editing_mode === '1' ? '0' : '1'
         }
       });
 
-      if (settings.editing_mode === "1") {
+      if (settings.editing_mode === '1') {
         (0,_decorators_gutenberg__WEBPACK_IMPORTED_MODULE_4__.removeAnnotations)();
       } else {
         const blockProblems = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.select)('writers-blocks/editor').getProblems();
@@ -251,7 +251,7 @@ const PluginPanel = () => {
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_edit_post__WEBPACK_IMPORTED_MODULE_2__.PluginSidebar, {
     name: "writers-blocks",
     icon: "text",
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Writer\'s Blocks', 'writers-blocks')
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Writer's Blocks", 'writers-blocks')
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Readability', 'writers-blocks')
   }, readingTime && score && polarity ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, "Reading time"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", {
@@ -273,11 +273,11 @@ const PluginPanel = () => {
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.ToggleControl, {
     label: _constants__WEBPACK_IMPORTED_MODULE_5__.PROBLEM_TYPES_TO_LABEL[type].label,
     help: _constants__WEBPACK_IMPORTED_MODULE_5__.PROBLEM_TYPES_TO_LABEL[type].help(problems[type].length),
-    checked: suggestions[type] ? suggestions[type] === "1" : true,
+    checked: suggestions[type] ? suggestions[type] === '1' : true,
     onChange: checked => {
       (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.dispatch)('core').saveEntityRecord('root', 'site', {
         writers_blocks: { ...suggestions,
-          [type]: checked ? "1" : "0"
+          [type]: checked ? '1' : '0'
         }
       }).then(_ref11 => {
         let {
@@ -308,7 +308,7 @@ const PluginPanel = () => {
             });
           });
         } else {
-          (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.dispatch)("core/annotations").__experimentalRemoveAnnotationsBySource(`writers-blocks--${source}`);
+          (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.dispatch)('core/annotations').__experimentalRemoveAnnotationsBySource(`writers-blocks--${source}`);
         }
       });
 
@@ -475,7 +475,7 @@ const {
 let isUpdatingProblems = false;
 let queue = [];
 function isAnnotationAvailable() {
-  return (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.select)("core/block-editor") && typeof (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.select)("core/block-editor").getBlocks === 'function' && (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.select)("core/annotations") && typeof (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.dispatch)("core/annotations").__experimentalAddAnnotation === 'function';
+  return (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.select)('core/block-editor') && typeof (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.select)('core/block-editor').getBlocks === 'function' && (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.select)('core/annotations') && typeof (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.dispatch)('core/annotations').__experimentalAddAnnotation === 'function';
 }
 const getQueueLength = () => queue.length;
 const addBlockToQueue = block => {
@@ -829,49 +829,42 @@ function addAnnotations(annotations) {
     annotations
   };
 }
-;
 function addProblem(problem) {
   return {
     type: 'ADD_PROBLEM',
     problem
   };
 }
-;
 function addProblems(problems) {
   return {
     type: 'ADD_PROBLEMS',
     problems
   };
 }
-;
 function removeProblem(name) {
   return {
     type: 'REMOVE_PROBLEM',
     name
   };
 }
-;
 function ignoreProblem(name) {
   return {
     type: 'IGNORE_PROBLEM',
     name
   };
 }
-;
 function updateReadability(stats) {
   return {
     type: 'UPDATE_READABILITY',
     stats
   };
 }
-;
 function updateUserSettings(settings) {
   return {
     type: 'UPDATE_USER_SETTINGS',
     settings
   };
 }
-;
 
 /***/ }),
 
@@ -1245,24 +1238,24 @@ __webpack_require__.r(__webpack_exports__);
 // });
 
 (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.subscribe)(() => {
-  const quickpostbutton = document.querySelector("#createwithrani-quick-post-button-wrapper"); // If the Quick Post Button already exists, skip render
+  const quickpostbutton = document.querySelector('#createwithrani-quick-post-button-wrapper'); // If the Quick Post Button already exists, skip render
 
   if (quickpostbutton || !(0,_decorators_gutenberg__WEBPACK_IMPORTED_MODULE_3__.isAnnotationAvailable)()) {
     return;
   }
 
   _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_2___default()(() => {
-    const editorToolbar = document.querySelector(".edit-post-header-toolbar__left"); // If toolbar doesn't exist, we can't continue
+    const editorToolbar = document.querySelector('.edit-post-header-toolbar__left'); // If toolbar doesn't exist, we can't continue
 
     if (!editorToolbar) {
       return;
     }
 
-    const buttonWrapper = document.createElement("div");
-    buttonWrapper.id = "createwithrani-quick-post-button-wrapper";
-    buttonWrapper.style.cssText = "display:flex;";
+    const buttonWrapper = document.createElement('div');
+    buttonWrapper.id = 'createwithrani-quick-post-button-wrapper';
+    buttonWrapper.style.cssText = 'display:flex;';
     editorToolbar.appendChild(buttonWrapper);
-    (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.render)((0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_editor_toolbar_button__WEBPACK_IMPORTED_MODULE_4__.EditorToolbarButton, null), document.getElementById("createwithrani-quick-post-button-wrapper"));
+    (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.render)((0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_editor_toolbar_button__WEBPACK_IMPORTED_MODULE_4__.EditorToolbarButton, null), document.getElementById('createwithrani-quick-post-button-wrapper'));
   });
 });
 
@@ -1308,16 +1301,16 @@ const {
   btoa
 } = window;
 /**
- * 
- * @param {*} element 
- * @returns 
+ *
+ * @param {*} element
+ * @return
  */
 
 const getPopoverPosition = element => element.getBoundingClientRect();
 /**
- * 
- * @param {*} param0 
- * @returns 
+ *
+ * @param {*} param0
+ * @return
  */
 
 
@@ -1399,8 +1392,8 @@ const Tooltip = _ref => {
     }
 
     if (!popoverWrapper) {
-      popoverWrapper = document.createElement("div");
-      popoverWrapper.id = "writers-blocks-popover-wrapper";
+      popoverWrapper = document.createElement('div');
+      popoverWrapper.id = 'writers-blocks-popover-wrapper';
       editorWrapper.prepend(popoverWrapper);
     }
 
@@ -1408,7 +1401,7 @@ const Tooltip = _ref => {
       isShown: !!selectedAnnotation && !isTyping,
       target: selectedAnnotation,
       annotationId: selectedAnnotation?.id?.replace('annotation-text-', '')
-    }), document.getElementById("writers-blocks-popover-wrapper"));
+    }), document.getElementById('writers-blocks-popover-wrapper'));
   });
 });
 
@@ -1434,13 +1427,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _strip_text__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./strip-text */ "./src/js/utils/strip-text.js");
 /* harmony import */ var _tokenizer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./tokenizer */ "./src/js/utils/tokenizer.js");
 /**
- * 
  */
 
 
 
 /**
- * 
  */
 
 
@@ -1451,7 +1442,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /**
- * 
+ *
  * @param {string} content
  */
 
@@ -1609,8 +1600,9 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Replaces items matched in the regex with new line
  *
- * @param {string} text The string being counted.
+ * @param {string} text               The string being counted.
  *
+ * @param          preserveWhiteSpace
  * @return {string} The manipulated text.
  */
 // export default function stripTags(text, preserveWhiteSpace) {
