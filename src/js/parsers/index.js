@@ -33,7 +33,7 @@ export default ( text, { preserveWhiteSpace = true } = {} ) => {
 
 		return {
 			value,
-			type: source.replace( 'retext-', '' ),
+			type: source.replace( 'retext-', '' ).replace( '-', '_' ),
 			level: fatal ? 'warning' : 'suggestion',
 			message: `${ message
 				.split( ', use' )[ 0 ]

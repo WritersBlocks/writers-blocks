@@ -18,61 +18,92 @@ export const BLOCK_TYPE_CONTENT_ATTRIBUTE = {
 };
 
 export const PROBLEM_TYPES = [
-	'simpler',
-	'adverb',
-	'hedge',
-	'weasel',
+	'simplify',
+	'intensify',
 	'passive',
-	'readability-hard',
-	'readability-very-hard',
-	'so',
-	'filler',
-	'cliche',
+	'readability',
+	'indefinite_article',
 	'equality',
-	'profanity',
+	'profanities',
+	'contractions',
+	'repeated_words',
+	'redundant_acronyms',
+	'diacritics',
+	'sentence_spacing',
 ];
 
 export const PROBLEM_TYPES_TO_LABEL = {
-	simpler: {
-		label: __( 'Simpler Words', 'writers-blocks' ),
-		help: ( number ) => `${ number } simpler words`,
+	simplify: {
+		label: __( 'Overly-Complex Words', 'writers-blocks' ),
+		help: ( number ) => number > 0
+			? `${ number } word${ number > 1 ? 's' : '' } may need to be simplified.`
+			: 'No words need to be simplified. Bravo.',
 	},
-	adverb: {
-		label: __( 'Adverbs', 'writers-blocks' ),
-		help: ( number ) => `${ number } adverbs`,
-	},
-	hedge: {
-		label: __( 'Hedge Words', 'writers-blocks' ),
-		help: ( number ) => `${ number } hedge words`,
-	},
-	weasel: {
-		label: __( 'Weasel Words', 'writers-blocks' ),
-		help: ( number ) => `${ number } weasel words`,
+	intensify: {
+		label: __( 'Vague Words', 'writers-blocks' ),
+		help: ( number ) => number > 0
+			? `${ number } word${ number > 1 ? 's' : '' } may lessen${ number > 1 ? '' : 's' } impact.`
+			: 'No vague language in sight. Awesome job!',
 	},
 	passive: {
 		label: __( 'Passive Voice', 'writers-blocks' ),
-		help: ( number ) => `${ number } uses of passive voice`,
+		help: ( number ) => number > 0
+			? `${ number } word${ number > 1 ? 's' : '' } may use passive voice.`
+			: 'No passive voice to report.',
 	},
 	readability: {
 		label: __( 'Readability', 'writers-blocks' ),
-		help: ( number ) => `${ number } difficult to read sentences`,
-		source: [ 'readability-hard', 'readability-very-hard' ],
-	},
-	filler: {
-		label: __( 'Filler Words', 'writers-blocks' ),
-		help: ( number ) => `${ number } filler words`,
-	},
-	cliche: {
-		label: __( 'Cliché Phrases', 'writers-blocks' ),
-		help: ( number ) => `${ number } cliché phrases`,
+		help: ( number ) => number > 0
+			? `${ number } sentence${ number > 1 ? 's' : '' } may be difficult to read.`
+			: 'Not a single sentence is difficult to read. Great job.',
 	},
 	equality: {
-		label: __( 'Inclusive Language', 'writers-blocks' ),
-		help: ( number ) => `${ number } uses of non-inclusive language`,
+		label: __( 'Equality', 'writers-blocks' ),
+		help: ( number ) => number > 0
+			? `${ number } word${ number > 1 ? 's' : '' } may be insensitive.`
+			: 'No words are insensitive. Well done.',
 	},
-	profanity: {
+	profanities: {
 		label: __( 'Profanity', 'writers-blocks' ),
-		help: ( number ) => `${ number } uses of profanity`,
+		help: ( number ) => number > 0
+			? `${ number } word${ number > 1 ? 's' : '' } may be profane.`
+			: 'No profanity to be found.',
+	},
+	'redundant_acronyms': {
+		label: __( 'Redundant Acronyms', 'writers-blocks' ),
+		help: ( number ) => number > 0
+			? `${ number } acronym${ number > 1 ? 's' : '' } may be redundant.`
+			: 'Acronyms are on point.',
+	},
+	contractions: {
+		label: __( 'Contractions', 'writers-blocks' ),
+		help: ( number ) => number > 0
+			? `${ number } contraction${ number > 1 ? 's' : '' } may .`
+			: 'Contractions are looking good.',
+	},
+	'repeated_words': {
+		label: __( 'Repeated Words', 'writers-blocks' ),
+		help: ( number ) => number > 0
+			? `${ number } word${ number > 1 ? 's' : '' } may be repeated.`
+			: 'No repeated words to be found.',
+	},
+	diacritics: {
+		label: __( 'Accents', 'writers-blocks' ),
+		help: ( number ) => number > 0
+			? `${ number } word${ number > 1 ? 's' : '' } may use improper accents.`
+			: 'No improper accents here.',
+	},
+	'indefinite_article': {
+		label: __( 'Indefinite Articles', 'writers-blocks' ),
+		help: ( number ) => number > 0
+			? `${ number } indefinite article${ number > 1 ? 's' : '' } may have improper usage.`
+			: 'All indefinite articles are correct.',
+	},
+	'sentence_spacing': {
+		label: __( 'Sentence Spacing', 'writers-blocks' ),
+		help: ( number ) => number > 0
+			? `${ number } sentence${ number > 1 ? 's' : '' } may have improper spacing.`
+			: 'All sentences are properly spaced.',
 	},
 };
 

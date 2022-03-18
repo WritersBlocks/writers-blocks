@@ -46,28 +46,10 @@ export const PluginPanel = () => {
 	const problems = useSelect( ( select ) => {
 		const currentProblems = select( store ).getProblems();
 
-		return {
-			adverb: currentProblems.filter( ( { type } ) => type === 'adverb' ),
-			weasel: currentProblems.filter( ( { type } ) => type === 'weasel' ),
-			hedge: currentProblems.filter( ( { type } ) => type === 'hedge' ),
-			filler: currentProblems.filter( ( { type } ) => type === 'filler' ),
-			profanity: currentProblems.filter(
-				( { type } ) => type === 'profanity'
-			),
-			equality: currentProblems.filter(
-				( { type } ) => type === 'equality'
-			),
-			cliche: currentProblems.filter( ( { type } ) => type === 'cliche' ),
-			passive: currentProblems.filter(
-				( { type } ) => type === 'passive'
-			),
-			readability: currentProblems.filter( ( { type } ) =>
-				type.includes( 'readability' )
-			),
-			simpler: currentProblems.filter(
-				( { type } ) => type === 'simpler'
-			),
-		};
+		return Object.keys( PROBLEM_TYPES_TO_LABEL ).reduce( ( acc, key ) => {
+			acc[ key ] = currentProblems.filter( ( { type } ) => type === key );
+			return acc;
+		}, {} );
 	} );
 
 	return (
@@ -143,122 +125,112 @@ export const PluginPanel = () => {
 				) }
 			</PanelBody>
 			<PanelBody title={ __( 'Suggestions', 'writers-blocks' ) }>
-				{ Object.keys( PROBLEM_TYPES_TO_LABEL ).map( ( type ) =>
-					problems[ type ].length ? (
-						<PanelRow key={ type }>
-							<ToggleControl
-								label={ PROBLEM_TYPES_TO_LABEL[ type ].label }
-								help={ PROBLEM_TYPES_TO_LABEL[ type ].help(
-									problems[ type ].length
-								) }
-								checked={
-									suggestions[ type ]
-										? suggestions[ type ] === '1'
-										: true
-								}
-								onChange={ ( checked ) => {
-									dispatch( 'core' )
-										.saveEntityRecord( 'root', 'site', {
-											writers_blocks: {
-												...suggestions,
-												[ type ]: checked ? '1' : '0',
-											},
-										} )
-										.then( ( { writers_blocks } ) => {
-											setSuggestions( writers_blocks );
-										} );
-
-									(
-										PROBLEM_TYPES_TO_LABEL[ type ]
-											.source || [ type ]
-									).forEach( ( source ) => {
-										if ( checked ) {
-											const problems = select(
-												store
-											).getProblemsByType( source );
-
-											problems.forEach(
-												( {
-													blockId,
-													blockName,
-													type,
-													index,
-													offset,
-												} ) => {
-													dispatch(
-														'core/annotations'
-													).__experimentalAddAnnotation(
-														{
-															source: `writers-blocks--${ type }`,
-															blockClientId: blockId,
-															richTextIdentifier:
-																BLOCK_TYPE_CONTENT_ATTRIBUTE[
-																	blockName
-																],
-															range: {
-																start: index,
-																end: offset,
-															},
-														}
-													);
-												}
-											);
-										} else {
-											dispatch(
-												'core/annotations'
-											).__experimentalRemoveAnnotationsBySource(
-												`writers-blocks--${ source }`
-											);
-										}
+				{ suggestions ? Object.keys( PROBLEM_TYPES_TO_LABEL ).map( ( type ) =>
+					<PanelRow key={ type }>
+						<ToggleControl
+							label={ PROBLEM_TYPES_TO_LABEL[ type ].label }
+							help={ PROBLEM_TYPES_TO_LABEL[ type ].help(
+								problems[ type ].length
+							) }
+							checked={
+								suggestions[ type ]
+									? suggestions[ type ] === '1'
+									: true
+							}
+							onChange={ ( checked ) => {
+								dispatch( 'core' )
+									.saveEntityRecord( 'root', 'site', {
+										writers_blocks: {
+											...suggestions,
+											[ type ]: checked ? '1' : '0',
+										},
+									} )
+									.then( ( { writers_blocks } ) => {
+										setSuggestions( writers_blocks );
 									} );
 
-									if (
-										type.includes( 'readability' ) &&
-										checked
-									) {
-										const problems = select(
-											store
-										).getProblems();
+								console.log({ checked, type });
 
-										problems
-											.filter(
-												( { type } ) =>
-													! type.includes(
-														'readability'
-													)
-											)
-											.forEach(
-												( {
-													blockId,
-													blockName,
-													type,
-													index,
-													offset,
-												} ) => {
-													dispatch(
-														'core/annotations'
-													).__experimentalAddAnnotation(
-														{
-															source: `writers-blocks--${ type }`,
-															blockClientId: blockId,
-															richTextIdentifier:
-																BLOCK_TYPE_CONTENT_ATTRIBUTE[
-																	blockName
-																],
-															range: {
-																start: index,
-																end: offset,
-															},
-														}
-													);
+								if ( checked ) {
+									const problems = select(
+										store
+									).getProblemsByType( type );
+
+									problems.forEach(
+										( {
+											blockId,
+											blockName,
+											type,
+											index,
+											offset,
+										} ) => {
+											dispatch(
+												'core/annotations'
+											).__experimentalAddAnnotation(
+												{
+													source: `writers-blocks--${ type }`,
+													blockClientId: blockId,
+													richTextIdentifier:
+														BLOCK_TYPE_CONTENT_ATTRIBUTE[
+															blockName
+														],
+													range: {
+														start: index,
+														end: offset,
+													},
 												}
 											);
-									}
-								} }
-							/>
-						</PanelRow>
-					) : null
-				) }
+										}
+									);
+								} else {
+									dispatch(
+										'core/annotations'
+									).__experimentalRemoveAnnotationsBySource(
+										`writers-blocks--${ type }`
+									);
+								}
+
+								if ( type === 'readability' && checked ) {
+									const problems = select(
+										store
+									).getProblems();
+
+									problems
+										.filter(
+											( { type } ) =>
+												type !== 'readability' && suggestions[ type ] === '1'
+										)
+										.forEach(
+											( {
+												blockId,
+												blockName,
+												type,
+												index,
+												offset,
+											} ) => {
+												dispatch(
+													'core/annotations'
+												).__experimentalAddAnnotation(
+													{
+														source: `writers-blocks--${ type }`,
+														blockClientId: blockId,
+														richTextIdentifier:
+															BLOCK_TYPE_CONTENT_ATTRIBUTE[
+																blockName
+															],
+														range: {
+															start: index,
+															end: offset,
+														},
+													}
+												);
+											}
+										);
+								}
+							} }
+						/>
+					</PanelRow>
+				) : null }
 			</PanelBody>
 		</PluginSidebar>
 	);

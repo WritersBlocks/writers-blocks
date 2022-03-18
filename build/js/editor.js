@@ -185,68 +185,15 @@ const PluginPanel = () => {
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => select(_store__WEBPACK_IMPORTED_MODULE_6__.store).getReadability());
   const problems = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => {
     const currentProblems = select(_store__WEBPACK_IMPORTED_MODULE_6__.store).getProblems();
-    return {
-      adverb: currentProblems.filter(_ref => {
+    return Object.keys(_constants__WEBPACK_IMPORTED_MODULE_5__.PROBLEM_TYPES_TO_LABEL).reduce((acc, key) => {
+      acc[key] = currentProblems.filter(_ref => {
         let {
           type
         } = _ref;
-        return type === 'adverb';
-      }),
-      weasel: currentProblems.filter(_ref2 => {
-        let {
-          type
-        } = _ref2;
-        return type === 'weasel';
-      }),
-      hedge: currentProblems.filter(_ref3 => {
-        let {
-          type
-        } = _ref3;
-        return type === 'hedge';
-      }),
-      filler: currentProblems.filter(_ref4 => {
-        let {
-          type
-        } = _ref4;
-        return type === 'filler';
-      }),
-      profanity: currentProblems.filter(_ref5 => {
-        let {
-          type
-        } = _ref5;
-        return type === 'profanity';
-      }),
-      equality: currentProblems.filter(_ref6 => {
-        let {
-          type
-        } = _ref6;
-        return type === 'equality';
-      }),
-      cliche: currentProblems.filter(_ref7 => {
-        let {
-          type
-        } = _ref7;
-        return type === 'cliche';
-      }),
-      passive: currentProblems.filter(_ref8 => {
-        let {
-          type
-        } = _ref8;
-        return type === 'passive';
-      }),
-      readability: currentProblems.filter(_ref9 => {
-        let {
-          type
-        } = _ref9;
-        return type.includes('readability');
-      }),
-      simpler: currentProblems.filter(_ref10 => {
-        let {
-          type
-        } = _ref10;
-        return type === 'simpler';
-      })
-    };
+        return type === key;
+      });
+      return acc;
+    }, {});
   });
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_edit_post__WEBPACK_IMPORTED_MODULE_2__.PluginSidebar, {
     name: "writers-blocks",
@@ -268,7 +215,7 @@ const PluginPanel = () => {
     }
   }, polarity || 0))) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Spinner, null)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Suggestions', 'writers-blocks')
-  }, Object.keys(_constants__WEBPACK_IMPORTED_MODULE_5__.PROBLEM_TYPES_TO_LABEL).map(type => problems[type].length ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, {
+  }, suggestions ? Object.keys(_constants__WEBPACK_IMPORTED_MODULE_5__.PROBLEM_TYPES_TO_LABEL).map(type => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, {
     key: type
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.ToggleControl, {
     label: _constants__WEBPACK_IMPORTED_MODULE_5__.PROBLEM_TYPES_TO_LABEL[type].label,
@@ -279,54 +226,57 @@ const PluginPanel = () => {
         writers_blocks: { ...suggestions,
           [type]: checked ? '1' : '0'
         }
-      }).then(_ref11 => {
+      }).then(_ref2 => {
         let {
           writers_blocks
-        } = _ref11;
+        } = _ref2;
         setSuggestions(writers_blocks);
       });
-      (_constants__WEBPACK_IMPORTED_MODULE_5__.PROBLEM_TYPES_TO_LABEL[type].source || [type]).forEach(source => {
-        if (checked) {
-          const problems = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.select)(_store__WEBPACK_IMPORTED_MODULE_6__.store).getProblemsByType(source);
-          problems.forEach(_ref12 => {
-            let {
-              blockId,
-              blockName,
-              type,
-              index,
-              offset
-            } = _ref12;
-
-            (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.dispatch)('core/annotations').__experimentalAddAnnotation({
-              source: `writers-blocks--${type}`,
-              blockClientId: blockId,
-              richTextIdentifier: _constants__WEBPACK_IMPORTED_MODULE_5__.BLOCK_TYPE_CONTENT_ATTRIBUTE[blockName],
-              range: {
-                start: index,
-                end: offset
-              }
-            });
-          });
-        } else {
-          (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.dispatch)('core/annotations').__experimentalRemoveAnnotationsBySource(`writers-blocks--${source}`);
-        }
+      console.log({
+        checked,
+        type
       });
 
-      if (type.includes('readability') && checked) {
-        const problems = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.select)(_store__WEBPACK_IMPORTED_MODULE_6__.store).getProblems();
-        problems.filter(_ref13 => {
-          let {
-            type
-          } = _ref13;
-          return !type.includes('readability');
-        }).forEach(_ref14 => {
+      if (checked) {
+        const problems = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.select)(_store__WEBPACK_IMPORTED_MODULE_6__.store).getProblemsByType(type);
+        problems.forEach(_ref3 => {
           let {
             blockId,
             blockName,
             type,
             index,
             offset
-          } = _ref14;
+          } = _ref3;
+
+          (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.dispatch)('core/annotations').__experimentalAddAnnotation({
+            source: `writers-blocks--${type}`,
+            blockClientId: blockId,
+            richTextIdentifier: _constants__WEBPACK_IMPORTED_MODULE_5__.BLOCK_TYPE_CONTENT_ATTRIBUTE[blockName],
+            range: {
+              start: index,
+              end: offset
+            }
+          });
+        });
+      } else {
+        (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.dispatch)('core/annotations').__experimentalRemoveAnnotationsBySource(`writers-blocks--${type}`);
+      }
+
+      if (type === 'readability' && checked) {
+        const problems = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.select)(_store__WEBPACK_IMPORTED_MODULE_6__.store).getProblems();
+        problems.filter(_ref4 => {
+          let {
+            type
+          } = _ref4;
+          return type !== 'readability' && suggestions[type] === '1';
+        }).forEach(_ref5 => {
+          let {
+            blockId,
+            blockName,
+            type,
+            index,
+            offset
+          } = _ref5;
 
           (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.dispatch)('core/annotations').__experimentalAddAnnotation({
             source: `writers-blocks--${type}`,
@@ -340,7 +290,7 @@ const PluginPanel = () => {
         });
       }
     }
-  })) : null)));
+  }))) : null));
 };
 
 /***/ }),
@@ -369,48 +319,55 @@ const BLOCK_TYPE_CONTENT_ATTRIBUTE = {
   'core/list': 'values',
   'core/quote': 'value'
 };
-const PROBLEM_TYPES = ['simpler', 'adverb', 'hedge', 'weasel', 'passive', 'readability-hard', 'readability-very-hard', 'so', 'filler', 'cliche', 'equality', 'profanity'];
+const PROBLEM_TYPES = ['simplify', 'intensify', 'passive', 'readability', 'indefinite_article', 'equality', 'profanities', 'contractions', 'repeated_words', 'redundant_acronyms', 'diacritics', 'sentence_spacing'];
 const PROBLEM_TYPES_TO_LABEL = {
-  simpler: {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Simpler Words', 'writers-blocks'),
-    help: number => `${number} simpler words`
+  simplify: {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Overly-Complex Words', 'writers-blocks'),
+    help: number => number > 0 ? `${number} word${number > 1 ? 's' : ''} may need to be simplified.` : 'No words need to be simplified. Bravo.'
   },
-  adverb: {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Adverbs', 'writers-blocks'),
-    help: number => `${number} adverbs`
-  },
-  hedge: {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Hedge Words', 'writers-blocks'),
-    help: number => `${number} hedge words`
-  },
-  weasel: {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Weasel Words', 'writers-blocks'),
-    help: number => `${number} weasel words`
+  intensify: {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Vague Words', 'writers-blocks'),
+    help: number => number > 0 ? `${number} word${number > 1 ? 's' : ''} may lessen${number > 1 ? '' : 's'} impact.` : 'No vague language in sight. Awesome job!'
   },
   passive: {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Passive Voice', 'writers-blocks'),
-    help: number => `${number} uses of passive voice`
+    help: number => number > 0 ? `${number} word${number > 1 ? 's' : ''} may use passive voice.` : 'No passive voice to report.'
   },
   readability: {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Readability', 'writers-blocks'),
-    help: number => `${number} difficult to read sentences`,
-    source: ['readability-hard', 'readability-very-hard']
-  },
-  filler: {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Filler Words', 'writers-blocks'),
-    help: number => `${number} filler words`
-  },
-  cliche: {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Cliché Phrases', 'writers-blocks'),
-    help: number => `${number} cliché phrases`
+    help: number => number > 0 ? `${number} sentence${number > 1 ? 's' : ''} may be difficult to read.` : 'Not a single sentence is difficult to read. Great job.'
   },
   equality: {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Inclusive Language', 'writers-blocks'),
-    help: number => `${number} uses of non-inclusive language`
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Equality', 'writers-blocks'),
+    help: number => number > 0 ? `${number} word${number > 1 ? 's' : ''} may be insensitive.` : 'No words are insensitive. Well done.'
   },
-  profanity: {
+  profanities: {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Profanity', 'writers-blocks'),
-    help: number => `${number} uses of profanity`
+    help: number => number > 0 ? `${number} word${number > 1 ? 's' : ''} may be profane.` : 'No profanity to be found.'
+  },
+  'redundant_acronyms': {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Redundant Acronyms', 'writers-blocks'),
+    help: number => number > 0 ? `${number} acronym${number > 1 ? 's' : ''} may be redundant.` : 'Acronyms are on point.'
+  },
+  contractions: {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Contractions', 'writers-blocks'),
+    help: number => number > 0 ? `${number} contraction${number > 1 ? 's' : ''} may .` : 'Contractions are looking good.'
+  },
+  'repeated_words': {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Repeated Words', 'writers-blocks'),
+    help: number => number > 0 ? `${number} word${number > 1 ? 's' : ''} may be repeated.` : 'No repeated words to be found.'
+  },
+  diacritics: {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Accents', 'writers-blocks'),
+    help: number => number > 0 ? `${number} word${number > 1 ? 's' : ''} may use improper accents.` : 'No improper accents here.'
+  },
+  'indefinite_article': {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Indefinite Articles', 'writers-blocks'),
+    help: number => number > 0 ? `${number} indefinite article${number > 1 ? 's' : ''} may have improper usage.` : 'All indefinite articles are correct.'
+  },
+  'sentence_spacing': {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Sentence Spacing', 'writers-blocks'),
+    help: number => number > 0 ? `${number} sentence${number > 1 ? 's' : ''} may have improper spacing.` : 'All sentences are properly spaced.'
   }
 };
 const DEFAULT_STATE = {
@@ -677,7 +634,7 @@ __webpack_require__.r(__webpack_exports__);
     } = match;
     return {
       value,
-      type: source.replace('retext-', ''),
+      type: source.replace('retext-', '').replace('-', '_'),
       level: fatal ? 'warning' : 'suggestion',
       message: `${message.split(', use')[0].replaceAll('`', '"')}.`,
       replacements: expected,
@@ -1072,15 +1029,15 @@ const getIgnoredAnnotations = state => {
 };
 const getBlockProblems = (state, blockId) => state.problems.list.filter(_ref4 => {
   let {
-    blockId
+    blockId: clientId
   } = _ref4;
-  return blockId === blockId;
+  return clientId === blockId;
 });
 const getProblemsByType = (state, type) => state.problems.list.filter(_ref5 => {
   let {
-    type
+    type: problemType
   } = _ref5;
-  return type === type;
+  return problemType === type;
 });
 const getReadability = state => state.readability.stats;
 const getUserSettings = state => state.user.settings;

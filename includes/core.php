@@ -65,31 +65,40 @@ function register_settings() {
 						'editing_mode' => array(
 							'type' => 'string',
 						),
-						'simpler' => array(
+						'simplify' => array(
 							'type' => 'string',
 						),
-						'adverb' => array(
+						'intensify' => array(
 							'type' => 'string',
 						),
-						'hedge' => array(
+						'indefinite_article' => array(
 							'type' => 'string',
 						),
-						'weasel' => array(
+						'contractions' => array(
+							'type' => 'string',
+						),
+						'repeated_words' => array(
+							'type' => 'string',
+						),
+						'contractions' => array(
+							'type' => 'string',
+						),
+						'redundant_acronyms' => array(
+							'type' => 'string',
+						),
+						'diacritics' => array(
+							'type' => 'string',
+						),
+						'sentence_spacing' => array(
 							'type' => 'string',
 						),
 						'passive' => array(
 							'type' => 'string',
 						),
-						'filler' => array(
-							'type' => 'string',
-						),
-						'cliche' => array(
-							'type' => 'string',
-						),
 						'equality' => array(
 							'type' => 'string',
 						),
-						'profanity' => array(
+						'profanities' => array(
 							'type' => 'string',
 						),
 						'readability' => array(
@@ -127,40 +136,48 @@ function sanitize_settings( $settings ) {
 		$new_settings['editing_mode'] = $settings['editing_mode'];
 	}
 
-	if ( isset( $settings['simpler'] ) ) {
-		$new_settings['simpler'] = $settings['simpler'];
+	if ( isset( $settings['simplify'] ) ) {
+		$new_settings['simplify'] = $settings['simplify'];
 	}
 
-	if ( isset( $settings['adverb'] ) ) {
-		$new_settings['adverb'] = $settings['adverb'];
-	}
-
-	if ( isset( $settings['hedge'] ) ) {
-		$new_settings['hedge'] = $settings['hedge'];
-	}
-
-	if ( isset( $settings['weasel'] ) ) {
-		$new_settings['weasel'] = $settings['weasel'];
+	if ( isset( $settings['intensify'] ) ) {
+		$new_settings['intensify'] = $settings['intensify'];
 	}
 
 	if ( isset( $settings['passive'] ) ) {
 		$new_settings['passive'] = $settings['passive'];
 	}
 
-	if ( isset( $settings['filler'] ) ) {
-		$new_settings['filler'] = $settings['filler'];
+	if ( isset( $settings['indefinite_article'] ) ) {
+		$new_settings['indefinite_article'] = $settings['indefinite_article'];
 	}
 
-	if ( isset( $settings['cliche'] ) ) {
-		$new_settings['cliche'] = $settings['cliche'];
+	if ( isset( $settings['contractions'] ) ) {
+		$new_settings['contractions'] = $settings['contractions'];
+	}
+
+	if ( isset( $settings['repeated_words'] ) ) {
+		$new_settings['repeated_words'] = $settings['repeated_words'];
+	}
+
+	if ( isset( $settings['redundant_acronyms'] ) ) {
+		$new_settings['redundant_acronyms'] = $settings['redundant_acronyms'];
 	}
 
 	if ( isset( $settings['equality'] ) ) {
 		$new_settings['equality'] = $settings['equality'];
 	}
 
-	if ( isset( $settings['profanity'] ) ) {
-		$new_settings['profanity'] = $settings['profanity'];
+	if ( isset( $settings['profanities'] ) ) {
+		$new_settings['profanities'] = $settings['profanities'];
+	}
+
+	if ( isset( $settings['diacritics'] ) ) {
+		$new_settings['diacritics'] = $settings['diacritics'];
+	}
+
+	if ( isset( $settings['sentence_spacing'] ) ) {
+		$new_settings['sentence_spacing'] = $settings['sentence_spacing'];
 	}
 
 	if ( isset( $settings['readability'] ) ) {
@@ -448,19 +465,21 @@ function activate() {
 	update_option(
 		'writers_blocks',
 		[
-			'license_key'      => '',
-			'license_verified' => '0',
-			'editing_mode' => '1',
-			'simpler'     => '1',
-			'adverb'      => '1',
-			'hedge'       => '1',
-			'weasel'      => '1',
-			'passive'     => '1',
-			'readability' => '1',
-			'filler'      => '1',
-			'cliche'      => '1',
-			'equality'    => '1',
-			'profanity'   => '1',
+			'license_key'        => '',
+			'license_verified'   => '0',
+			'editing_mode'       => '1',
+			'simplify'           => '1',
+			'intensify'          => '1',
+			'passive'            => '1',
+			'readability'        => '1',
+			'indefinite_article' => '1',
+			'equality'           => '1',
+			'profanities'        => '1',
+			'contractions'       => '1',
+			'repeated_words'     => '1',
+			'redundant_acronyms' => '1',
+			'diacritics'         => '1',
+			'sentence_spacing'   => '1',
 		],
 		false
 	);

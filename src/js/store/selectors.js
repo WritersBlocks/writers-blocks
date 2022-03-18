@@ -36,10 +36,10 @@ export const getIgnoredAnnotations = ( state ) => {
 };
 
 export const getBlockProblems = ( state, blockId ) =>
-	state.problems.list.filter( ( { blockId } ) => blockId === blockId );
+	state.problems.list.filter( ( { blockId: clientId } ) => clientId === blockId );
 
 export const getProblemsByType = ( state, type ) =>
-	state.problems.list.filter( ( { type } ) => type === type );
+	state.problems.list.filter( ( { type: problemType } ) => problemType === type );
 
 export const getReadability = ( state ) => state.readability.stats;
 
