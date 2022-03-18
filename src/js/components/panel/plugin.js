@@ -149,8 +149,6 @@ export const PluginPanel = () => {
 										setSuggestions( writers_blocks );
 									} );
 
-								console.log({ checked, type });
-
 								if ( checked ) {
 									const problems = select(
 										store

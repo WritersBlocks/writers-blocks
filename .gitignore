@@ -40,6 +40,7 @@ Thumbs.db
 # NPM #
 #######
 node_modules/
+build/
 
 # Composer #
 ############
