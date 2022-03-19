@@ -1,29 +1,28 @@
-body {
-    /* Base Colors: Extracted from Tailwind.css */
-    --writers-blocks--color--pink: #FBCFE8;
-    --writers-blocks--color--red: #FECACA;
-    --writers-blocks--color--orange: #FED7AA;
-    --writers-blocks--color--yellow: #FEF9C3;
-    --writers-blocks--color--lime: #ECFCCB;
-    --writers-blocks--color--green: #A7F3D0;
-    --writers-blocks--color--teal: #99F6E4;
-    --writers-blocks--color--cyan: #A5F3FC;
-    --writers-blocks--color--blue: #BFDBFE;
-    --writers-blocks--color--violet: #DDD6FE;
-    --writers-blocks--color--fuchsia: #F5D0FE;
-    --writers-blocks--color--purple: #D8B4FE;
+@import url("open-color/open-color.css");
 
-    /* Style Colors */
-    --writers-blocks--color--simplify: var(--writers-blocks--color--blue);
-    --writers-blocks--color--intensify: var(--writers-blocks--color--cyan);
-    --writers-blocks--color--passive: var(--writers-blocks--color--green);
-    --writers-blocks--color--readability: var(--writers-blocks--color--orange);
-    --writers-blocks--color--equality: var(--writers-blocks--color--purple);
-    --writers-blocks--color--profanity: var(--writers-blocks--color--red);
-    --writers-blocks--color--contractions: var(--writers-blocks--color--yellow);
-    --writers-blocks--color--diacritics: var(--writers-blocks--color--pink);
-    --writers-blocks--color--indefinite-article: var(--writers-blocks--color--teal);
-    --writers-blocks--color--repeated-words: var(--writers-blocks--color--fuchsia);
-    --writers-blocks--color--redundant-acronyms: var(--writers-blocks--color--violet);
-    --writers-blocks--color--sentence-spacing: var(--writers-blocks--color--lime);
+body {
+    --writers-blocks--color--simplify: var(--oc-teal-1);
+    --writers-blocks--color--simplify-dark: var(--oc-teal-4);
+    --writers-blocks--color--intensify: var(--oc-blue-1);
+    --writers-blocks--color--intensify-dark: var(--oc-blue-4);
+    --writers-blocks--color--passive: var(--oc-green-1);
+    --writers-blocks--color--passive-dark: var(--oc-green-4);
+    --writers-blocks--color--readability: var(--oc-orange-1);
+    --writers-blocks--color--readability-dark: var(--oc-orange-4);
+    --writers-blocks--color--equality: var(--oc-violet-1);
+    --writers-blocks--color--equality-dark: var(--oc-violet-4);
+    --writers-blocks--color--profanity: var(--oc-red-1);
+    --writers-blocks--color--profanity-dark: var(--oc-red-4);
+    --writers-blocks--color--contractions: var(--oc-yellow-1);
+    --writers-blocks--color--contractions-dark: var(--oc-yellow-4);
+    --writers-blocks--color--diacritics: var(--oc-pink-1);
+    --writers-blocks--color--diacritics-dark: var(--oc-pink-4);
+    --writers-blocks--color--indefinite-article: var(--oc-indigo-1);
+    --writers-blocks--color--indefinite-article-dark: var(--oc-indigo-4);
+    --writers-blocks--color--repeated-words: var(--oc-cyan-1);
+    --writers-blocks--color--repeated-words-dark: var(--oc-cyan-4);
+    --writers-blocks--color--redundant-acronyms: var(--oc-grape-1);
+    --writers-blocks--color--redundant-acronyms-dark: var(--oc-grape-4);
+    --writers-blocks--color--sentence-spacing: var(--oc-lime-1);
+    --writers-blocks--color--sentence-spacing-dark: var(--oc-lime-4);
 }

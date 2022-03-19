@@ -3,84 +3,84 @@
     &.simplify {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--writers-blocks--color--simplify);
+            background-color: var(--writers-blocks--color--simplify-dark);
         }
     }
 
     &.intensify {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--writers-blocks--color--intensify);
+            background-color: var(--writers-blocks--color--intensify-dark);
         }
     }
 
     &.passive {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--writers-blocks--color--passive);
+            background-color: var(--writers-blocks--color--passive-dark);
         }
     }
 
     &.readability {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--writers-blocks--color--readability);
+            background-color: var(--writers-blocks--color--readability-dark);
         }
     }
 
     &.equality {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--writers-blocks--color--equality);
+            background-color: var(--writers-blocks--color--equality-dark);
         }
     }
 
     &.profanities {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--writers-blocks--color--profanity);
+            background-color: var(--writers-blocks--color--profanity-dark);
         }
     }
 
     &.redundant_acronyms {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--writers-blocks--color--redundant-acronyms);
+            background-color: var(--writers-blocks--color--redundant-acronyms-dark);
         }
     }
 
     &.sentence_spacing {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--writers-blocks--color--sentence-spacing);
+            background-color: var(--writers-blocks--color--sentence-spacing-dark);
         }
     }
 
     &.indefinite_article {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--writers-blocks--color--indefinite-article);
+            background-color: var(--writers-blocks--color--indefinite-article-dark);
         }
     }
 
     &.contractions {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--writers-blocks--color--contractions);
+            background-color: var(--writers-blocks--color--contractions-dark);
         }
     }
 
     &.repeated_words {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--writers-blocks--color--repeated-words);
+            background-color: var(--writers-blocks--color--repeated-words-dark);
         }
     }
 
     &.diacritics {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--writers-blocks--color--diacritics);
+            background-color: var(--writers-blocks--color--diacritics-dark);
         }
     }
 }
