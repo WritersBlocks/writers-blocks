@@ -34,13 +34,13 @@ export const PROBLEM_TYPES = [
 
 export const PROBLEM_TYPES_TO_LABEL = {
 	simplify: {
-		label: __( 'Overly-Complex Words', 'writers-blocks' ),
+		label: __( 'Simplify', 'writers-blocks' ),
 		help: ( number ) => number > 0
 			? `${ number } word${ number > 1 ? 's' : '' } may need to be simplified.`
 			: 'No words need to be simplified. Bravo.',
 	},
 	intensify: {
-		label: __( 'Vague Words', 'writers-blocks' ),
+		label: __( 'Intensify', 'writers-blocks' ),
 		help: ( number ) => number > 0
 			? `${ number } word${ number > 1 ? 's' : '' } may lessen${ number > 1 ? '' : 's' } impact.`
 			: 'No vague language in sight. Awesome job!',
@@ -88,7 +88,7 @@ export const PROBLEM_TYPES_TO_LABEL = {
 			: 'No repeated words to be found.',
 	},
 	diacritics: {
-		label: __( 'Accents', 'writers-blocks' ),
+		label: __( 'Diacritics', 'writers-blocks' ),
 		help: ( number ) => number > 0
 			? `${ number } word${ number > 1 ? 's' : '' } may use improper accents.`
 			: 'No improper accents here.',

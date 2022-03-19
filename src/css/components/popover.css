@@ -1,49 +1,49 @@
 .writers-blocks-annotation-popover.is-type-simplify .components-popover__content {
-	border-left: 4px solid var(--writers-blocks--color--simplify);
+	border-left: 4px solid var(--writers-blocks--color--simplify-dark);
 }
 
 .writers-blocks-annotation-popover.is-type-passive .components-popover__content {
-	border-left: 4px solid var(--writers-blocks--color--passive);
+	border-left: 4px solid var(--writers-blocks--color--passive-dark);
 }
 
 .writers-blocks-annotation-popover.is-type-intensify .components-popover__content {
-	border-left: 4px solid var(--writers-blocks--color--intensify);
+	border-left: 4px solid var(--writers-blocks--color--intensify-dark);
 }
 
 .writers-blocks-annotation-popover.is-type-contractions .components-popover__content {
-	border-left: 4px solid var(--writers-blocks--color--contractions);
+	border-left: 4px solid var(--writers-blocks--color--contractions-dark);
 }
 
 .writers-blocks-annotation-popover.is-type-equality .components-popover__content {
-	border-left: 4px solid var(--writers-blocks--color--equality);
+	border-left: 4px solid var(--writers-blocks--color--equality-dark);
 }
 
 .writers-blocks-annotation-popover.is-type-profanities .components-popover__content {
-	border-left: 4px solid var(--writers-blocks--color--profanity);
+	border-left: 4px solid var(--writers-blocks--color--profanity-dark);
 }
 
 .writers-blocks-annotation-popover.is-type-diacritics .components-popover__content {
-	border-left: 4px solid var(--writers-blocks--color--diacritics);
+	border-left: 4px solid var(--writers-blocks--color--diacritics-dark);
 }
 
 .writers-blocks-annotation-popover.is-type-indefinite_article .components-popover__content {
-	border-left: 4px solid var(--writers-blocks--color--indefinite-article);
+	border-left: 4px solid var(--writers-blocks--color--indefinite-article-dark);
 }
 
 .writers-blocks-annotation-popover.is-type-repeated_words .components-popover__content {
-	border-left: 4px solid var(--writers-blocks--color--repeated-words);
+	border-left: 4px solid var(--writers-blocks--color--repeated-words-dark);
 }
 
 .writers-blocks-annotation-popover.is-type-redundant_acronyms .components-popover__content {
-	border-left: 4px solid var(--writers-blocks--color--redundant-acronyms);
+	border-left: 4px solid var(--writers-blocks--color--redundant-acronyms-dark);
 }
 
 .writers-blocks-annotation-popover.is-type-readability .components-popover__content {
-	border-left: 4px solid var(--writers-blocks--color--readability);
+	border-left: 4px solid var(--writers-blocks--color--readability-dark);
 }
 
 .writers-blocks-annotation-popover.is-type-sentence_spacing .components-popover__content {
-	border-left: 4px solid var(--writers-blocks--color--sentence-spacing);
+	border-left: 4px solid var(--writers-blocks--color--sentence-spacing-dark);
 }
 
 .writers-blocks-annotation-popover .components-popover__content > div {

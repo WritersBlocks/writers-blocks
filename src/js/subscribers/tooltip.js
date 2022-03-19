@@ -98,7 +98,7 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 				<h5 style={{ margin: 0 }}>{ title }</h5>
 			) }
 			<p>{ message }</p>
-			{ replacements.length ? (
+			{ replacements.length && type !== 'sentence_spacing' ? (
 				<HStack alignment="left" direction="row" spacing="4px" wrap={ true }>
 					{ /**
 					 * Still needs some work...
