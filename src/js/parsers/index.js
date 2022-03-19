@@ -35,9 +35,7 @@ export default ( text, { preserveWhiteSpace = true } = {} ) => {
 			value,
 			type: source.replace( 'retext-', '' ).replace( '-', '_' ),
 			level: fatal ? 'warning' : 'suggestion',
-			message: `${ message
-				.split( ', use' )[ 0 ]
-				.replaceAll( '`', '"' ) }.`,
+			message: `${ message.replaceAll( '`', '"' ) }.`,
 			replacements: expected,
 			index,
 			offset,

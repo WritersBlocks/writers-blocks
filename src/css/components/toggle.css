@@ -1,0 +1,86 @@
+.writers-blocks__toggle {
+
+    &.simplify {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--simplify);
+        }
+    }
+
+    &.intensify {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--intensify);
+        }
+    }
+
+    &.passive {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--passive);
+        }
+    }
+
+    &.readability {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--readability);
+        }
+    }
+
+    &.equality {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--equality);
+        }
+    }
+
+    &.profanities {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--profanity);
+        }
+    }
+
+    &.redundant_acronyms {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--redundant-acronyms);
+        }
+    }
+
+    &.sentence_spacing {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--sentence-spacing);
+        }
+    }
+
+    &.indefinite_article {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--indefinite-article);
+        }
+    }
+
+    &.contractions {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--contractions);
+        }
+    }
+
+    &.repeated_words {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--repeated-words);
+        }
+    }
+
+    &.diacritics {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--diacritics);
+        }
+    }
+}

@@ -11,16 +11,18 @@ import {
 } from '@wordpress/data';
 import domReady from '@wordpress/dom-ready';
 import { render, useEffect, useState } from '@wordpress/element';
-import { Popover, Button, Flex } from '@wordpress/components';
+import { Popover, Button, Flex, __experimentalHStack as HStack } from '@wordpress/components';
+import { info } from '@wordpress/icons';
 
 /**
  * Internal depenedencies
  */
 // import { BLOCK_TYPE_CONTENT_ATTRIBUTE } from '../constants';
 import { store } from '../store';
+import { CopyButton } from '../components/CopyButton';
 // import { strip } from '../utils/strip-text';
 
-const { btoa } = window;
+// const { btoa } = window;
 
 /**
  *
@@ -35,23 +37,23 @@ const getPopoverPosition = ( element ) => element.getBoundingClientRect();
  * @return
  */
 const Tooltip = ( { isShown, target, annotationId } ) => {
-	const [ ignoredAnnotations, setIgnoredAnnotations ] = useState( null );
+	// const [ ignoredAnnotations, setIgnoredAnnotations ] = useState( null );
 
-	const { wb_ignored } = useSelect(
-		( select ) =>
-			select( 'core/editor' ).getEditedPostAttribute( 'meta' ) || {}
-	);
+	// const { wb_ignored } = useSelect(
+	// 	( select ) =>
+	// 		select( 'core/editor' ).getEditedPostAttribute( 'meta' ) || {}
+	// );
 	const selectedAnnotation = useSelect( ( select ) =>
 		select( 'writers-blocks/editor' ).getProblem( annotationId )
 	);
 
-	const { editPost } = useDispatch( 'core/editor' );
+	// const { editPost } = useDispatch( 'core/editor' );
 
-	useEffect( () => {
-		if ( wb_ignored ) {
-			setIgnoredAnnotations( wb_ignored );
-		}
-	}, [ wb_ignored ] );
+	// useEffect( () => {
+	// 	if ( wb_ignored ) {
+	// 		setIgnoredAnnotations( wb_ignored );
+	// 	}
+	// }, [ wb_ignored ] );
 
 	const {
 		// blockId,
@@ -61,9 +63,9 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 		message,
 		type,
 		value,
-		// replacements: [ { action, value } = {} ] = [ {} ],
+		replacements = [],
 	} = selectedAnnotation || {};
-	const [ title ] = type?.split( '-' ) || [];
+	const title = type?.split( '_' )?.join( ' ' ) || '';
 
 	// const { attributes } = useSelect(
 	// 	( select ) => select( 'core/block-editor' ).getBlock( blockId ) || {},
@@ -77,10 +79,9 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 			position="top center"
 			getAnchorRect={ () => getPopoverPosition( target ) }
 		>
-			<h5>{ title }</h5>
-			<p>{ message }</p>
-			<Flex justify="end">
-				{ process.env.NODE_ENV === 'development' ? (
+			{ process.env.NODE_ENV === 'development' ? (
+				<Flex justify="space-between" align="center">
+					<h5 style={{ margin: 0 }}>{ title }</h5>
 					<Button
 						variant="tertiary"
 						onClick={ () => {
@@ -88,53 +89,56 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 								select( store ).getProblem( annotationId )
 							);
 						} }
+						icon={ info }
+						iconSize={ 18 }
+						isSmall={ true }
+					/>
+				</Flex>
+			) : (
+				<h5 style={{ margin: 0 }}>{ title }</h5>
+			) }
+			<p>{ message }</p>
+			{ replacements.length ? (
+				<HStack alignment="left" direction="row" spacing="4px" wrap={ true }>
+					{ /**
+					 * Still needs some work...
+					 */
+					/* <Button
+						variant="secondary"
+						onClick={ () => {
+							dispatch( store ).ignoreProblem( annotationId );
+							dispatch(
+								'core/annotations'
+							).__experimentalRemoveAnnotation( annotationId );
+
+							editPost( {
+								meta: {
+									wb_ignored: [
+										...ignoredAnnotations,
+										btoa(
+											`${ type }_${ index }_${ offset }_${ value }`
+										),
+									],
+								},
+							} );
+						} }
 					>
-						{ __( 'Inspect', 'writers-blocks' ) }
-					</Button>
-				) : null }
-				<Button
-					variant="secondary"
-					onClick={ () => {
-						dispatch( store ).ignoreProblem( annotationId );
-						dispatch(
-							'core/annotations'
-						).__experimentalRemoveAnnotation( annotationId );
-
-						editPost( {
-							meta: {
-								wb_ignored: [
-									...ignoredAnnotations,
-									btoa(
-										`${ type }_${ index }_${ offset }_${ value }`
-									),
-								],
-							},
-						} );
-					} }
-				>
-					{ __( 'Ignore', 'writers-blocks' ) }
-				</Button>
-				{ /**
-				 * Still needs some work...
-				 */
-				/* {
-						action ? (
-							<Button
-								variant="primary"
-								onClick={ () => {
-									const content = strip( attributes[ BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] ] );
-									const newContent = `${ content.substring( 0, index ) }${ value.trim() }${ content.substring( offset + 1 ) }`;
-
-									updateBlockAttributes( blockId, {
-										[ BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] ]: `<p>${ newContent }</p>`,
-									} );
-								} }
-							>
-								{ __( action === 'delete' ? 'Omit' : action, 'writers-blocks' ) }
-							</Button>
-						) : null
-					} */ }
-			</Flex>
+						{ __( 'Ignore', 'writers-blocks' ) }
+					</Button> */}
+					{
+						replacements.map( ( replacement ) => {
+							return (
+								<CopyButton
+									key={ replacement }
+									text={ replacement }
+									label={ null }
+									onClick={ () => {} }
+								/>
+							);
+						} )
+					}
+				</HStack>
+			) : null }
 		</Popover>
 	) : null;
 };

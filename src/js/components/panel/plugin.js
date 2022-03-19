@@ -124,81 +124,38 @@ export const PluginPanel = () => {
 					<Spinner />
 				) }
 			</PanelBody>
-			<PanelBody title={ __( 'Suggestions', 'writers-blocks' ) }>
+			<PanelBody title={ __( 'Style', 'writers-blocks' ) }>
 				{ suggestions ? Object.keys( PROBLEM_TYPES_TO_LABEL ).map( ( type ) =>
 					<PanelRow key={ type }>
-						<ToggleControl
-							label={ PROBLEM_TYPES_TO_LABEL[ type ].label }
-							help={ PROBLEM_TYPES_TO_LABEL[ type ].help(
-								problems[ type ].length
-							) }
-							checked={
-								suggestions[ type ]
-									? suggestions[ type ] === '1'
-									: true
-							}
-							onChange={ ( checked ) => {
-								dispatch( 'core' )
-									.saveEntityRecord( 'root', 'site', {
-										writers_blocks: {
-											...suggestions,
-											[ type ]: checked ? '1' : '0',
-										},
-									} )
-									.then( ( { writers_blocks } ) => {
-										setSuggestions( writers_blocks );
-									} );
-
-								if ( checked ) {
-									const problems = select(
-										store
-									).getProblemsByType( type );
-
-									problems.forEach(
-										( {
-											blockId,
-											blockName,
-											type,
-											index,
-											offset,
-										} ) => {
-											dispatch(
-												'core/annotations'
-											).__experimentalAddAnnotation(
-												{
-													source: `writers-blocks--${ type }`,
-													blockClientId: blockId,
-													richTextIdentifier:
-														BLOCK_TYPE_CONTENT_ATTRIBUTE[
-															blockName
-														],
-													range: {
-														start: index,
-														end: offset,
-													},
-												}
-											);
-										}
-									);
-								} else {
-									dispatch(
-										'core/annotations'
-									).__experimentalRemoveAnnotationsBySource(
-										`writers-blocks--${ type }`
-									);
+						<div className={`writers-blocks__toggle ${type}`}>
+							<ToggleControl
+								label={ PROBLEM_TYPES_TO_LABEL[ type ].label }
+								help={ PROBLEM_TYPES_TO_LABEL[ type ].help(
+									problems[ type ].length
+								) }
+								checked={
+									suggestions[ type ]
+										? suggestions[ type ] === '1'
+										: true
 								}
+								onChange={ ( checked ) => {
+									dispatch( 'core' )
+										.saveEntityRecord( 'root', 'site', {
+											writers_blocks: {
+												...suggestions,
+												[ type ]: checked ? '1' : '0',
+											},
+										} )
+										.then( ( { writers_blocks } ) => {
+											setSuggestions( writers_blocks );
+										} );
 
-								if ( type === 'readability' && checked ) {
-									const problems = select(
-										store
-									).getProblems();
+									if ( checked ) {
+										const problems = select(
+											store
+										).getProblemsByType( type );
 
-									problems
-										.filter(
-											( { type } ) =>
-												type !== 'readability' && suggestions[ type ] === '1'
-										)
-										.forEach(
+										problems.forEach(
 											( {
 												blockId,
 												blockName,
@@ -224,9 +181,54 @@ export const PluginPanel = () => {
 												);
 											}
 										);
-								}
-							} }
-						/>
+									} else {
+										dispatch(
+											'core/annotations'
+										).__experimentalRemoveAnnotationsBySource(
+											`writers-blocks--${ type }`
+										);
+									}
+
+									if ( type === 'readability' && checked ) {
+										const problems = select(
+											store
+										).getProblems();
+
+										problems
+											.filter(
+												( { type } ) =>
+													type !== 'readability' && suggestions[ type ] === '1'
+											)
+											.forEach(
+												( {
+													blockId,
+													blockName,
+													type,
+													index,
+													offset,
+												} ) => {
+													dispatch(
+														'core/annotations'
+													).__experimentalAddAnnotation(
+														{
+															source: `writers-blocks--${ type }`,
+															blockClientId: blockId,
+															richTextIdentifier:
+																BLOCK_TYPE_CONTENT_ATTRIBUTE[
+																	blockName
+																],
+															range: {
+																start: index,
+																end: offset,
+															},
+														}
+													);
+												}
+											);
+									}
+								} }
+							/>
+						</div>
 					</PanelRow>
 				) : null }
 			</PanelBody>

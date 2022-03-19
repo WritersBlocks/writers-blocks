@@ -1,0 +1,60 @@
+.writers-blocks-annotation-popover.is-type-simplify .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--simplify);
+}
+
+.writers-blocks-annotation-popover.is-type-passive .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--passive);
+}
+
+.writers-blocks-annotation-popover.is-type-intensify .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--intensify);
+}
+
+.writers-blocks-annotation-popover.is-type-contractions .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--contractions);
+}
+
+.writers-blocks-annotation-popover.is-type-equality .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--equality);
+}
+
+.writers-blocks-annotation-popover.is-type-profanities .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--profanity);
+}
+
+.writers-blocks-annotation-popover.is-type-diacritics .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--diacritics);
+}
+
+.writers-blocks-annotation-popover.is-type-indefinite_article .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--indefinite-article);
+}
+
+.writers-blocks-annotation-popover.is-type-repeated_words .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--repeated-words);
+}
+
+.writers-blocks-annotation-popover.is-type-redundant_acronyms .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--redundant-acronyms);
+}
+
+.writers-blocks-annotation-popover.is-type-readability .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--readability);
+}
+
+.writers-blocks-annotation-popover.is-type-sentence_spacing .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--sentence-spacing);
+}
+
+.writers-blocks-annotation-popover .components-popover__content > div {
+	padding: 16px;
+	min-width: 200px;
+}
+
+.writers-blocks-annotation-popover .components-popover__content > div h5 {
+	font-size: 8px;
+	font-weight: 700;
+	letter-spacing: 0.5px;
+	margin-top: 0;
+	text-transform: uppercase;
+}

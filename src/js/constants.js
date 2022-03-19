@@ -78,7 +78,7 @@ export const PROBLEM_TYPES_TO_LABEL = {
 	contractions: {
 		label: __( 'Contractions', 'writers-blocks' ),
 		help: ( number ) => number > 0
-			? `${ number } contraction${ number > 1 ? 's' : '' } may .`
+			? `${ number } word${ number > 1 ? 's' : '' } may use improper an contraction.`
 			: 'Contractions are looking good.',
 	},
 	'repeated_words': {
