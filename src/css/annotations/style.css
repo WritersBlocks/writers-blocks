@@ -1,0 +1,51 @@
+.annotation-text-writers-blocks--style--ignored {
+	background-color: transparent !important;
+}
+
+.annotation-text-writers-blocks--style--diacritics {
+	background-color: var(--writers-blocks--color--diacritics) !important;
+}
+
+.annotation-text-writers-blocks--style--passive {
+	background-color: var(--writers-blocks--color--passive) !important;
+}
+
+.annotation-text-writers-blocks--style--readability {
+	background-color: var(--writers-blocks--color--readability) !important;
+}
+
+.annotation-text-writers-blocks--style--simplify {
+	background-color: var(--writers-blocks--color--simplify) !important;
+}
+
+.annotation-text-writers-blocks--style--profanities {
+	background-color: var(--writers-blocks--color--profanity) !important;
+}
+
+.annotation-text-writers-blocks--style--equality {
+	background-color: var(--writers-blocks--color--equality) !important;
+}
+
+.annotation-text-writers-blocks--style--intensify {
+	background-color: var(--writers-blocks--color--intensify) !important;
+}
+
+.annotation-text-writers-blocks--style--contractions {
+	background-color: var(--writers-blocks--color--contractions) !important;
+}
+
+.annotation-text-writers-blocks--style--sentence_spacing {
+	background-color: var(--writers-blocks--color--sentence-spacing) !important;
+}
+
+.annotation-text-writers-blocks--style--indefinite_article {
+	background-color: var(--writers-blocks--color--indefinite-article) !important;
+}
+
+.annotation-text-writers-blocks--style--redundant_acronyms {
+	background-color: var(--writers-blocks--color--redundant-acronyms) !important;
+}
+
+.annotation-text-writers-blocks--style--repeated_words {
+	background-color: var(--writers-blocks--color--repeated-words) !important;
+}

@@ -5,6 +5,13 @@ export function addAnnotations( annotations ) {
 	};
 }
 
+export function addWords( words ) {
+	return {
+		type: 'ADD_WORDS',
+		words,
+	};
+}
+
 export function addProblem( problem ) {
 	return {
 		type: 'ADD_PROBLEM',

@@ -13,13 +13,14 @@ import {
 } from '@wordpress/components';
 import { useSelect, select, dispatch } from '@wordpress/data';
 import { Fragment, useEffect, useState } from '@wordpress/element';
-import { moreVertical, edit } from '@wordpress/icons';
+import { moreVertical, key } from '@wordpress/icons';
 
 import {
 	PROBLEM_TYPES_TO_LABEL,
 	BLOCK_TYPE_CONTENT_ATTRIBUTE,
 } from '../../constants';
 import { store } from '../../store';
+import { removeAnnotations, addAnnotations } from '../../decorators/gutenberg';
 
 const {
 	WB_SETTINGS: { settings: SHOWN_ANNOTATION_TYPES },
@@ -58,44 +59,85 @@ export const PluginPanel = () => {
 			icon="text"
 			title={ __( "Writer's Blocks", 'writers-blocks' ) }
 		>
-			{ /* <PanelRow className='components-panel__body-static'>
-				<span>Settings</span>
-				<DropdownMenu icon={ moreVertical } label="Select a direction">
-					{ ( { onClose } ) => (
-						<Fragment>
-							<MenuGroup>
-								<MenuItem
-									icon={ edit }
-									onClick={ () => {
-										const isEditingMode = suggestions.editing_mode === '1';
+			<div style={{ padding: '16px' }}>
+				<PanelRow className='components-panel__body-static'>
+					<span>Settings</span>
+					<DropdownMenu icon={ moreVertical } label="Select a direction">
+						{ ( { onClose } ) => (
+							<Fragment>
+								<MenuGroup>
+									<MenuItem
+										icon={ key }
+										onClick={ () => {
+											onClose();
+										} }
+									>
+										{ __( 'License Key', 'writers-blocks' ) }
+									</MenuItem>
+								</MenuGroup>
+							</Fragment>
+						) }
+					</DropdownMenu>
+				</PanelRow>
+				<PanelRow>
+					<ToggleControl
+						label={ __( 'Editing Mode', 'writers-blocks' ) }
+						checked={ suggestions.editing_mode === '1' }
+						onChange={ () => {
+							dispatch( 'core' ).saveEntityRecord( 'root', 'site', {
+								writers_blocks: {
+									...suggestions,
+									syntax_mode: suggestions.syntax_mode === '1' && suggestions.editing_mode === '0' ? '0' : suggestions.syntax_mode,
+									editing_mode: suggestions.editing_mode === '1' ? '0' : '1',
+								},
+							} );
 
-										dispatch( 'core' ).saveEntityRecord( 'root', 'site', {
-											writers_blocks: {
-												...suggestions,
-												editing_mode: isEditingMode ? "0" : "1",
-											}
-										} ).then(({ writers_blocks }) => {
-											setSuggestions(writers_blocks);
-										});
+							if ( suggestions.syntax_mode === '1' ) {
+								removeAnnotations( 'syntax' );
+							}
+			
+							if ( suggestions.editing_mode === '1' ) {
+								removeAnnotations( 'style' );
+							} else {
+								const blockProblems = select(
+									'writers-blocks/editor'
+								).getProblems();
+			
+								addAnnotations( blockProblems );
+							}
+						} }
+					/>
+				</PanelRow>
+				<PanelRow>
+					<ToggleControl
+						label={ __( 'Syntax Mode', 'writers-blocks' ) }
+						checked={ suggestions.syntax_mode === '1' }
+						onChange={ () => {
+							dispatch( 'core' ).saveEntityRecord( 'root', 'site', {
+								writers_blocks: {
+									...suggestions,
+									editing_mode: suggestions.editing_mode === '1' && suggestions.syntax_mode === '0' ? '0' : suggestions.editing_mode,
+									syntax_mode: suggestions.syntax_mode === '1' ? '0' : '1',
+								},
+							} );
 
-										if (isEditingMode) {
-											removeAnnotations();
-										} else {
-											const blockProblems = select('writers-blocks/editor').getProblems();
-											addAnnotations(blockProblems);
-										}
-
-										onClose();
-									} }
-									isSelected={ suggestions.editing_mode }
-								>
-									Editing Mode
-								</MenuItem>
-							</MenuGroup>
-						</Fragment>
-					) }
-				</DropdownMenu>
-			</PanelRow> */ }
+							if ( suggestions.editing_mode === '1' ) {
+								removeAnnotations( 'style' );
+							}
+			
+							if ( suggestions.syntax_mode === '1' ) {
+								removeAnnotations( 'syntax' );
+							} else {
+								const blockWords = select(
+									'writers-blocks/editor'
+								).getWords();
+			
+								addAnnotations( blockWords );
+							}
+						} }
+					/>
+				</PanelRow>
+			</div>
 			<PanelBody title={ __( 'Readability', 'writers-blocks' ) }>
 				{ readingTime && score && polarity ? (
 					<>
@@ -167,7 +209,7 @@ export const PluginPanel = () => {
 													'core/annotations'
 												).__experimentalAddAnnotation(
 													{
-														source: `writers-blocks--${ type }`,
+														source: `writers-blocks--style--${ type }`,
 														blockClientId: blockId,
 														richTextIdentifier:
 															BLOCK_TYPE_CONTENT_ATTRIBUTE[
@@ -185,7 +227,7 @@ export const PluginPanel = () => {
 										dispatch(
 											'core/annotations'
 										).__experimentalRemoveAnnotationsBySource(
-											`writers-blocks--${ type }`
+											`writers-blocks--style--${ type }`
 										);
 									}
 
@@ -211,7 +253,7 @@ export const PluginPanel = () => {
 														'core/annotations'
 													).__experimentalAddAnnotation(
 														{
-															source: `writers-blocks--${ type }`,
+															source: `writers-blocks--style--${ type }`,
 															blockClientId: blockId,
 															richTextIdentifier:
 																BLOCK_TYPE_CONTENT_ATTRIBUTE[

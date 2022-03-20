@@ -32,6 +32,18 @@ export function readability( state = { stats: {} }, action ) {
 	}
 }
 
+export function words( state = { list: [] }, action ) {
+	switch ( action.type ) {
+		case 'ADD_WORDS':
+			return {
+				...state,
+				list: action.words,
+			};
+		default:
+			return state;
+	}
+}
+
 export function problems( state = { list: [] }, action ) {
 	switch ( action.type ) {
 		case 'ADD_PROBLEMS':
@@ -84,6 +96,7 @@ export function user( state = { settings: DEFAULT_USER_SETTINGS }, action ) {
 }
 
 export default combineReducers( {
+	words,
 	problems,
 	readability,
 	user,

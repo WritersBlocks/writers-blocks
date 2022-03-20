@@ -15,6 +15,7 @@ import check from '../parsers';
 import { store } from '../store';
 import {
 	PROBLEM_TYPES,
+	SYNTAX_TYPES,
 	ALLOWED_BLOCKS,
 	BLOCK_TYPE_CONTENT_ATTRIBUTE,
 } from '../constants';
@@ -63,35 +64,42 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 		return [];
 	}
 
-	const problems = check( blockAttributes[ attribute ], {
+	const { messages: problems, nodes } = check( blockAttributes[ attribute ], {
 		preserveWhiteSpace: blockName !== 'core/list',
 	} );
 
-	if ( ! problems.length ) {
-		return [];
-	}
-
-	return problems.map( ( problem ) => ( {
-		blockId,
-		blockName,
-		blockAttributes,
-		annotationId: uuid(),
-		id: btoa(
-			`${ problem.type }_${ problem.index }_${ problem.offset }_${ problem.value }`
-		),
-		...problem,
-	} ) );
+	return {
+		nodes: ! nodes.length ? [] : nodes.map( ( node ) => ( {
+			blockId,
+			blockName,
+			blockAttributes,
+			annotationId: uuid(),
+			mode: 'syntax',
+			...node,
+		} ) ),
+		problems: ! problems.length ? [] : problems.map( ( problem ) => ( {
+			blockId,
+			blockName,
+			blockAttributes,
+			annotationId: uuid(),
+			id: btoa(
+				`${ problem.type }_${ problem.index }_${ problem.offset }_${ problem.value }`
+			),
+			mode: 'style',
+			...problem,
+		} ) ),
+	};
 };
 
-export const removeAnnotations = ( blockId = null ) => {
+export const removeAnnotations = ( annotationType, blockId = null ) => {
 	const annotations = select( 'core/annotations' )
 		.__experimentalGetAnnotations()
 		.filter( ( annotation ) =>
 			blockId
 				? annotation.blockClientId === blockId
 				: true &&
-				  PROBLEM_TYPES.map(
-						( type ) => `writers-blocks--${ type }`
+				  [...PROBLEM_TYPES, ...SYNTAX_TYPES].map(
+						( type ) => `writers-blocks--${ annotationType }--${ type }`
 				  ).includes( annotation.source )
 		);
 
@@ -106,16 +114,26 @@ export const getAnnotatableText = ( blocks ) => {
 	const allowedBlocks = blocks.filter( ( block ) =>
 		ALLOWED_BLOCKS.includes( block.name )
 	);
+	const { nodes, problems } = allowedBlocks.reduce( ( acc, block ) => {
+		const { nodes: blockNodes, problems: blockProblems } = getAnnotatableTextFromBlock( block );
+		acc.nodes = [ ...acc.nodes, ...blockNodes ];
+		acc.problems = [ ...acc.problems, ...blockProblems ];
 
-	return allowedBlocks.flatMap( getAnnotatableTextFromBlock );
+		return acc;
+	}, { nodes: [], problems: [] } );
+
+	return {
+		nodes,
+		problems,
+	};
 };
 
 export const addAnnotations = (
 	blockProblems,
-	{ clientId = null, ignore = [] } = {}
+	{ clientId = null, type, ignore = [] } = {}
 ) => {
 	if ( clientId ) {
-		removeAnnotations( clientId );
+		removeAnnotations( type, clientId );
 	}
 
 	const annotations = blockProblems.filter(
@@ -123,7 +141,7 @@ export const addAnnotations = (
 			problem.state !== 'ignored' && ! ignore.includes( problem.id )
 	);
 	const readabilityAnnotations = annotations.filter( ( problem ) =>
-		problem.type.includes( 'readability' )
+		problem.type === 'readability'
 	);
 
 	readabilityAnnotations.forEach( ( annotation ) => {
@@ -131,6 +149,7 @@ export const addAnnotations = (
 			blockId,
 			blockName,
 			annotationId,
+			mode,
 			type,
 			index,
 			offset,
@@ -143,7 +162,7 @@ export const addAnnotations = (
 				: true
 		) {
 			dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
-				source: `writers-blocks--${ type }`,
+				source: `writers-blocks--${ mode }--${ type }`,
 				blockClientId: blockId,
 				richTextIdentifier: BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ],
 				range: {
@@ -156,12 +175,13 @@ export const addAnnotations = (
 	} );
 
 	annotations
-		.filter( ( annotation ) => ! annotation.type.includes( 'readability' ) )
+		.filter( ( annotation ) => annotation.type && annotation.type !== 'readability' )
 		.forEach( ( annotation ) => {
 			const {
 				blockId,
 				blockName,
 				annotationId,
+				mode,
 				type,
 				index,
 				offset,
@@ -174,7 +194,7 @@ export const addAnnotations = (
 					: true
 			) {
 				dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
-					source: `writers-blocks--${ type }`,
+					source: `writers-blocks--${ mode }--${ type }`,
 					blockClientId: blockId,
 					richTextIdentifier:
 						BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ],
@@ -201,18 +221,23 @@ export const scheduleAnnotations = debounce( () => {
 		return;
 	}
 
-	const blockProblems = getAnnotatableTextFromBlock( block );
+	const { problems: blockProblems, nodes: blockNodes } = getAnnotatableTextFromBlock( block );
+	const { clientId } = block;
 
 	if ( blockProblems.length ) {
-		const { clientId } = block;
 		const problems = select( store ).getProblems();
 
 		dispatch( store ).addProblems( [
 			...problems.filter( ( problem ) => problem.blockId !== clientId ),
 			...blockProblems,
+			...blockNodes,
 		] );
+	}
 
-		addAnnotations( blockProblems, { clientId } );
+	const { writers_blocks: { editing_mode: isStyleModeEnabled, syntax_mode: isSyntaxModeEnabled } } = select( 'core' ).getEntityRecord( 'root', 'site' );
+
+	if ( isStyleModeEnabled === '1' || isSyntaxModeEnabled === '1' ) {
+		addAnnotations( isStyleModeEnabled ? blockProblems : blockNodes, { clientId, type: isStyleModeEnabled ? 'style' : 'syntax' } );
 	}
 
 	isUpdatingProblems = false;

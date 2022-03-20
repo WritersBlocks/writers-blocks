@@ -20,6 +20,8 @@ import {
 	addAnnotations,
 } from '../decorators/gutenberg';
 
+const { WB_SETTINGS: { settings: { editing_mode: isStyleModeEnabled, syntax_mode: isSyntaxModeEnabled } } } = window;
+
 let _content = '';
 
 const scheduleReadingScoreUpdate = debounce( ( content ) => {
@@ -53,17 +55,18 @@ domReady( () => {
 		const blocks = select( 'core/block-editor' ).getBlocks();
 
 		if ( ! problems.length && blocks.length ) {
-			const blockProblems = getAnnotatableText( blocks );
+			const { problems: blockProblems, nodes: blockNodes } = getAnnotatableText( blocks );
 
 			if ( blockProblems.length ) {
-				const ignoredAnnotations = select(
-					store
-				).getIgnoredAnnotations();
+				// const ignoredAnnotations = select(
+				// 	store
+				// ).getIgnoredAnnotations();
 
-				dispatch( store ).addProblems( blockProblems );
-				addAnnotations( blockProblems, {
-					ignore: ignoredAnnotations,
-				} );
+				dispatch( store ).addProblems( [...blockProblems, ...blockNodes] );
+				
+				if ( isStyleModeEnabled === '1' || isSyntaxModeEnabled === '1' ) {
+					addAnnotations( isStyleModeEnabled === '1' ? blockProblems : blockNodes );
+				}
 			}
 		}
 

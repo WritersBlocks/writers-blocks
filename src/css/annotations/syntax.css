@@ -1,0 +1,19 @@
+.annotation-text-writers-blocks--syntax--noun {
+    background-color: transparent !important;
+	color: var(--oc-red-6) !important;
+}
+
+.annotation-text-writers-blocks--syntax--adverb {
+    background-color: transparent !important;
+	color: var(--oc-violet-6) !important;
+}
+
+.annotation-text-writers-blocks--syntax--verb {
+    background-color: transparent !important;
+	color: var(--oc-blue-6) !important;
+}
+
+.annotation-text-writers-blocks--syntax--adjective {
+    background-color: transparent !important;
+	color: var(--oc-orange-6) !important;
+}

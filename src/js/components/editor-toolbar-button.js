@@ -44,11 +44,12 @@ export const EditorToolbarButton = ( props ) => {
 				} );
 
 				if ( settings.editing_mode === '1' ) {
-					removeAnnotations();
+					removeAnnotations( 'style' );
 				} else {
 					const blockProblems = select(
 						'writers-blocks/editor'
 					).getProblems();
+
 					addAnnotations( blockProblems );
 				}
 			} }

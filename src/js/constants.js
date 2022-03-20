@@ -32,6 +32,13 @@ export const PROBLEM_TYPES = [
 	'sentence_spacing',
 ];
 
+export const SYNTAX_TYPES = [
+	'noun',
+	'adjective',
+	'adverb',
+	'verb',
+];
+
 export const PROBLEM_TYPES_TO_LABEL = {
 	simplify: {
 		label: __( 'Simplify', 'writers-blocks' ),

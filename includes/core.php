@@ -65,6 +65,9 @@ function register_settings() {
 						'editing_mode' => array(
 							'type' => 'string',
 						),
+						'syntax_mode' => array(
+							'type' => 'string',
+						),
 						'simplify' => array(
 							'type' => 'string',
 						),
@@ -104,6 +107,18 @@ function register_settings() {
 						'readability' => array(
 							'type' => 'string',
 						),
+						'nouns' => array(
+							'type' => 'string',
+						),
+						'adjectives' => array(
+							'type' => 'string',
+						),
+						'adverbs' => array(
+							'type' => 'string',
+						),
+						'verbs' => array(
+							'type' => 'string',
+						),
 					),
 				),
 			),
@@ -134,6 +149,10 @@ function sanitize_settings( $settings ) {
 
 	if ( isset( $settings['editing_mode'] ) ) {
 		$new_settings['editing_mode'] = $settings['editing_mode'];
+	}
+
+	if ( isset( $settings['syntax_mode'] ) ) {
+		$new_settings['syntax_mode'] = $settings['syntax_mode'];
 	}
 
 	if ( isset( $settings['simplify'] ) ) {
@@ -182,6 +201,22 @@ function sanitize_settings( $settings ) {
 
 	if ( isset( $settings['readability'] ) ) {
 		$new_settings['readability'] = $settings['readability'];
+	}
+
+	if ( isset( $settings['nouns'] ) ) {
+		$new_settings['nouns'] = $settings['nouns'];
+	}
+	
+	if ( isset( $settings['adverbs'] ) ) {
+		$new_settings['adverbs'] = $settings['adverbs'];
+	}
+
+	if ( isset( $settings['adjectives'] ) ) {
+		$new_settings['adjectives'] = $settings['adjectives'];
+	}
+
+	if ( isset( $settings['verbs'] ) ) {
+		$new_settings['verbs'] = $settings['verbs'];
 	}
 
 	return $new_settings;
@@ -468,6 +503,7 @@ function activate() {
 			'license_key'        => '',
 			'license_verified'   => '0',
 			'editing_mode'       => '1',
+			'syntax_mode'		 => '0',
 			'simplify'           => '1',
 			'intensify'          => '1',
 			'passive'            => '1',
@@ -480,6 +516,10 @@ function activate() {
 			'redundant_acronyms' => '1',
 			'diacritics'         => '1',
 			'sentence_spacing'   => '1',
+			'nouns'			     => '1',
+			'adjectives'         => '1',
+			'adverbs'            => '1',
+			'verbs'              => '1',
 		],
 		false
 	);

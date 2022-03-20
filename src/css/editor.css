@@ -3,3 +3,6 @@
 
 /* Components */
 @import url("components/index.css");
+
+/* Annotations */
+@import url("annotations/index.css");

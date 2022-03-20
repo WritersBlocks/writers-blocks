@@ -2,7 +2,9 @@ import { select } from '@wordpress/data';
 
 const { btoa } = window;
 
-export const getProblems = ( state ) => state.problems.list;
+export const getWords = ( state ) => state.problems.list.filter( ( { mode } ) => mode === 'syntax' );
+
+export const getProblems = ( state ) => state.problems.list.filter( ( { mode } ) => mode === 'style' );
 
 export const getProblem = ( state, id ) =>
 	state.problems.list.find(

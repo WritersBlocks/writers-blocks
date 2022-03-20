@@ -30,13 +30,14 @@ export const EditToolbarButton = ( { setAttributes, isHighlighted } ) => {
 				setAttributes( { isHighlighted: ! isHighlighted } );
 
 				if ( isHighlighted ) {
-					removeAnnotations( selectedBlock.clientId );
+					removeAnnotations( 'style', selectedBlock.clientId );
 				} else {
 					const blockProblems = select(
 						'writers-blocks/editor'
 					).getBlockProblems( selectedBlock.clientId );
 					addAnnotations( blockProblems, {
 						clientId: selectedBlock.clientId,
+						type: 'style',
 					} );
 				}
 			} }
