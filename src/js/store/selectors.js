@@ -2,9 +2,16 @@ import { select } from '@wordpress/data';
 
 const { btoa } = window;
 
-export const getWords = ( state ) => state.problems.list.filter( ( { mode } ) => mode === 'syntax' );
+export const getWords = ( state ) =>
+	state.problems.list.filter( ( { mode } ) => mode === 'syntax' );
 
-export const getProblems = ( state ) => state.problems.list.filter( ( { mode } ) => mode === 'style' );
+export const getWordsByType = ( state, type ) =>
+	state.problems.list.filter(
+		( { mode, type: wordType } ) => mode === 'syntax' && type === wordType
+	);
+
+export const getProblems = ( state ) =>
+	state.problems.list.filter( ( { mode } ) => mode === 'style' );
 
 export const getProblem = ( state, id ) =>
 	state.problems.list.find(
@@ -38,10 +45,14 @@ export const getIgnoredAnnotations = ( state ) => {
 };
 
 export const getBlockProblems = ( state, blockId ) =>
-	state.problems.list.filter( ( { blockId: clientId } ) => clientId === blockId );
+	state.problems.list.filter(
+		( { blockId: clientId } ) => clientId === blockId
+	);
 
 export const getProblemsByType = ( state, type ) =>
-	state.problems.list.filter( ( { type: problemType } ) => problemType === type );
+	state.problems.list.filter(
+		( { type: problemType } ) => problemType === type
+	);
 
 export const getReadability = ( state ) => state.readability.stats;
 

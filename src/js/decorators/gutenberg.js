@@ -69,25 +69,29 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 	} );
 
 	return {
-		nodes: ! nodes.length ? [] : nodes.map( ( node ) => ( {
-			blockId,
-			blockName,
-			blockAttributes,
-			annotationId: uuid(),
-			mode: 'syntax',
-			...node,
-		} ) ),
-		problems: ! problems.length ? [] : problems.map( ( problem ) => ( {
-			blockId,
-			blockName,
-			blockAttributes,
-			annotationId: uuid(),
-			id: btoa(
-				`${ problem.type }_${ problem.index }_${ problem.offset }_${ problem.value }`
-			),
-			mode: 'style',
-			...problem,
-		} ) ),
+		nodes: ! nodes.length
+			? []
+			: nodes.map( ( node ) => ( {
+					blockId,
+					blockName,
+					blockAttributes,
+					annotationId: uuid(),
+					mode: 'syntax',
+					...node,
+			  } ) ),
+		problems: ! problems.length
+			? []
+			: problems.map( ( problem ) => ( {
+					blockId,
+					blockName,
+					blockAttributes,
+					annotationId: uuid(),
+					id: btoa(
+						`${ problem.type }_${ problem.index }_${ problem.offset }_${ problem.value }`
+					),
+					mode: 'style',
+					...problem,
+			  } ) ),
 	};
 };
 
@@ -98,9 +102,12 @@ export const removeAnnotations = ( annotationType, blockId = null ) => {
 			blockId
 				? annotation.blockClientId === blockId
 				: true &&
-				  [...PROBLEM_TYPES, ...SYNTAX_TYPES].map(
-						( type ) => `writers-blocks--${ annotationType }--${ type }`
-				  ).includes( annotation.source )
+				  [ ...PROBLEM_TYPES, ...SYNTAX_TYPES ]
+						.map(
+							( type ) =>
+								`writers-blocks--${ annotationType }--${ type }`
+						)
+						.includes( annotation.source )
 		);
 
 	annotations.forEach( ( annotation ) => {
@@ -114,13 +121,19 @@ export const getAnnotatableText = ( blocks ) => {
 	const allowedBlocks = blocks.filter( ( block ) =>
 		ALLOWED_BLOCKS.includes( block.name )
 	);
-	const { nodes, problems } = allowedBlocks.reduce( ( acc, block ) => {
-		const { nodes: blockNodes, problems: blockProblems } = getAnnotatableTextFromBlock( block );
-		acc.nodes = [ ...acc.nodes, ...blockNodes ];
-		acc.problems = [ ...acc.problems, ...blockProblems ];
+	const { nodes, problems } = allowedBlocks.reduce(
+		( acc, block ) => {
+			const {
+				nodes: blockNodes,
+				problems: blockProblems,
+			} = getAnnotatableTextFromBlock( block );
+			acc.nodes = [ ...acc.nodes, ...blockNodes ];
+			acc.problems = [ ...acc.problems, ...blockProblems ];
 
-		return acc;
-	}, { nodes: [], problems: [] } );
+			return acc;
+		},
+		{ nodes: [], problems: [] }
+	);
 
 	return {
 		nodes,
@@ -140,8 +153,8 @@ export const addAnnotations = (
 		( problem ) =>
 			problem.state !== 'ignored' && ! ignore.includes( problem.id )
 	);
-	const readabilityAnnotations = annotations.filter( ( problem ) =>
-		problem.type === 'readability'
+	const readabilityAnnotations = annotations.filter(
+		( problem ) => problem.type === 'readability'
 	);
 
 	readabilityAnnotations.forEach( ( annotation ) => {
@@ -175,7 +188,10 @@ export const addAnnotations = (
 	} );
 
 	annotations
-		.filter( ( annotation ) => annotation.type && annotation.type !== 'readability' )
+		.filter(
+			( annotation ) =>
+				annotation.type && annotation.type !== 'readability'
+		)
 		.forEach( ( annotation ) => {
 			const {
 				blockId,
@@ -221,7 +237,10 @@ export const scheduleAnnotations = debounce( () => {
 		return;
 	}
 
-	const { problems: blockProblems, nodes: blockNodes } = getAnnotatableTextFromBlock( block );
+	const {
+		problems: blockProblems,
+		nodes: blockNodes,
+	} = getAnnotatableTextFromBlock( block );
 	const { clientId } = block;
 
 	if ( blockProblems.length ) {
@@ -234,10 +253,18 @@ export const scheduleAnnotations = debounce( () => {
 		] );
 	}
 
-	const { writers_blocks: { editing_mode: isStyleModeEnabled, syntax_mode: isSyntaxModeEnabled } } = select( 'core' ).getEntityRecord( 'root', 'site' );
+	const {
+		writers_blocks: {
+			editing_mode: isStyleModeEnabled,
+			syntax_mode: isSyntaxModeEnabled,
+		},
+	} = select( 'core' ).getEntityRecord( 'root', 'site' );
 
 	if ( isStyleModeEnabled === '1' || isSyntaxModeEnabled === '1' ) {
-		addAnnotations( isStyleModeEnabled ? blockProblems : blockNodes, { clientId, type: isStyleModeEnabled ? 'style' : 'syntax' } );
+		addAnnotations(
+			isStyleModeEnabled === '1' ? blockProblems : blockNodes,
+			{ clientId, type: isStyleModeEnabled === '1' ? 'style' : 'syntax' }
+		);
 	}
 
 	isUpdatingProblems = false;

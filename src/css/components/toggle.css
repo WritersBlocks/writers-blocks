@@ -83,4 +83,39 @@
             background-color: var(--writers-blocks--color--diacritics-dark);
         }
     }
+
+    &.noun {
+            
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--oc-red-6);
+        }
+    }
+
+    &.conjunction {
+            
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--oc-green-6);
+        }
+    }
+
+    &.verb {
+            
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--oc-blue-6);
+        }
+    }
+
+    &.adverb {
+            
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--oc-grape-6);
+        }
+    }
+
+    &.adjective {
+            
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--oc-yellow-6);
+        }
+    }
 }

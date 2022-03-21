@@ -6,7 +6,7 @@
 		color: #1e1e1e;
 	}
 
-	& .components-panel__row {
+	& + .components-panel__row {
 		margin-top: 0;
 	}
 

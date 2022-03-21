@@ -107,16 +107,19 @@ function register_settings() {
 						'readability' => array(
 							'type' => 'string',
 						),
-						'nouns' => array(
+						'noun' => array(
 							'type' => 'string',
 						),
-						'adjectives' => array(
+						'adjective' => array(
 							'type' => 'string',
 						),
-						'adverbs' => array(
+						'adverb' => array(
 							'type' => 'string',
 						),
-						'verbs' => array(
+						'verb' => array(
+							'type' => 'string',
+						),
+						'conjunction' => array(
 							'type' => 'string',
 						),
 					),
@@ -203,20 +206,24 @@ function sanitize_settings( $settings ) {
 		$new_settings['readability'] = $settings['readability'];
 	}
 
-	if ( isset( $settings['nouns'] ) ) {
-		$new_settings['nouns'] = $settings['nouns'];
+	if ( isset( $settings['noun'] ) ) {
+		$new_settings['noun'] = $settings['noun'];
 	}
 	
-	if ( isset( $settings['adverbs'] ) ) {
-		$new_settings['adverbs'] = $settings['adverbs'];
+	if ( isset( $settings['adverb'] ) ) {
+		$new_settings['adverb'] = $settings['adverb'];
 	}
 
-	if ( isset( $settings['adjectives'] ) ) {
-		$new_settings['adjectives'] = $settings['adjectives'];
+	if ( isset( $settings['adjective'] ) ) {
+		$new_settings['adjective'] = $settings['adjective'];
 	}
 
-	if ( isset( $settings['verbs'] ) ) {
-		$new_settings['verbs'] = $settings['verbs'];
+	if ( isset( $settings['verb'] ) ) {
+		$new_settings['verb'] = $settings['verb'];
+	}
+
+	if ( isset( $settings['conjunction'] ) ) {
+		$new_settings['conjunction'] = $settings['conjunction'];
 	}
 
 	return $new_settings;
@@ -516,10 +523,11 @@ function activate() {
 			'redundant_acronyms' => '1',
 			'diacritics'         => '1',
 			'sentence_spacing'   => '1',
-			'nouns'			     => '1',
-			'adjectives'         => '1',
-			'adverbs'            => '1',
-			'verbs'              => '1',
+			'noun'			     => '1',
+			'adjective'         => '1',
+			'adverb'            => '1',
+			'verb'              => '1',
+			'conjunction'	     => '1',
 		],
 		false
 	);

@@ -54,21 +54,33 @@ function makeText( options ) {
 function core( value, options, processor ) {
 	const nodes = [];
 	const file = new VFile( value );
-	const tree = processor
-		.use( filter, options )
-		.parse( file );
+	const tree = processor.use( filter, options ).parse( file );
 
 	processor.runSync( tree, file );
 
 	visit( tree, 'WordNode', ( node ) => {
-		const { data: { partOfSpeech }, children: [{ value, position: { end: { offset }, start: { offset: index } } }] } = node;
+		const {
+			data: { partOfSpeech },
+			children: [
+				{
+					value,
+					position: {
+						end: { offset },
+						start: { offset: index },
+					},
+				},
+			],
+		} = node;
 
 		const isNodeProcessed = nodes.find( ( node ) => {
-			return node.value === value && node.index === index && node.offset === offset;
+			return (
+				node.value === value &&
+				node.index === index &&
+				node.offset === offset
+			);
 		} );
 
 		if ( ! isNodeProcessed ) {
-
 			const syntaxType = getPartOfSpeech( partOfSpeech );
 
 			if ( SYNTAX_TYPES.includes( syntaxType ) ) {

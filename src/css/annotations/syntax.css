@@ -3,9 +3,14 @@
 	color: var(--oc-red-6) !important;
 }
 
+.annotation-text-writers-blocks--syntax--conjunction {
+    background-color: transparent !important;
+	color: var(--oc-green-6) !important;
+}
+
 .annotation-text-writers-blocks--syntax--adverb {
     background-color: transparent !important;
-	color: var(--oc-violet-6) !important;
+	color: var(--oc-grape-6) !important;
 }
 
 .annotation-text-writers-blocks--syntax--verb {
@@ -15,5 +20,5 @@
 
 .annotation-text-writers-blocks--syntax--adjective {
     background-color: transparent !important;
-	color: var(--oc-orange-6) !important;
+	color: var(--oc-yellow-6) !important;
 }

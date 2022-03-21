@@ -11,7 +11,12 @@ import {
 } from '@wordpress/data';
 import domReady from '@wordpress/dom-ready';
 import { render, useEffect, useState } from '@wordpress/element';
-import { Popover, Button, Flex, __experimentalHStack as HStack } from '@wordpress/components';
+import {
+	Popover,
+	Button,
+	Flex,
+	__experimentalHStack as HStack,
+} from '@wordpress/components';
 import { info } from '@wordpress/icons';
 
 /**
@@ -81,7 +86,7 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 		>
 			{ process.env.NODE_ENV === 'development' ? (
 				<Flex justify="space-between" align="center">
-					<h5 style={{ margin: 0 }}>{ title }</h5>
+					<h5 style={ { margin: 0 } }>{ title }</h5>
 					<Button
 						variant="tertiary"
 						onClick={ () => {
@@ -95,11 +100,16 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 					/>
 				</Flex>
 			) : (
-				<h5 style={{ margin: 0 }}>{ title }</h5>
+				<h5 style={ { margin: 0 } }>{ title }</h5>
 			) }
 			<p>{ message }</p>
 			{ replacements.length && type !== 'sentence_spacing' ? (
-				<HStack alignment="left" direction="row" spacing="4px" wrap={ true }>
+				<HStack
+					alignment="left"
+					direction="row"
+					spacing="4px"
+					wrap={ true }
+				>
 					{ /**
 					 * Still needs some work...
 					 */
@@ -124,19 +134,17 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 						} }
 					>
 						{ __( 'Ignore', 'writers-blocks' ) }
-					</Button> */}
-					{
-						replacements.map( ( replacement ) => {
-							return (
-								<CopyButton
-									key={ replacement }
-									text={ replacement }
-									label={ null }
-									onClick={ () => {} }
-								/>
-							);
-						} )
-					}
+					</Button> */ }
+					{ replacements.map( ( replacement ) => {
+						return (
+							<CopyButton
+								key={ replacement }
+								text={ replacement }
+								label={ null }
+								onClick={ () => {} }
+							/>
+						);
+					} ) }
 				</HStack>
 			) : null }
 		</Popover>
