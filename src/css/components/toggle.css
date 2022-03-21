@@ -87,35 +87,35 @@
     &.noun {
             
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--oc-red-6);
+            background-color: var(--oc-red-4);
         }
     }
 
     &.conjunction {
             
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--oc-green-6);
+            background-color: var(--oc-green-4);
         }
     }
 
     &.verb {
             
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--oc-blue-6);
+            background-color: var(--oc-blue-4);
         }
     }
 
     &.adverb {
             
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--oc-grape-6);
+            background-color: var(--oc-grape-4);
         }
     }
 
     &.adjective {
             
         & .components-form-toggle.is-checked .components-form-toggle__track {
-            background-color: var(--oc-yellow-6);
+            background-color: var(--oc-yellow-4);
         }
     }
 }

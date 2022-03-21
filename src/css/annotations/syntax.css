@@ -1,24 +1,24 @@
 .annotation-text-writers-blocks--syntax--noun {
     background-color: transparent !important;
-	color: var(--oc-red-6) !important;
+	color: var(--oc-red-4) !important;
 }
 
 .annotation-text-writers-blocks--syntax--conjunction {
     background-color: transparent !important;
-	color: var(--oc-green-6) !important;
+	color: var(--oc-green-4) !important;
 }
 
 .annotation-text-writers-blocks--syntax--adverb {
     background-color: transparent !important;
-	color: var(--oc-grape-6) !important;
+	color: var(--oc-grape-4) !important;
 }
 
 .annotation-text-writers-blocks--syntax--verb {
     background-color: transparent !important;
-	color: var(--oc-blue-6) !important;
+	color: var(--oc-blue-4) !important;
 }
 
 .annotation-text-writers-blocks--syntax--adjective {
     background-color: transparent !important;
-	color: var(--oc-yellow-6) !important;
+	color: var(--oc-yellow-4) !important;
 }
