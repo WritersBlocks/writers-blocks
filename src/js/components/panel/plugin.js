@@ -204,8 +204,8 @@ export const PluginPanel = () => {
 							>
 								<ToggleControl
 									label={
-										type.charAt( 0 ).toUpperCase() +
-										type.slice( 1 )
+										`${type.charAt( 0 ).toUpperCase() +
+										type.slice( 1 )}s`
 									}
 									checked={
 										suggestions[ type ]
