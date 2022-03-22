@@ -68,6 +68,9 @@ function register_settings() {
 						'syntax_mode' => array(
 							'type' => 'string',
 						),
+						'focus_mode' => array(
+							'type' => 'string',
+						),
 						'simplify' => array(
 							'type' => 'string',
 						),
@@ -156,6 +159,10 @@ function sanitize_settings( $settings ) {
 
 	if ( isset( $settings['syntax_mode'] ) ) {
 		$new_settings['syntax_mode'] = $settings['syntax_mode'];
+	}
+
+	if ( isset( $settings['focus_mode'] ) ) {
+		$new_settings['focus_mode'] = $settings['focus_mode'];
 	}
 
 	if ( isset( $settings['simplify'] ) ) {
@@ -509,8 +516,9 @@ function activate() {
 		[
 			'license_key'        => '',
 			'license_verified'   => '0',
-			'editing_mode'       => '1',
+			'editing_mode'       => '0',
 			'syntax_mode'		 => '0',
+			'focus_mode'         => '0',
 			'simplify'           => '1',
 			'intensify'          => '1',
 			'passive'            => '1',

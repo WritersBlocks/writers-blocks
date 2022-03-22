@@ -1,4 +1,11 @@
-[data-block].is-blurred {
-	color: transparent;
-	text-shadow: #111 0 0 15px;
+body.focus-mode {
+	
+	& .wp-block:not(.is-selected) {
+		color: transparent;
+		text-shadow: #111 0 0 15px;
+
+		& a {
+			color: transparent !important;
+		}
+	}
 }

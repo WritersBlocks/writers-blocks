@@ -13,7 +13,7 @@ import {
 } from '@wordpress/components';
 import { useSelect, select, dispatch } from '@wordpress/data';
 import { Fragment, useEffect, useState } from '@wordpress/element';
-import { moreVertical, key } from '@wordpress/icons';
+import { moreVertical, key, settings } from '@wordpress/icons';
 
 import {
 	SYNTAX_TYPES,
@@ -24,15 +24,26 @@ import { store } from '../../store';
 import { removeAnnotations, addAnnotations } from '../../decorators/gutenberg';
 
 const {
-	WB_SETTINGS: { settings: SHOWN_ANNOTATION_TYPES },
+	WB_SETTINGS: { settings: DEFAULT_SETTINGS },
 } = window;
 
 export const PluginPanel = () => {
-	const [ suggestions, setSuggestions ] = useState( SHOWN_ANNOTATION_TYPES );
+	const [ suggestions, setSuggestions ] = useState( DEFAULT_SETTINGS );
 
 	const siteSettings = useSelect( ( select ) => {
 		return select( 'core' ).getEntityRecord( 'root', 'site' );
-	}, [] );
+	} );
+	const selectedBlock = useSelect( ( select ) => {
+		return select( 'core/block-editor' ).getSelectedBlock();
+	} );
+
+	useEffect( () => {
+		if ( suggestions.focus_mode === '1' && selectedBlock ) {
+			document.body.classList.add( 'focus-mode' );
+		} else {
+			document.body.classList.remove( 'focus-mode' );
+		}
+	}, [ selectedBlock ] );
 
 	useEffect( () => {
 		if ( siteSettings ) {
@@ -106,12 +117,17 @@ export const PluginPanel = () => {
 											suggestions.editing_mode === '1'
 												? '0'
 												: '1',
+										focus_mode: '0',
 									},
 								}
 							);
 
 							if ( suggestions.syntax_mode === '1' ) {
 								removeAnnotations( 'syntax' );
+							}
+
+							if ( suggestions.focus_mode === '1' ) {
+								document.body.classList.remove( 'focus-mode' );
 							}
 
 							if ( suggestions.editing_mode === '1' ) {
@@ -146,12 +162,17 @@ export const PluginPanel = () => {
 											suggestions.syntax_mode === '1'
 												? '0'
 												: '1',
+										focus_mode: '0',
 									},
 								}
 							);
 
 							if ( suggestions.editing_mode === '1' ) {
 								removeAnnotations( 'style' );
+							}
+
+							if ( suggestions.focus_mode === '1' ) {
+								document.body.classList.remove( 'focus-mode' );
 							}
 
 							if ( suggestions.syntax_mode === '1' ) {
@@ -162,6 +183,43 @@ export const PluginPanel = () => {
 								).getWords();
 
 								addAnnotations( blockWords );
+							}
+						} }
+					/>
+				</PanelRow>
+				<PanelRow>
+					<ToggleControl
+						label={ __( 'Focus Mode', 'writers-blocks' ) }
+						checked={ suggestions.focus_mode === '1' }
+						onChange={ () => {
+							dispatch( 'core' ).saveEntityRecord(
+								'root',
+								'site',
+								{
+									writers_blocks: {
+										...suggestions,
+										editing_mode: '0',
+										syntax_mode: '0',
+										focus_mode:
+											suggestions.focus_mode === '1'
+												? '0'
+												: '1',
+									},
+								}
+							);
+
+							if ( suggestions.editing_mode === '1' ) {
+								removeAnnotations( 'style' );
+							}
+
+							if ( suggestions.syntax_mode === '1' ) {
+								removeAnnotations( 'syntax' );
+							}
+
+							if ( suggestions.focus_mode === '1' ) {
+								document.body.classList.remove( 'focus-mode' );
+							} else {
+								document.body.classList.add( 'focus-mode' );
 							}
 						} }
 					/>
@@ -195,7 +253,7 @@ export const PluginPanel = () => {
 					<Spinner />
 				) }
 			</PanelBody>
-			<PanelBody title={ __( 'Syntax', 'writers-blocks' ) }>
+			<PanelBody title={ __( 'Syntax', 'writers-blocks' ) } initialOpen={ false }>
 				{ suggestions ? (
 					SYNTAX_TYPES.map( ( type ) => (
 						<PanelRow key={ type }>
@@ -275,7 +333,7 @@ export const PluginPanel = () => {
 					<Spinner />
 				) }
 			</PanelBody>
-			<PanelBody title={ __( 'Style', 'writers-blocks' ) }>
+			<PanelBody title={ __( 'Style', 'writers-blocks' ) } initialOpen={ false }>
 				{ suggestions ? (
 					Object.keys( PROBLEM_TYPES_TO_LABEL ).map( ( type ) => (
 						<PanelRow key={ type }>
