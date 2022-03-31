@@ -6,6 +6,11 @@
 	background-color: var(--writers-blocks--color--diacritics) !important;
 }
 
+.annotation-text-writers-blocks--style--spell {
+	background-color: transparent !important;
+	border-bottom: 1px dashed var(--writers-blocks--color--spell) !important;
+}
+
 .annotation-text-writers-blocks--style--passive {
 	background-color: var(--writers-blocks--color--passive) !important;
 }

@@ -5,6 +5,7 @@ import { VFile } from 'vfile';
 import { sort } from 'vfile-sort';
 import { unified } from 'unified';
 import retextEnglish from 'retext-english';
+import retextSpell from 'retext-spell';
 import retextEquality from 'retext-equality';
 import retextProfanities from 'retext-profanities';
 import retextSimplify from 'retext-simplify';
@@ -26,6 +27,8 @@ import { visit } from 'unist-util-visit';
  */
 import { getPartOfSpeech } from '../../utils/part-of-speech';
 import { SYNTAX_TYPES } from '../../constants';
+import dic from '../dictionary/en/dic';
+import aff from '../dictionary/en/aff';
 
 export function parse( value, config ) {
 	const options = splitOptions( config );
@@ -48,6 +51,7 @@ function makeText( options ) {
 		.use( retextDiacritics, options )
 		.use( retextContractions, options )
 		.use( retextPos, options )
+		.use( retextSpell, callback => callback( null, { aff, dic } ) )
 		.use( () => ( tree ) => tree );
 }
 

@@ -46,6 +46,7 @@
 		"alex": "^10.0.0",
 		"automated-readability": "^2.0.0",
 		"classnames": "^2.3.1",
+		"dictionary-en": "^3.1.0",
 		"dictionary-en-gb": "^2.3.0",
 		"fillers": "^2.0.0",
 		"hedges": "^2.0.0",

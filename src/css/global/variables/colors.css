@@ -3,6 +3,8 @@
 body {
     --writers-blocks--color--simplify: var(--oc-teal-1);
     --writers-blocks--color--simplify-dark: var(--oc-teal-4);
+    --writers-blocks--color--spell: var(--oc-red-8);
+    --writers-blocks--color--spell-dark: var(--oc-red-6);
     --writers-blocks--color--intensify: var(--oc-blue-1);
     --writers-blocks--color--intensify-dark: var(--oc-blue-4);
     --writers-blocks--color--passive: var(--oc-green-1);

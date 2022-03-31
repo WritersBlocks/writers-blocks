@@ -2,6 +2,10 @@
 	border-left: 4px solid var(--writers-blocks--color--simplify-dark);
 }
 
+.writers-blocks-annotation-popover.is-type-spell .components-popover__content {
+	border-left: 4px solid var(--writers-blocks--color--spell-dark);
+}
+
 .writers-blocks-annotation-popover.is-type-passive .components-popover__content {
 	border-left: 4px solid var(--writers-blocks--color--passive-dark);
 }
