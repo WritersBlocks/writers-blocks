@@ -36,6 +36,12 @@ if ( file_exists( WRITERS_BLOCKS_PATH . 'vendor/autoload.php' ) ) {
 	require_once WRITERS_BLOCKS_PATH . 'vendor/autoload.php';
 }
 
+if ( ! class_exists( 'LEMONSQUEEZY_LICENSE_CHECKER' ) ) {
+	require_once WRITERS_BLOCKS_PATH_INC . 'classes/class-lemonsqueezy-license-checker.php';
+
+	$license_checker = new LEMONSQUEEZY_LICENSE_CHECKER( __FILE__ );
+}
+
 // Include files.
 require_once WRITERS_BLOCKS_PATH_INC . '/core.php';
 require_once WRITERS_BLOCKS_PATH_INC . '/utility.php';
