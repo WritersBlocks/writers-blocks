@@ -35,6 +35,7 @@ domReady( () => {
 		const content = select( 'core/editor' ).getEditedPostAttribute(
 			'content'
 		);
+		const isTyping = select( 'core/block-editor' ).isTyping();
 		const { writers_blocks } = select( 'core' ).getEntityRecord(
 			'root',
 			'site'
@@ -49,6 +50,7 @@ domReady( () => {
 		const problems = select( store ).getProblems();
 
 		if (
+			isTyping ||
 			! strippedContent ||
 			( strippedContent === _content && problems.length )
 		) {
