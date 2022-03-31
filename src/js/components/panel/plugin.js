@@ -43,7 +43,7 @@ export const PluginPanel = () => {
 	} );
 
 	useEffect( () => {
-		if ( suggestions.focus_mode === '1' && selectedBlock ) {
+		if ( suggestions.mode === 'focus' && selectedBlock ) {
 			document.body.classList.add( 'focus-mode' );
 		} else {
 			document.body.classList.remove( 'focus-mode' );
