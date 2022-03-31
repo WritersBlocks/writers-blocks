@@ -56,19 +56,7 @@ function register_settings() {
 				'schema' => array(
 					'type'       => 'object',
 					'properties' => array(
-						'license_key' => array(
-							'type' => 'string',
-						),
-						'license_verified' => array(
-							'type' => 'string',
-						),
-						'editing_mode' => array(
-							'type' => 'string',
-						),
-						'syntax_mode' => array(
-							'type' => 'string',
-						),
-						'focus_mode' => array(
+						'mode' => array(
 							'type' => 'string',
 						),
 						'simplify' => array(
@@ -145,24 +133,8 @@ function register_settings() {
 function sanitize_settings( $settings ) {
 	$new_settings = [];
 
-	if ( isset( $settings['license_key'] ) ) {
-		$new_settings['license_key'] = trim( $settings['license_key'] );
-	}
-
-	if ( isset( $settings['license_verified'] ) ) {
-		$new_settings['license_verified'] = $settings['license_verified'];
-	}
-
-	if ( isset( $settings['editing_mode'] ) ) {
-		$new_settings['editing_mode'] = $settings['editing_mode'];
-	}
-
-	if ( isset( $settings['syntax_mode'] ) ) {
-		$new_settings['syntax_mode'] = $settings['syntax_mode'];
-	}
-
-	if ( isset( $settings['focus_mode'] ) ) {
-		$new_settings['focus_mode'] = $settings['focus_mode'];
+	if ( isset( $settings['mode'] ) ) {
+		$new_settings['mode'] = $settings['mode'];
 	}
 
 	if ( isset( $settings['simplify'] ) ) {
@@ -279,6 +251,7 @@ function admin_scripts( $page ) {
 			'WB_SETTINGS',
 			[
 				'settings' => get_option( 'writers_blocks', [] ),
+				'license'  => get_option( 'writers-blocks_ls_data', [] ),
 			]
 		);
 
@@ -374,7 +347,7 @@ function rest_api_init() {
 
 	register_rest_route(
 		'writers-blocks/v1',
-		'license',
+		'license-legacy',
 		[
 			'methods'             => 'POST',
 			'callback'            => __NAMESPACE__ . '\handle_verification_request',
@@ -514,11 +487,7 @@ function activate() {
 	update_option(
 		'writers_blocks',
 		[
-			'license_key'        => '',
-			'license_verified'   => '0',
-			'editing_mode'       => '0',
-			'syntax_mode'		 => '0',
-			'focus_mode'         => '0',
+			'mode'               => 'writing',
 			'simplify'           => '1',
 			'intensify'          => '1',
 			'passive'            => '1',
@@ -532,9 +501,9 @@ function activate() {
 			'diacritics'         => '1',
 			'sentence_spacing'   => '1',
 			'noun'			     => '1',
-			'adjective'         => '1',
-			'adverb'            => '1',
-			'verb'              => '1',
+			'adjective'          => '1',
+			'adverb'             => '1',
+			'verb'               => '1',
 			'conjunction'	     => '1',
 		],
 		false
@@ -543,4 +512,5 @@ function activate() {
 
 function deactivate() {
 	delete_option( 'writers_blocks' );
+	delete_option( 'writers-blocks_ls_data' );
 }

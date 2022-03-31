@@ -40,8 +40,7 @@ domReady( () => {
 			'site'
 		) || { writers_blocks: settings };
 		const {
-			editing_mode: isStyleModeEnabled,
-			syntax_mode: isSyntaxModeEnabled,
+			mode: writingMode,
 		} = writers_blocks;
 		const strippedContent =
 			typeof content === 'string'
@@ -81,11 +80,11 @@ domReady( () => {
 				] );
 
 				if (
-					isStyleModeEnabled === '1' ||
-					isSyntaxModeEnabled === '1'
+					writingMode === 'editing' ||
+					writingMode === 'syntax'
 				) {
 					addAnnotations(
-						isStyleModeEnabled === '1' ? blockProblems : blockNodes
+						writingMode === 'editing' ? blockProblems : blockNodes
 					);
 				}
 			}

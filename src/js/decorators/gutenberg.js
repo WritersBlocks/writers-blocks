@@ -255,15 +255,14 @@ export const scheduleAnnotations = debounce( () => {
 
 	const {
 		writers_blocks: {
-			editing_mode: isStyleModeEnabled,
-			syntax_mode: isSyntaxModeEnabled,
+			mode: writingMode,
 		},
 	} = select( 'core' ).getEntityRecord( 'root', 'site' );
 
-	if ( isStyleModeEnabled === '1' || isSyntaxModeEnabled === '1' ) {
+	if ( writingMode === 'syntax' || writingMode === 'editing' ) {
 		addAnnotations(
-			isStyleModeEnabled === '1' ? blockProblems : blockNodes,
-			{ clientId, type: isStyleModeEnabled === '1' ? 'style' : 'syntax' }
+			writingMode === 'editing' ? blockProblems : blockNodes,
+			{ clientId, type: writingMode === 'editing' ? 'style' : 'syntax' }
 		);
 	}
 
