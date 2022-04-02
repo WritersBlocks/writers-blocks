@@ -248,10 +248,13 @@ export const scheduleAnnotations = debounce( () => {
 
 	if ( blockProblems.length ) {
 		const problems = select( store ).getProblems();
+		const nodes = select( store ).getWords();
 		const filteredProblems = problems.filter( ( problem ) => problem.blockId !== clientId );
+		const filteredNodes = nodes.filter( ( node ) => node.blockId !== clientId );
 
 		dispatch( store ).addProblems( [
 			...filteredProblems,
+			...filteredNodes,
 			...blockProblems,
 			...blockNodes,
 		] );
