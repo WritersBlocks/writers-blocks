@@ -1,13 +1,4 @@
-// import adverbs from "./adverbs";
-// import hedges from "./hedges";
-// import passive from "./passive";
-// import readability from "./readability";
-// import simpler from "./simpler";
-// import weasel from "./weasel";
 import { parse } from './retext';
-// import sensitivity from "./sensitivity";
-// import fillers from "./fillers";
-// import cliches from './cliches';
 import { strip } from '../utils/strip-text';
 
 export default ( text, { preserveWhiteSpace = true } = {} ) => {

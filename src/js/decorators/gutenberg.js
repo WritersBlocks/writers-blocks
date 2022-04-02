@@ -11,7 +11,7 @@ import '@wordpress/annotations';
 /**
  * Internal depenedencies
  */
-import check from '../parsers';
+import parse from '../parsers';
 import { store } from '../store';
 import {
 	PROBLEM_TYPES,
@@ -40,13 +40,16 @@ export function isAnnotationAvailable() {
 
 export const getQueueLength = () => queue.length;
 
-export const addBlockToQueue = ( block ) => {
+export const addBlockToQueue = ( block, unshift ) => {
 	if ( block ) {
-		queue = [
-			// remove all scheduled annotations for this block
-			...queue.filter( ( block ) => block.clientId !== block.clientId ),
-			block,
-		];
+		// remove all scheduled annotations for this block
+		queue = queue.filter( ( queuedBlock ) => block.clientId !== queuedBlock.clientId );
+
+		if ( unshift ) {
+			queue.unshift( block );
+		} else {
+			queue.push( block );
+		}
 	}
 };
 
@@ -64,7 +67,7 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 		return [];
 	}
 
-	const { messages: problems, nodes } = check( blockAttributes[ attribute ], {
+	const { messages: problems, nodes } = parse( blockAttributes[ attribute ], {
 		preserveWhiteSpace: blockName !== 'core/list',
 	} );
 
@@ -95,28 +98,6 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 	};
 };
 
-export const removeAnnotations = ( annotationType, blockId = null ) => {
-	const annotations = select( 'core/annotations' )
-		.__experimentalGetAnnotations()
-		.filter( ( annotation ) =>
-			blockId
-				? annotation.blockClientId === blockId
-				: true &&
-				  [ ...PROBLEM_TYPES, ...SYNTAX_TYPES ]
-						.map(
-							( type ) =>
-								`writers-blocks--${ annotationType }--${ type }`
-						)
-						.includes( annotation.source )
-		);
-
-	annotations.forEach( ( annotation ) => {
-		dispatch( 'core/annotations' ).__experimentalRemoveAnnotation(
-			annotation.id
-		);
-	} );
-};
-
 export const getAnnotatableText = ( blocks ) => {
 	const allowedBlocks = blocks.filter( ( block ) =>
 		ALLOWED_BLOCKS.includes( block.name )
@@ -139,6 +120,28 @@ export const getAnnotatableText = ( blocks ) => {
 		nodes,
 		problems,
 	};
+};
+
+export const removeAnnotations = ( annotationType, blockId = null ) => {
+	const annotations = select( 'core/annotations' )
+		.__experimentalGetAnnotations()
+		.filter( ( annotation ) =>
+			blockId
+				? annotation.blockClientId === blockId
+				: true &&
+				  [ ...PROBLEM_TYPES, ...SYNTAX_TYPES ]
+						.map(
+							( type ) =>
+								`writers-blocks--${ annotationType }--${ type }`
+						)
+						.includes( annotation.source )
+		);
+
+	annotations.forEach( ( annotation ) => {
+		dispatch( 'core/annotations' ).__experimentalRemoveAnnotation(
+			annotation.id
+		);
+	} );
 };
 
 export const addAnnotations = (
@@ -245,9 +248,10 @@ export const scheduleAnnotations = debounce( () => {
 
 	if ( blockProblems.length ) {
 		const problems = select( store ).getProblems();
+		const filteredProblems = problems.filter( ( problem ) => problem.blockId !== clientId );
 
 		dispatch( store ).addProblems( [
-			...problems.filter( ( problem ) => problem.blockId !== clientId ),
+			...filteredProblems,
 			...blockProblems,
 			...blockNodes,
 		] );

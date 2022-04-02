@@ -3,6 +3,10 @@
  */
 import { debounce } from 'lodash';
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 import { subscribe, select, dispatch } from '@wordpress/data';
 import domReady from '@wordpress/dom-ready';
 
@@ -12,17 +16,12 @@ import domReady from '@wordpress/dom-ready';
 import { readingScore } from '../utils/reading-score';
 import { store } from '../store';
 import {
-	getAnnotatableText,
 	getQueueLength,
 	isAnnotationAvailable,
 	addBlockToQueue,
 	scheduleAnnotations,
-	addAnnotations,
 } from '../decorators/gutenberg';
-
-const {
-	WB_SETTINGS: { settings },
-} = window;
+import { ALLOWED_BLOCKS } from '../constants';
 
 let _content = '';
 
@@ -31,18 +30,11 @@ const scheduleReadingScoreUpdate = debounce( ( content ) => {
 }, 500 );
 
 domReady( () => {
-	subscribe( () => {
+	subscribe( debounce( () => {
 		const content = select( 'core/editor' ).getEditedPostAttribute(
 			'content'
 		);
 		const isTyping = select( 'core/block-editor' ).isTyping();
-		const { writers_blocks } = select( 'core' ).getEntityRecord(
-			'root',
-			'site'
-		) || { writers_blocks: settings };
-		const {
-			mode: writingMode,
-		} = writers_blocks;
 		const strippedContent =
 			typeof content === 'string'
 				? content.replace( /<!--(.*?)-->/g, '' )
@@ -66,36 +58,19 @@ domReady( () => {
 		const blocks = select( 'core/block-editor' ).getBlocks();
 
 		if ( ! problems.length && blocks.length ) {
-			const {
-				problems: blockProblems,
-				nodes: blockNodes,
-			} = getAnnotatableText( blocks );
+			const allowedBlocks = blocks.filter( ( block ) =>
+				ALLOWED_BLOCKS.includes( block.name )
+			);
 
-			if ( blockProblems.length ) {
-				// const ignoredAnnotations = select(
-				// 	store
-				// ).getIgnoredAnnotations();
-
-				dispatch( store ).addProblems( [
-					...blockProblems,
-					...blockNodes,
-				] );
-
-				if (
-					writingMode === 'editing' ||
-					writingMode === 'syntax'
-				) {
-					addAnnotations(
-						writingMode === 'editing' ? blockProblems : blockNodes
-					);
-				}
-			}
+			allowedBlocks.forEach(( block ) => {
+				addBlockToQueue( block );
+			} );
 		}
 
 		const selectedBlock = select( 'core/block-editor' ).getSelectedBlock();
 
 		if ( selectedBlock ) {
-			addBlockToQueue( selectedBlock );
+			addBlockToQueue( selectedBlock, true );
 		}
 
 		if ( getQueueLength() > 0 ) {
@@ -103,5 +78,5 @@ domReady( () => {
 		}
 
 		_content = strippedContent;
-	} );
+	}, 500 ) );
 } );
