@@ -113,6 +113,30 @@ function register_settings() {
 						'conjunction' => array(
 							'type' => 'string',
 						),
+						'spell' => array(
+							'type' => 'string',
+						),
+						'ignored_profanities' => array(
+							'type' => 'string',
+						),
+						'ignored_spell' => array(
+							'type' => 'string',
+						),
+						'ignored_equality' => array(
+							'type' => 'string',
+						),
+						'ignored_simplify' => array(
+							'type' => 'string',
+						),
+						'ignored_intensify' => array(
+							'type' => 'string',
+						),
+						'ignored_diacritics' => array(
+							'type' => 'string',
+						),
+						'ignored_passive' => array(
+							'type' => 'string',
+						),
 					),
 				),
 			),
@@ -203,6 +227,38 @@ function sanitize_settings( $settings ) {
 
 	if ( isset( $settings['conjunction'] ) ) {
 		$new_settings['conjunction'] = $settings['conjunction'];
+	}
+
+	if ( isset( $settings['spell'] ) ) {
+		$new_settings['spell'] = $settings['spell'];
+	}
+
+	if ( isset( $settings['ignored_equality'] ) ) {
+		$new_settings['ignored_equality'] = $settings['ignored_equality'];
+	}
+
+	if ( isset( $settings['ignored_profanities'] ) ) {
+		$new_settings['ignored_profanities'] = $settings['ignored_profanities'];
+	}
+
+	if ( isset( $settings['ignored_simplify'] ) ) {
+		$new_settings['ignored_simplify'] = $settings['ignored_simplify'];
+	}
+
+	if ( isset( $settings['ignored_spell'] ) ) {
+		$new_settings['ignored_spell'] = $settings['ignored_spell'];
+	}
+
+	if ( isset( $settings['ignored_intensify'] ) ) {
+		$new_settings['ignored_intensify'] = $settings['ignored_intensify'];
+	}
+
+	if ( isset( $settings['ignored_passive'] ) ) {
+		$new_settings['ignored_passive'] = $settings['ignored_passive'];
+	}
+
+	if ( isset( $settings['ignored_diacritics'] ) ) {
+		$new_settings['ignored_diacritics'] = $settings['ignored_diacritics'];
 	}
 
 	return $new_settings;
@@ -505,6 +561,14 @@ function activate() {
 			'adverb'             => '1',
 			'verb'               => '1',
 			'conjunction'	     => '1',
+			'spell'           => '1',
+			'ignored_profanities'        => '',
+			'ignored_spell'           => '',
+			'ignored_simplify'           => '',
+			'ignored_intensify'          => '',
+			'ignored_equality'           => '',
+			'ignored_passive'          => '',
+			'ignored_diacritics'           => '',
 		],
 		false
 	);

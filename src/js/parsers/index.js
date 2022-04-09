@@ -1,12 +1,33 @@
 import { parse } from './retext';
 import { strip } from '../utils/strip-text';
 
-export default ( text, { preserveWhiteSpace = true } = {} ) => {
+export default ( text, {
+	preserveWhiteSpace = true,
+	ignored: {
+		passive = '',
+		intensify = '',
+		diacritics = '',
+		equality = '',
+		profanities = '',
+		simplify = '',
+		spell = '',
+	} = {},
+} = {} ) => {
 	const content = strip( text, { preserveWhiteSpace } );
 	const {
 		tree: { messages },
 		nodes,
-	} = parse( content );
+	} = parse( content, {
+		ignored: {
+			passive,
+			intensify,
+			diacritics,
+			equality,
+			profanities,
+			simplify,
+			spell,
+		},
+	} );
 
 	return {
 		nodes: ! nodes?.length ? [] : nodes,
@@ -31,7 +52,7 @@ export default ( text, { preserveWhiteSpace = true } = {} ) => {
 							.replace( 'retext-', '' )
 							.replace( '-', '_' ),
 						level: fatal ? 'warning' : 'suggestion',
-						message: `${ message.replaceAll( '`', '"' ) }.`,
+						message: `${ message.replaceAll( '`', '"' ).split( ', use' )[0].split( '; did' )[0] }.`,
 						replacements: expected,
 						index,
 						offset,

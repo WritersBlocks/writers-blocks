@@ -31,31 +31,57 @@ import dic from '../dictionary/en/dic';
 import aff from '../dictionary/en/aff';
 
 export function parse( value, config ) {
-	const options = splitOptions( config );
-	return core( value, options.filter, makeText( options.text ) );
+	return core( value, makeText( config ) );
 }
 
-function makeText( options ) {
+function makeText( {
+	ignored: {
+		passive = '',
+		intensify = '',
+		diacritics = '',
+		equality = '',
+		profanities = '',
+		simplify = '',
+		spell = '',
+	},
+} ) {
 	return unified()
 		.use( retextEnglish )
-		.use( retextEquality, options )
-		.use( retextProfanities, options )
-		.use( retextSimplify, options )
-		.use( retextReadability, options )
-		.use( retextIndefiniteArticle, options )
-		.use( retextSentenceSpacing, options )
-		.use( retextRepeatedWords, options )
-		.use( retextRedundantAcronyms, options )
-		.use( retextPassive, options )
-		.use( retextIntensify, options )
-		.use( retextDiacritics, options )
-		.use( retextContractions, options )
-		.use( retextPos, options )
-		.use( retextSpell, callback => callback( null, { aff, dic } ) )
+		.use( retextEquality, {
+			ignore: equality.split( ',' ),
+		} )
+		.use( retextProfanities, {
+			ignore: profanities.split( ',' ),
+		} )
+		.use( retextSimplify, {
+			ignore: simplify.split( ',' ),
+		} )
+		.use( retextReadability )
+		.use( retextIndefiniteArticle )
+		.use( retextSentenceSpacing )
+		.use( retextRepeatedWords )
+		.use( retextRedundantAcronyms )
+		.use( retextPassive, {
+			ignore: passive.split( ',' ),
+		} )
+		.use( retextIntensify, {
+			ignore: intensify.split( ',' ),
+		} )
+		.use( retextDiacritics, {
+			ignore: diacritics.split( ',' ),
+		} )
+		.use( retextContractions, {
+			straight: true,
+		} )
+		.use( retextPos )
+		.use( retextSpell, {
+			dictionary: callback => callback( null, { aff, dic } ),
+			ignore: spell.split( ',' ),
+		} )
 		.use( () => ( tree ) => tree );
 }
 
-function core( value, options, processor ) {
+function core( value, processor, options = {} ) {
 	const nodes = [];
 	const file = new VFile( value );
 	const tree = processor.use( filter, options ).parse( file );
@@ -104,24 +130,6 @@ function core( value, options, processor ) {
 		nodes,
 		tree: file,
 	};
-}
-
-function splitOptions( options ) {
-	let allow;
-	let deny;
-	let noBinary;
-	let sureness;
-
-	if ( Array.isArray( options ) ) {
-		allow = options;
-	} else if ( options ) {
-		allow = options.allow;
-		deny = options.deny;
-		noBinary = options.noBinary;
-		sureness = options.profanitySureness;
-	}
-
-	return { filter: { allow, deny }, text: { noBinary, sureness } };
 }
 
 function filter( options = {} ) {

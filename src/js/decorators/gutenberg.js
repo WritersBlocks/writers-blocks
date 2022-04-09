@@ -67,8 +67,29 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 		return [];
 	}
 
+	const {
+		writers_blocks: {
+			ignored_passive: ignoredPassive,
+			ignored_equality: ignoredEquality,
+			ignored_spell: ignoredSpell,
+			ignored_profanities: ignoredProfanities,
+			ignored_simplify: ignoredSimplify,
+			ignored_diacritics: ignoredDiacritics,
+			ignored_intensify: ignoredIntensify,
+		}
+	} = select( 'core' ).getEntityRecord( 'root', 'site' );
+
 	const { messages: problems, nodes } = parse( blockAttributes[ attribute ], {
 		preserveWhiteSpace: blockName !== 'core/list',
+		ignored: {
+			passive: ignoredPassive,
+			equality: ignoredEquality,
+			spell: ignoredSpell,
+			profanities: ignoredProfanities,
+			simplify: ignoredSimplify,
+			diacritics: ignoredDiacritics,
+			intensify: ignoredIntensify,
+		},
 	} );
 
 	return {

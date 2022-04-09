@@ -20,3 +20,11 @@
 		right: 16px;
 	}
 }
+
+.writers-blocks__panel-row {
+	align-items: flex-start;
+
+	& .components-button.has-icon {
+		margin-top: -8px;
+	}
+}

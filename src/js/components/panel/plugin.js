@@ -12,15 +12,18 @@ import {
 	DropdownMenu,
 	Modal,
 	__experimentalHStack as HStack,
-	TextControl
+	TextControl,
+	TextareaControl,
 } from '@wordpress/components';
 import { useSelect, select, dispatch } from '@wordpress/data';
 import { Fragment, useEffect, useState } from '@wordpress/element';
 import { moreVertical } from '@wordpress/icons';
+import { capitalize } from 'lodash';
 
 import {
 	SYNTAX_TYPES,
 	PROBLEM_TYPES_TO_LABEL,
+	PROBLEM_TYPES_WITH_IGNORE,
 	BLOCK_TYPE_CONTENT_ATTRIBUTE,
 } from '../../constants';
 import { store } from '../../store';
@@ -33,7 +36,10 @@ const {
 export const PluginPanel = () => {
 	const [ suggestions, setSuggestions ] = useState( DEFAULT_SETTINGS );
 	const [ mode, setMode ] = useState( DEFAULT_SETTINGS.mode );
-	const [ isOptionsPopoverOpen, setOptionsPopoverOpen ] = useState( false );
+	const [ isOptionsPopoverOpen, setIsOptionsPopoverOpen ] = useState( false );
+	const [ isStyleOptionsPopoverOpen, setIsStyleOptionsPopoverOpen ] = useState( false );
+	const [ styleOptionsPopoverType, setStyleOptionsPopoverType ] = useState( null );
+	const [ ignoredWordList, setIgnoredWordList ] = useState( '' );
 
 	const siteSettings = useSelect( ( select ) => {
 		return select( 'core' ).getEntityRecord( 'root', 'site' );
@@ -53,7 +59,10 @@ export const PluginPanel = () => {
 	useEffect( () => {
 		if ( siteSettings ) {
 			const { writers_blocks } = siteSettings;
-			setSuggestions( writers_blocks );
+			
+			if ( writers_blocks ) {
+				setSuggestions( writers_blocks );
+			}
 		}
 	}, [ siteSettings ] );
 
@@ -76,7 +85,7 @@ export const PluginPanel = () => {
 				<Modal
 					title={ __( "Writer's Blocks options", 'writers-blocks' ) }
 					onRequestClose={ () => {
-						setOptionsPopoverOpen( false );
+						setIsOptionsPopoverOpen( false );
 					} }
 				>
 					<h2 className='edit-post-options-modal__section-title'>{ __( 'License', 'writers-blocks' ) }</h2>
@@ -102,6 +111,56 @@ export const PluginPanel = () => {
 					</HStack>
 				</Modal>
 			) :  null }
+			{ isStyleOptionsPopoverOpen ? (
+				<Modal
+					title={ __( `${ capitalize( styleOptionsPopoverType ) } options`, 'writers-blocks' ) }
+					onRequestClose={ () => {
+						setIsStyleOptionsPopoverOpen( false );
+					} }
+				>
+					<h2 className='edit-post-options-modal__section-title'>{ __( 'Ignore List', 'writers-blocks' ) }</h2>
+					<p className='edit-post-options-modal__section-help'>{ __( 'Edit your list of ignored words.', 'writers-blocks' ) }</p>
+					<TextareaControl
+						label={ __( 'Ignored Words', 'writers-blocks' ) }
+						hideLabelFromVision={ true }
+						value={ ignoredWordList }
+						rows={ suggestions[ `ignored_${ styleOptionsPopoverType }` ].split( ',' ).length + 4 }
+						onChange={ ( value ) => {
+							setIgnoredWordList( value );
+						} }
+						spellCheck={ false }
+					/>
+					<Button
+						isPrimary
+						onClick={ () => {
+							dispatch( 'core' ).saveEntityRecord(
+								'root',
+								'site',
+								{
+									writers_blocks: {
+										...suggestions,
+										[ `ignored_${styleOptionsPopoverType}` ]: ignoredWordList.split( '\n' ).join( ',' ),
+									},
+								}
+							);
+
+							ignoredWordList.split( '\n' ).forEach( ( word ) => {
+								const problems = select( store ).getProblemsByValue( word, styleOptionsPopoverType );
+
+								problems.forEach( ( { annotationId } ) => {
+									dispatch(
+										'core/annotations'
+									).__experimentalRemoveAnnotation( annotationId );
+								} );
+							} );
+
+							setIsStyleOptionsPopoverOpen( false );
+						} }
+					>
+						{ __( 'Save', 'writers-blocks' ) }
+					</Button>
+				</Modal>
+			) : null }
 			<PluginSidebar
 				name="writers-blocks"
 				icon="text"
@@ -182,7 +241,7 @@ export const PluginPanel = () => {
 									<MenuGroup>
 										<MenuItem
 											label="Show options"
-											onClick={ () => setOptionsPopoverOpen( ( isOpen ) => ! isOpen ) }
+											onClick={ () => setIsOptionsPopoverOpen( ( isOpen ) => ! isOpen ) }
 										>
 											{ __( 'Options', 'writers-blocks' ) }
 										</MenuItem>
@@ -430,7 +489,7 @@ export const PluginPanel = () => {
 				<PanelBody title={ __( 'Style', 'writers-blocks' ) } initialOpen={ false }>
 					{ suggestions ? (
 						Object.keys( PROBLEM_TYPES_TO_LABEL ).map( ( type ) => (
-							<PanelRow key={ type }>
+							<PanelRow key={ type } className="writers-blocks__panel-row">
 								<div
 									className={ `writers-blocks__toggle ${ type }` }
 								>
@@ -547,6 +606,22 @@ export const PluginPanel = () => {
 										} }
 									/>
 								</div>
+								{ PROBLEM_TYPES_WITH_IGNORE.includes( type ) ? (
+									<Button
+										variant="tertiary"
+										icon={ moreVertical }
+										label={ __(
+											'More options',
+											'writers-blocks'
+										) }
+										onClick={ () => {
+											setIsStyleOptionsPopoverOpen( true );
+											setStyleOptionsPopoverType( type );
+											setIgnoredWordList( suggestions[ `ignored_${ type }` ].split( ',' ).join( '\n' ) );
+										} }
+										showTooltip={ true }
+									/>
+								) : null }
 							</PanelRow>
 						) )
 					) : (

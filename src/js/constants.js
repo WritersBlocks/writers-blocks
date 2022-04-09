@@ -20,6 +20,7 @@ export const BLOCK_TYPE_CONTENT_ATTRIBUTE = {
 export const PROBLEM_TYPES = [
 	'simplify',
 	'intensify',
+	'spell',
 	'passive',
 	'readability',
 	'indefinite_article',
@@ -40,7 +41,26 @@ export const SYNTAX_TYPES = [
 	'conjunction',
 ];
 
+export const PROBLEM_TYPES_WITH_IGNORE = [
+	'simplify',
+	'intensify',
+	'spell',
+	'passive',
+	'equality',
+	'profanities',
+	'diacritics',
+];
+
 export const PROBLEM_TYPES_TO_LABEL = {
+	spell: {
+		label: __( 'Spell', 'writers-blocks' ),
+		help: ( number ) =>
+			number > 0
+				? `${ number } word${
+						number > 1 ? 's' : ''
+				  } may be misspelled.`
+				: 'No misspellings found.',
+	},	
 	simplify: {
 		label: __( 'Simplify', 'writers-blocks' ),
 		help: ( number ) =>

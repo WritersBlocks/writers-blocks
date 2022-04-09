@@ -1,3 +1,7 @@
+[class*="annotation-text-writers-blocks"] {
+	cursor: pointer;
+}
+
 .annotation-text-writers-blocks--style--ignored {
 	background-color: transparent !important;
 }
@@ -8,7 +12,7 @@
 
 .annotation-text-writers-blocks--style--spell {
 	background-color: transparent !important;
-	border-bottom: 1px dashed var(--writers-blocks--color--spell) !important;
+	border-bottom: 2px dotted var(--writers-blocks--color--spell) !important;
 }
 
 .annotation-text-writers-blocks--style--passive {

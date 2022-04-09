@@ -54,6 +54,11 @@ export const getProblemsByType = ( state, type ) =>
 		( { type: problemType } ) => problemType === type
 	);
 
+export const getProblemsByValue = ( state, value, type = false ) =>
+	state.problems.list.filter(
+		( { value: problemValue, type: problemType } ) => problemValue === value && ( ! type || problemType === type )
+	);
+
 export const getReadability = ( state ) => state.readability.stats;
 
 export const getUserSettings = ( state ) => state.user.settings;

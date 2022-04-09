@@ -1,5 +1,12 @@
 .writers-blocks__toggle {
 
+    &.spell {
+
+        & .components-form-toggle.is-checked .components-form-toggle__track {
+            background-color: var(--writers-blocks--color--spell);
+        }
+    }
+
     &.simplify {
 
         & .components-form-toggle.is-checked .components-form-toggle__track {
