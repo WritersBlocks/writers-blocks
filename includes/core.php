@@ -65,6 +65,12 @@ function register_settings() {
 						'intensify' => array(
 							'type' => 'string',
 						),
+						'assuming' => array(
+							'type' => 'string',
+						),
+						'cliche' => array(
+							'type' => 'string',
+						),
 						'indefinite_article' => array(
 							'type' => 'string',
 						),
@@ -137,6 +143,12 @@ function register_settings() {
 						'ignored_passive' => array(
 							'type' => 'string',
 						),
+						'ignored_assuming' => array(
+							'type' => 'string',
+						),
+						'ignored_cliche' => array(
+							'type' => 'string',
+						),
 					),
 				),
 			),
@@ -167,6 +179,14 @@ function sanitize_settings( $settings ) {
 
 	if ( isset( $settings['intensify'] ) ) {
 		$new_settings['intensify'] = $settings['intensify'];
+	}
+
+	if ( isset( $settings['assuming'] ) ) {
+		$new_settings['assuming'] = $settings['assuming'];
+	}
+
+	if ( isset( $settings['cliche'] ) ) {
+		$new_settings['cliche'] = $settings['cliche'];
 	}
 
 	if ( isset( $settings['passive'] ) ) {
@@ -259,6 +279,14 @@ function sanitize_settings( $settings ) {
 
 	if ( isset( $settings['ignored_diacritics'] ) ) {
 		$new_settings['ignored_diacritics'] = $settings['ignored_diacritics'];
+	}
+
+	if ( isset( $settings['ignored_assuming'] ) ) {
+		$new_settings['ignored_assuming'] = $settings['ignored_assuming'];
+	}
+
+	if ( isset( $settings['ignored_cliche'] ) ) {
+		$new_settings['ignored_cliche'] = $settings['ignored_cliche'];
 	}
 
 	return $new_settings;
@@ -546,6 +574,8 @@ function activate() {
 			'mode'               => 'writing',
 			'simplify'           => '1',
 			'intensify'          => '1',
+			'assuming'          => '1',
+			'cliche'          => '1',
 			'passive'            => '1',
 			'readability'        => '1',
 			'indefinite_article' => '1',
@@ -569,6 +599,8 @@ function activate() {
 			'ignored_equality'           => '',
 			'ignored_passive'          => '',
 			'ignored_diacritics'           => '',
+			'ignored_assuming'           => '',
+			'ignored_cliche'           => '',
 		],
 		false
 	);

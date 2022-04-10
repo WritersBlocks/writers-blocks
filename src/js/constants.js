@@ -20,6 +20,7 @@ export const BLOCK_TYPE_CONTENT_ATTRIBUTE = {
 export const PROBLEM_TYPES = [
 	'simplify',
 	'intensify',
+	'assuming',
 	'spell',
 	'passive',
 	'readability',
@@ -44,6 +45,8 @@ export const SYNTAX_TYPES = [
 export const PROBLEM_TYPES_WITH_IGNORE = [
 	'simplify',
 	'intensify',
+	'assuming',
+	'cliche',
 	'spell',
 	'passive',
 	'equality',
@@ -79,6 +82,13 @@ export const PROBLEM_TYPES_TO_LABEL = {
 				  } impact.`
 				: 'No vague language in sight. Awesome job!',
 	},
+	assuming: {
+		label: __( 'Assuming', 'writers-blocks' ),
+		help: ( number ) =>
+			number > 0
+				? `${ number } word${ number > 1 ? 's' : '' } may be unhelpful.`
+				: 'No unhelpful phrases found.',
+	},
 	passive: {
 		label: __( 'Passive Voice', 'writers-blocks' ),
 		help: ( number ) =>
@@ -87,6 +97,15 @@ export const PROBLEM_TYPES_TO_LABEL = {
 						number > 1 ? 's' : ''
 				  } may use passive voice.`
 				: 'No passive voice to report.',
+	},
+	cliche: {
+		label: __( 'Clichés', 'writers-blocks' ),
+		help: ( number ) =>
+			number > 0
+				? `${ number } phrase${
+						number > 1 ? 's' : ''
+				  } may be cliché.`
+				: 'No clichés in sight.',
 	},
 	readability: {
 		label: __( 'Readability', 'writers-blocks' ),

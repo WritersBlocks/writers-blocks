@@ -214,7 +214,84 @@ export const addAnnotations = (
 	annotations
 		.filter(
 			( annotation ) =>
-				annotation.type && annotation.type !== 'readability'
+				annotation.type &&
+				annotation.type !== 'readability' &&
+				annotation.type !== 'assuming' &&
+				annotation.type !== 'spell'
+		)
+		.forEach( ( annotation ) => {
+			const {
+				blockId,
+				blockName,
+				annotationId,
+				mode,
+				type,
+				index,
+				offset,
+			} = annotation;
+			const [ name ] = type.split( '-' );
+
+			if (
+				SHOWN_ANNOTATION_TYPES[ name ]
+					? SHOWN_ANNOTATION_TYPES[ name ] === '1'
+					: true
+			) {
+				dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
+					source: `writers-blocks--${ mode }--${ type }`,
+					blockClientId: blockId,
+					richTextIdentifier:
+						BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ],
+					range: {
+						start: index,
+						end: offset,
+					},
+					id: annotationId,
+				} );
+			}
+		} );
+
+	annotations
+		.filter(
+			( annotation ) =>
+				annotation.type &&
+				annotation.type === 'assuming'
+		)
+		.forEach( ( annotation ) => {
+			const {
+				blockId,
+				blockName,
+				annotationId,
+				mode,
+				type,
+				index,
+				offset,
+			} = annotation;
+			const [ name ] = type.split( '-' );
+
+			if (
+				SHOWN_ANNOTATION_TYPES[ name ]
+					? SHOWN_ANNOTATION_TYPES[ name ] === '1'
+					: true
+			) {
+				dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
+					source: `writers-blocks--${ mode }--${ type }`,
+					blockClientId: blockId,
+					richTextIdentifier:
+						BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ],
+					range: {
+						start: index,
+						end: offset,
+					},
+					id: annotationId,
+				} );
+			}
+		} );
+
+	annotations
+		.filter(
+			( annotation ) =>
+				annotation.type &&
+				annotation.type === 'spell'
 		)
 		.forEach( ( annotation ) => {
 			const {

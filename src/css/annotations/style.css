@@ -19,6 +19,13 @@
 	background-color: var(--writers-blocks--color--passive) !important;
 }
 
+.annotation-text-writers-blocks--style--assuming,
+.annotation-text-writers-blocks--style--cliche {
+	background-color: transparent !important;
+	text-decoration: line-through !important;
+	color: var(--writers-blocks--color--assuming) !important;
+}
+
 .annotation-text-writers-blocks--style--readability {
 	background-color: var(--writers-blocks--color--readability) !important;
 }

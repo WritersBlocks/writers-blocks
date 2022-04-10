@@ -5,6 +5,8 @@ import { VFile } from 'vfile';
 import { sort } from 'vfile-sort';
 import { unified } from 'unified';
 import retextEnglish from 'retext-english';
+import retextSyntaxUrls from 'retext-syntax-urls';
+import retextSyntaxMentions from 'retext-syntax-mentions';
 import retextSpell from 'retext-spell';
 import retextEquality from 'retext-equality';
 import retextProfanities from 'retext-profanities';
@@ -30,6 +32,9 @@ import { SYNTAX_TYPES } from '../../constants';
 import dic from '../dictionary/en/dic';
 import aff from '../dictionary/en/aff';
 
+import retextAssuming from './assuming';
+import retextCliches from './cliches';
+
 export function parse( value, config ) {
 	return core( value, makeText( config ) );
 }
@@ -47,6 +52,8 @@ function makeText( {
 } ) {
 	return unified()
 		.use( retextEnglish )
+		.use( retextSyntaxUrls )
+		.use( retextSyntaxMentions )
 		.use( retextEquality, {
 			ignore: equality.split( ',' ),
 		} )
@@ -73,6 +80,8 @@ function makeText( {
 		.use( retextContractions, {
 			straight: true,
 		} )
+		.use( retextAssuming )
+		.use( retextCliches )
 		.use( retextPos )
 		.use( retextSpell, {
 			dictionary: callback => callback( null, { aff, dic } ),
