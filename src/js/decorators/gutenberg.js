@@ -64,7 +64,11 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 	const attribute = BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content';
 
 	if ( ! isAllowed ) {
-		return [];
+		console.log(block);
+		return {
+			nodes: [],
+			problems: [],
+		};
 	}
 
 	const {

@@ -36,7 +36,6 @@ import retextAssuming from './assuming';
 import retextCliches from './cliches';
 
 export function parse( value, config ) {
-	console.log(config);
 	return core( value, makeText( config ) );
 }
 

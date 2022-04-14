@@ -1,6 +1,4 @@
-const path = require('path');
-
-module.exports = ({ file, env }) => {
+module.exports = ({ env }) => {
 	const config = {
 		plugins: {
 			'postcss-import': {},

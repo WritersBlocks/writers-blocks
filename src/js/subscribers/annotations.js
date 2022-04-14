@@ -29,6 +29,19 @@ const scheduleReadingScoreUpdate = debounce( ( content ) => {
 	dispatch( store ).updateReadability( readingScore( content ) );
 }, 500 );
 
+const flattenBlocks = ( blocks ) => {
+	return blocks.reduce( ( accumulator, block ) => {
+		if ( block.innerBlocks.length ) {
+			return [
+				...accumulator,
+				...flattenBlocks( block.innerBlocks ),
+			];
+		}
+
+		return [ ...accumulator, block ];
+	}, [] );
+};
+
 domReady( () => {
 	subscribe( debounce( () => {
 		const content = select( 'core/editor' ).getEditedPostAttribute(
@@ -58,7 +71,8 @@ domReady( () => {
 		const blocks = select( 'core/block-editor' ).getBlocks();
 
 		if ( ! problems.length && blocks.length ) {
-			const allowedBlocks = blocks.filter( ( block ) =>
+			const flattenedBlocks = flattenBlocks( blocks );
+			const allowedBlocks = flattenedBlocks.filter( ( block ) =>
 				ALLOWED_BLOCKS.includes( block.name )
 			);
 
@@ -78,5 +92,5 @@ domReady( () => {
 		}
 
 		_content = strippedContent;
-	}, 500 ) );
+	}, 100 ) );
 } );

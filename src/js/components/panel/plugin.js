@@ -184,8 +184,6 @@ export const PluginPanel = () => {
 							const removedWords = previouslyIgnoredWords.filter( ( word ) => ! ignoredWords.includes( word ) );
 							const removedDictionary = previousDictionary.filter( ( word ) => ! customWordList.split( '\n' ).includes( word ) );
 
-							console.log( { removedWords, removedDictionary } );
-
 							[
 								...removedWords,
 								...removedDictionary,
