@@ -72,19 +72,20 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 	}
 
 	const {
-		writers_blocks: {
-			dictionary,
-			ignored_passive: ignoredPassive,
-			ignored_equality: ignoredEquality,
-			ignored_spell: ignoredSpell,
-			ignored_profanities: ignoredProfanities,
-			ignored_simplify: ignoredSimplify,
-			ignored_diacritics: ignoredDiacritics,
-			ignored_intensify: ignoredIntensify,
-			ignored_assuming: ignoredAssuming,
-			ignored_cliche: ignoredCliche,
-		}
+		writers_blocks = {},
 	} = select( 'core' ).getEntityRecord( 'root', 'site' );
+	const {
+		dictionary = '',
+		ignored_passive: ignoredPassive = '',
+		ignored_equality: ignoredEquality = '',
+		ignored_spell: ignoredSpell = '',
+		ignored_profanities: ignoredProfanities = '',
+		ignored_simplify: ignoredSimplify = '',
+		ignored_diacritics: ignoredDiacritics = '',
+		ignored_intensify: ignoredIntensify = '',
+		ignored_assuming: ignoredAssuming = '',
+		ignored_cliche: ignoredCliche = '',
+	} = writers_blocks;
 
 	const { messages: problems, nodes } = parse( blockAttributes[ attribute ], {
 		preserveWhiteSpace: blockName !== 'core/list',
@@ -369,10 +370,11 @@ export const scheduleAnnotations = debounce( () => {
 	}
 
 	const {
-		writers_blocks: {
-			mode: writingMode,
-		},
+		writers_blocks = {},
 	} = select( 'core' ).getEntityRecord( 'root', 'site' );
+	const {
+		mode: writingMode = 'writing',
+	} = writers_blocks;
 
 	if ( writingMode === 'syntax' || writingMode === 'editing' ) {
 		addAnnotations(
