@@ -17,7 +17,7 @@ import {
 	Flex,
 	__experimentalHStack as HStack,
 } from '@wordpress/components';
-import { info, plusCircle } from '@wordpress/icons';
+import { info, plusCircle, trash } from '@wordpress/icons';
 import { store as noticesStore } from '@wordpress/notices';
 
 /**
@@ -126,6 +126,46 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 							isSmall={ true }
 						/>
 					) : null }
+					{ type === 'spell' ? (
+						<Button
+							variant="tertiary"
+							onClick={ () => {
+								const { dictionary } = suggestions;
+								const newDictionary = new Set( [ ...( dictionary.length ? dictionary.split(',') : [] ), value ] );
+
+								dispatch( 'core' ).saveEntityRecord(
+									'root',
+									'site',
+									{
+										writers_blocks: {
+											...suggestions,
+											dictionary: [...newDictionary].join( ',' ),
+										},
+									}
+								);
+
+								createNotice(
+									'info',
+									__( `Added "${value}" to dictionary`, 'writers-blocks' ),
+									{
+										isDismissible: true,
+										type: 'snackbar',
+									}
+								);
+
+								const problems = select( store ).getProblemsByValue( value, type );
+
+								problems.forEach( ( { annotationId } ) => {
+									dispatch(
+										'core/annotations'
+									).__experimentalRemoveAnnotation( annotationId );
+								} );
+							} }
+							icon={ plusCircle }
+							iconSize={ 18 }
+							isSmall={ true }
+						/>
+					) : null }
 					{ PROBLEM_TYPES_WITH_IGNORE.includes( type ) ? (
 						<Button
 							variant="tertiary"
@@ -146,12 +186,7 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 
 								createNotice(
 									'info',
-									__(
-										type === 'spell'
-											? `Added "${value}" to dictionary`
-											: `Ignored "${value}"`,
-										'writers-blocks'
-									),
+									__( `Ignored "${value}"`, 'writers-blocks' ),
 									{
 										isDismissible: true,
 										type: 'snackbar',
@@ -166,7 +201,7 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 									).__experimentalRemoveAnnotation( annotationId );
 								} );
 							} }
-							icon={ plusCircle }
+							icon={ trash }
 							iconSize={ 18 }
 							isSmall={ true }
 						/>

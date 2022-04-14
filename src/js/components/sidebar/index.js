@@ -10,9 +10,10 @@ import { select, dispatch } from '@wordpress/data';
  */
 import {
 	PROBLEM_TYPES_TO_LABEL,
-	BLOCK_TYPE_CONTENT_ATTRIBUTE,
+	// BLOCK_TYPE_CONTENT_ATTRIBUTE,
 } from '../../constants';
 import { store } from '../../store';
+import { addAnnotations } from '../../store/actions';
 
 export const Sidebar = ( props ) => {
 	const { clientId, setAttributes, attributes, problems } = props;
@@ -46,37 +47,11 @@ export const Sidebar = ( props ) => {
 											store
 										).getProblemsByType( source );
 
-										problems
-											.filter(
-												( { blockId } ) =>
-													blockId === clientId
+										addAnnotations(
+											problems.filter(
+												( { blockId } ) => blockId === clientId
 											)
-											.forEach(
-												( {
-													blockId,
-													blockName,
-													type,
-													index,
-													offset,
-												} ) => {
-													dispatch(
-														'core/annotations'
-													).__experimentalAddAnnotation(
-														{
-															source: `writers-blocks--${ type }`,
-															blockClientId: blockId,
-															richTextIdentifier:
-																BLOCK_TYPE_CONTENT_ATTRIBUTE[
-																	blockName
-																],
-															range: {
-																start: index,
-																end: offset,
-															},
-														}
-													);
-												}
-											);
+										);
 									} else {
 										const annotationsInBlock = select(
 											'core/annotations'

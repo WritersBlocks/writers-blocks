@@ -12,7 +12,6 @@ export const ALLOWED_BLOCKS = [
 ];
 
 export const BLOCK_TYPE_CONTENT_ATTRIBUTE = {
-	'core/paragraph': 'content',
 	'core/list': 'values',
 	'core/quote': 'value',
 };

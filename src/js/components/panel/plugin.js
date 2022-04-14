@@ -6,7 +6,7 @@ import {
 	ToggleControl,
 	Spinner,
 	Button,
-	MenuItem,
+	// MenuItem,
 	MenuGroup,
 	MenuItemsChoice,
 	DropdownMenu,
@@ -16,7 +16,7 @@ import {
 	TextareaControl,
 } from '@wordpress/components';
 import { useSelect, select, dispatch } from '@wordpress/data';
-import { Fragment, useEffect, useState } from '@wordpress/element';
+import { Fragment, useEffect, useState, useRef } from '@wordpress/element';
 import { moreVertical } from '@wordpress/icons';
 import { capitalize } from 'lodash';
 
@@ -24,7 +24,7 @@ import {
 	SYNTAX_TYPES,
 	PROBLEM_TYPES_TO_LABEL,
 	PROBLEM_TYPES_WITH_IGNORE,
-	BLOCK_TYPE_CONTENT_ATTRIBUTE,
+	// BLOCK_TYPE_CONTENT_ATTRIBUTE,
 } from '../../constants';
 import { store } from '../../store';
 import { removeAnnotations, addAnnotations } from '../../decorators/gutenberg';
@@ -40,21 +40,22 @@ export const PluginPanel = () => {
 	const [ isStyleOptionsPopoverOpen, setIsStyleOptionsPopoverOpen ] = useState( false );
 	const [ styleOptionsPopoverType, setStyleOptionsPopoverType ] = useState( null );
 	const [ ignoredWordList, setIgnoredWordList ] = useState( '' );
+	const [ customWordList, setCustomWordList ] = useState( '' );
 
 	const siteSettings = useSelect( ( select ) => {
 		return select( 'core' ).getEntityRecord( 'root', 'site' );
 	} );
-	const selectedBlock = useSelect( ( select ) => {
-		return select( 'core/block-editor' ).getSelectedBlock();
-	} );
+	// const selectedBlock = useSelect( ( select ) => {
+	// 	return select( 'core/block-editor' ).getSelectedBlock();
+	// } );
 
-	useEffect( () => {
-		if ( suggestions.mode === 'focus' && selectedBlock ) {
-			document.body.classList.add( 'focus-mode' );
-		} else {
-			document.body.classList.remove( 'focus-mode' );
-		}
-	}, [ selectedBlock ] );
+	// useEffect( () => {
+	// 	if ( suggestions.mode === 'focus' && selectedBlock ) {
+	// 		document.body.classList.add( 'focus-mode' );
+	// 	} else {
+	// 		document.body.classList.remove( 'focus-mode' );
+	// 	}
+	// }, [ selectedBlock ] );
 
 	useEffect( () => {
 		if ( siteSettings ) {
@@ -118,8 +119,24 @@ export const PluginPanel = () => {
 						setIsStyleOptionsPopoverOpen( false );
 					} }
 				>
+					{ styleOptionsPopoverType === 'spell' ? (
+						<Fragment>
+							<h2 className='edit-post-options-modal__section-title'>{ __( 'Dictionary', 'writers-blocks' ) }</h2>
+							<p className='edit-post-options-modal__section-help'>{ __( 'Enter a list of words to add to the dictionary. Each word should be on a new line.', 'writers-blocks' ) }</p>
+							<TextareaControl
+								label={ __( 'Dictionary', 'writers-blocks' ) }
+								hideLabelFromVision={ true }
+								value={ customWordList }
+								rows={ suggestions.dictionary.split( ',' ).length + 4 }
+								onChange={ ( value ) => {
+									setCustomWordList( value );
+								} }
+								spellCheck={ false }
+							/>
+						</Fragment>
+					 ) : null }
 					<h2 className='edit-post-options-modal__section-title'>{ __( 'Ignore List', 'writers-blocks' ) }</h2>
-					<p className='edit-post-options-modal__section-help'>{ __( 'Edit your list of ignored words.', 'writers-blocks' ) }</p>
+					<p className='edit-post-options-modal__section-help'>{ __( 'Edit your list of ignored words. Each word should be on a new line.', 'writers-blocks' ) }</p>
 					<TextareaControl
 						label={ __( 'Ignored Words', 'writers-blocks' ) }
 						hideLabelFromVision={ true }
@@ -133,18 +150,28 @@ export const PluginPanel = () => {
 					<Button
 						isPrimary
 						onClick={ () => {
+							const ignoredWords = ignoredWordList.split( '\n' ).filter( ( word ) => word.length > 0 );
+							const previouslyIgnoredWords = suggestions[ `ignored_${ styleOptionsPopoverType }` ].split( ',' );
+							const previousDictionary = suggestions.dictionary.split( ',' );
+
 							dispatch( 'core' ).saveEntityRecord(
 								'root',
 								'site',
 								{
 									writers_blocks: {
 										...suggestions,
-										[ `ignored_${styleOptionsPopoverType}` ]: ignoredWordList.split( '\n' ).join( ',' ),
+										[ `ignored_${styleOptionsPopoverType}` ]: ignoredWords.join( ',' ),
+										...(styleOptionsPopoverType === 'spell' ? {
+											dictionary: customWordList.split( '\n' ).join( ',' ),
+										} : {})
 									},
 								}
 							);
 
-							ignoredWordList.split( '\n' ).forEach( ( word ) => {
+							[
+								...customWordList.split( '\n' ),
+								...ignoredWords,
+							].forEach( ( word ) => {
 								const problems = select( store ).getProblemsByValue( word, styleOptionsPopoverType );
 
 								problems.forEach( ( { annotationId } ) => {
@@ -152,6 +179,20 @@ export const PluginPanel = () => {
 										'core/annotations'
 									).__experimentalRemoveAnnotation( annotationId );
 								} );
+							} );
+
+							const removedWords = previouslyIgnoredWords.filter( ( word ) => ! ignoredWords.includes( word ) );
+							const removedDictionary = previousDictionary.filter( ( word ) => ! customWordList.split( '\n' ).includes( word ) );
+
+							console.log( { removedWords, removedDictionary } );
+
+							[
+								...removedWords,
+								...removedDictionary,
+							].forEach( ( word ) => {
+								const problems = select( store ).getProblemsByValue( word, styleOptionsPopoverType );
+
+								addAnnotations( problems );
 							} );
 
 							setIsStyleOptionsPopoverOpen( false );
@@ -166,7 +207,7 @@ export const PluginPanel = () => {
 				icon="text"
 				title={ __( "Writer's Blocks", 'writers-blocks' ) }
 			>
-				<div style={ { padding: '16px' } }>
+				<div style={ { padding: '6px 16px' } }>
 					<PanelRow className="components-panel__body-static">
 						<span>Settings</span>
 						<DropdownMenu
@@ -186,18 +227,18 @@ export const PluginPanel = () => {
 												{
 													label: 'Editing',
 													value: 'editing',
-													info: 'Highlight style suggetions'
+													info: 'Highlight style suggestions'
 												},
 												{
 													label: 'Syntax',
 													value: 'syntax',
 													info: 'Highlight parts of speech'
 												},
-												{
-													label: 'Focus',
-													value: 'focus',
-													info: 'Focus on one paragraph at a time',
-												},
+												// {
+												// 	label: 'Focus',
+												// 	value: 'focus',
+												// 	info: 'Focus on one paragraph at a time',
+												// },
 											] }
 											onSelect={ ( value ) => {
 												setMode( value );
@@ -238,14 +279,14 @@ export const PluginPanel = () => {
 											} }
 										/>
 									</MenuGroup>
-									<MenuGroup>
+									{/* <MenuGroup>
 										<MenuItem
 											label="Show options"
 											onClick={ () => setIsOptionsPopoverOpen( ( isOpen ) => ! isOpen ) }
 										>
 											{ __( 'Options', 'writers-blocks' ) }
 										</MenuItem>
-									</MenuGroup>
+									</MenuGroup> */}
 								</Fragment>
 							) }
 						</DropdownMenu>
@@ -444,32 +485,7 @@ export const PluginPanel = () => {
 													store
 												).getWordsByType( type );
 
-												words.forEach(
-													( {
-														blockId,
-														blockName,
-														type,
-														index,
-														offset,
-													} ) => {
-														dispatch(
-															'core/annotations'
-														).__experimentalAddAnnotation(
-															{
-																source: `writers-blocks--syntax--${ type }`,
-																blockClientId: blockId,
-																richTextIdentifier:
-																	BLOCK_TYPE_CONTENT_ATTRIBUTE[
-																		blockName
-																	],
-																range: {
-																	start: index,
-																	end: offset,
-																},
-															}
-														);
-													}
-												);
+												addAnnotations( words );
 											} else {
 												dispatch(
 													'core/annotations'
@@ -526,32 +542,7 @@ export const PluginPanel = () => {
 													store
 												).getProblemsByType( type );
 
-												problems.forEach(
-													( {
-														blockId,
-														blockName,
-														type,
-														index,
-														offset,
-													} ) => {
-														dispatch(
-															'core/annotations'
-														).__experimentalAddAnnotation(
-															{
-																source: `writers-blocks--style--${ type }`,
-																blockClientId: blockId,
-																richTextIdentifier:
-																	BLOCK_TYPE_CONTENT_ATTRIBUTE[
-																		blockName
-																	],
-																range: {
-																	start: index,
-																	end: offset,
-																},
-															}
-														);
-													}
-												);
+												addAnnotations( problems );
 											} else {
 												dispatch(
 													'core/annotations'
@@ -568,40 +559,15 @@ export const PluginPanel = () => {
 													store
 												).getProblems();
 
-												problems
-													.filter(
+												addAnnotations(
+													problems.filter(
 														( { type } ) =>
 															type !==
 																'readability' &&
 															suggestions[ type ] ===
 																'1'
 													)
-													.forEach(
-														( {
-															blockId,
-															blockName,
-															type,
-															index,
-															offset,
-														} ) => {
-															dispatch(
-																'core/annotations'
-															).__experimentalAddAnnotation(
-																{
-																	source: `writers-blocks--style--${ type }`,
-																	blockClientId: blockId,
-																	richTextIdentifier:
-																		BLOCK_TYPE_CONTENT_ATTRIBUTE[
-																			blockName
-																		],
-																	range: {
-																		start: index,
-																		end: offset,
-																	},
-																}
-															);
-														}
-													);
+												);
 											}
 										} }
 									/>
@@ -618,6 +584,10 @@ export const PluginPanel = () => {
 											setIsStyleOptionsPopoverOpen( true );
 											setStyleOptionsPopoverType( type );
 											setIgnoredWordList( suggestions[ `ignored_${ type }` ].split( ',' ).join( '\n' ) );
+											
+											if ( type === 'spell' ) {
+												setCustomWordList( suggestions.dictionary.split( ',' ).join( '\n' ) );
+											}
 										} }
 										showTooltip={ true }
 									/>

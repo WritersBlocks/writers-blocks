@@ -36,10 +36,12 @@ import retextAssuming from './assuming';
 import retextCliches from './cliches';
 
 export function parse( value, config ) {
+	console.log(config);
 	return core( value, makeText( config ) );
 }
 
 function makeText( {
+	dictionary,
 	ignored: {
 		passive = '',
 		intensify = '',
@@ -48,6 +50,8 @@ function makeText( {
 		profanities = '',
 		simplify = '',
 		spell = '',
+		assuming = '',
+		cliche = '',
 	},
 } ) {
 	return unified()
@@ -80,11 +84,16 @@ function makeText( {
 		.use( retextContractions, {
 			straight: true,
 		} )
-		.use( retextAssuming )
-		.use( retextCliches )
+		.use( retextAssuming, {
+			ignore: assuming.split( ',' ),
+		} )
+		.use( retextCliches, {
+			ignore: cliche.split( ',' ),
+		} )
 		.use( retextPos )
 		.use( retextSpell, {
 			dictionary: callback => callback( null, { aff, dic } ),
+			personal: dictionary.split( ',' ).join( '\n' ),
 			ignore: spell.split( ',' ),
 		} )
 		.use( () => ( tree ) => tree );

@@ -15,7 +15,7 @@ import list from './list';
  *   - List of phrases to *not* warn about.
  * @return {Function} - `transformer`.
  */
-export default function retextCliches(processor, options) {
+export default function retextCliches(options) {
     var ignore = (options || {}).ignore || [];
     var phrases = difference(list, ignore);
 
@@ -27,16 +27,17 @@ export default function retextCliches(processor, options) {
      */
     function transformer(tree, file) {
         search(tree, phrases, function (match, position, parent, phrase) {
-            var value = quotation(toString(match), '“', '”');
-            var message = 'Warning: ' + value  + ' is a cliche';
+            var value = toString(match);
+            var message = 'Warning: ' + quotation( value, '“', '”') + ' is a cliche';
 
             message = file.message(message, {
-                'start': match[0].position.start,
-                'end': match[match.length - 1].position.end
+                start: match[0].position.start,
+                end: match[match.length - 1].position.end,
             });
 
             message.cliche = phrase;
             message.source = 'retext-cliche';
+            message.actual = value;
         });
     }
 

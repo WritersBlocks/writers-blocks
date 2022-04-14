@@ -61,7 +61,7 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 	} = block;
 
 	const isAllowed = ALLOWED_BLOCKS.includes( blockName );
-	const attribute = BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ];
+	const attribute = BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content';
 
 	if ( ! isAllowed ) {
 		return [];
@@ -69,6 +69,7 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 
 	const {
 		writers_blocks: {
+			dictionary,
 			ignored_passive: ignoredPassive,
 			ignored_equality: ignoredEquality,
 			ignored_spell: ignoredSpell,
@@ -76,11 +77,14 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 			ignored_simplify: ignoredSimplify,
 			ignored_diacritics: ignoredDiacritics,
 			ignored_intensify: ignoredIntensify,
+			ignored_assuming: ignoredAssuming,
+			ignored_cliche: ignoredCliche,
 		}
 	} = select( 'core' ).getEntityRecord( 'root', 'site' );
 
 	const { messages: problems, nodes } = parse( blockAttributes[ attribute ], {
 		preserveWhiteSpace: blockName !== 'core/list',
+		dictionary,
 		ignored: {
 			passive: ignoredPassive,
 			equality: ignoredEquality,
@@ -89,6 +93,8 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 			simplify: ignoredSimplify,
 			diacritics: ignoredDiacritics,
 			intensify: ignoredIntensify,
+			assuming: ignoredAssuming,
+			cliche: ignoredCliche,
 		},
 	} );
 
@@ -201,7 +207,7 @@ export const addAnnotations = (
 			dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
 				source: `writers-blocks--${ mode }--${ type }`,
 				blockClientId: blockId,
-				richTextIdentifier: BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ],
+				richTextIdentifier: BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content',
 				range: {
 					start: index,
 					end: offset,
@@ -240,7 +246,7 @@ export const addAnnotations = (
 					source: `writers-blocks--${ mode }--${ type }`,
 					blockClientId: blockId,
 					richTextIdentifier:
-						BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ],
+						BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content',
 					range: {
 						start: index,
 						end: offset,
@@ -277,7 +283,7 @@ export const addAnnotations = (
 					source: `writers-blocks--${ mode }--${ type }`,
 					blockClientId: blockId,
 					richTextIdentifier:
-						BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ],
+						BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content',
 					range: {
 						start: index,
 						end: offset,
@@ -314,7 +320,7 @@ export const addAnnotations = (
 					source: `writers-blocks--${ mode }--${ type }`,
 					blockClientId: blockId,
 					richTextIdentifier:
-						BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ],
+						BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content',
 					range: {
 						start: index,
 						end: offset,

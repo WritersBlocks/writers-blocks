@@ -17,13 +17,16 @@ var NEGATIVES = ['never', 'not', 'can\'t', 'cannot', 'don\'t', 'couldn\'t', 'sho
 var QUALIFIERS = ['that', 'very', 'too', 'so', 'quite', 'rather'];
 
 export default function retextAssume(options) {
+
     // Options
     var opts = options || {};
     var phrases = opts.phrases || assumingPhrases;
     var ignore = opts.ignore || [];
     var verbose = opts.verbose || false;
 
-    var list = difference(phrases, ignore);
+    var list = phrases.filter((phrase) => {
+        return ignore.indexOf(phrase) === -1;
+    });
 
     return transformer;
 
@@ -101,12 +104,13 @@ export default function retextAssume(options) {
             ].join(' '),
                 {
                     start: match[0].position.start,
-                    end: match[match.length - 1].position.end
+                    end: match[match.length - 1].position.end,
                 });
 
             message.ruleId = 'no-' + phrase.replace(/\W+/g, '-');
             message.source = MODULENAME;
             message.url = URL;
+            message.actual = value;
         }
     }
 }

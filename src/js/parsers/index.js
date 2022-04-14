@@ -3,6 +3,7 @@ import { strip } from '../utils/strip-text';
 
 export default ( text, {
 	preserveWhiteSpace = true,
+	dictionary,
 	ignored: {
 		passive = '',
 		intensify = '',
@@ -18,6 +19,7 @@ export default ( text, {
 		tree: { messages },
 		nodes,
 	} = parse( content, {
+		dictionary,
 		ignored: {
 			passive,
 			intensify,
