@@ -370,10 +370,13 @@ export const scheduleAnnotations = debounce( () => {
 	}
 
 	const {
-		writers_blocks = DEFAULT_SETTINGS,
-	} = select( 'core' ).getEntityRecord( 'root', 'site' ) ?? {};
+		writers_blocks,
+	} = select( 'core' ).getEntityRecord( 'root', 'site' ) ?? {
+		writers_blocks: DEFAULT_SETTINGS,
+	};
+
 	const {
-		mode: writingMode = 'writing',
+		mode: writingMode = DEFAULT_SETTINGS.demo ? 'editing' : 'writing',
 	} = writers_blocks;
 
 	if ( writingMode === 'syntax' || writingMode === 'editing' ) {

@@ -49,6 +49,9 @@ function get_setting( $setting, $parent = false ) {
  */
 function get_options() {
 	$options = get_option( 'writers_blocks', [] );
+
+	$options['demo']                = defined( 'WRITERS_BLOCKS_DEMO' ) ? WRITERS_BLOCKS_DEMO : false;
+	$options['mode']                = defined( 'WRITERS_BLOCKS_DEMO' ) && WRITERS_BLOCKS_DEMO ? 'editing' : $options['mode'];
 	$options['dictionary']          = apply_filters( 'writers_blocks_dictionary', $options['dictionary'] );
 	$options['ignored_profanities'] = apply_filters( 'writers_blocks_ignored_profanities', $options['ignored_profanities'] );
 	$options['ignored_spell']       = apply_filters( 'writers_blocks_ignored_spell', $options['ignored_spell'] );
