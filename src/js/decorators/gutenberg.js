@@ -21,7 +21,7 @@ import {
 } from '../constants';
 
 const {
-	WB_SETTINGS: { settings: SHOWN_ANNOTATION_TYPES },
+	WB_SETTINGS: { settings: DEFAULT_SETTINGS },
 	btoa,
 } = window;
 
@@ -72,8 +72,8 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 	}
 
 	const {
-		writers_blocks = {},
-	} = select( 'core' ).getEntityRecord( 'root', 'site' );
+		writers_blocks = DEFAULT_SETTINGS,
+	} = select( 'core' ).getEntityRecord( 'root', 'site' ) ?? {};
 	const {
 		dictionary = '',
 		ignored_passive: ignoredPassive = '',
@@ -205,8 +205,8 @@ export const addAnnotations = (
 		const [ name ] = type.split( '-' );
 
 		if (
-			SHOWN_ANNOTATION_TYPES[ name ]
-				? SHOWN_ANNOTATION_TYPES[ name ] === '1'
+			DEFAULT_SETTINGS[ name ]
+				? DEFAULT_SETTINGS[ name ] === '1'
 				: true
 		) {
 			dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
@@ -243,8 +243,8 @@ export const addAnnotations = (
 			const [ name ] = type.split( '-' );
 
 			if (
-				SHOWN_ANNOTATION_TYPES[ name ]
-					? SHOWN_ANNOTATION_TYPES[ name ] === '1'
+				DEFAULT_SETTINGS[ name ]
+					? DEFAULT_SETTINGS[ name ] === '1'
 					: true
 			) {
 				dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
@@ -280,8 +280,8 @@ export const addAnnotations = (
 			const [ name ] = type.split( '-' );
 
 			if (
-				SHOWN_ANNOTATION_TYPES[ name ]
-					? SHOWN_ANNOTATION_TYPES[ name ] === '1'
+				DEFAULT_SETTINGS[ name ]
+					? DEFAULT_SETTINGS[ name ] === '1'
 					: true
 			) {
 				dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
@@ -317,8 +317,8 @@ export const addAnnotations = (
 			const [ name ] = type.split( '-' );
 
 			if (
-				SHOWN_ANNOTATION_TYPES[ name ]
-					? SHOWN_ANNOTATION_TYPES[ name ] === '1'
+				DEFAULT_SETTINGS[ name ]
+					? DEFAULT_SETTINGS[ name ] === '1'
 					: true
 			) {
 				dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
@@ -370,8 +370,8 @@ export const scheduleAnnotations = debounce( () => {
 	}
 
 	const {
-		writers_blocks = {},
-	} = select( 'core' ).getEntityRecord( 'root', 'site' );
+		writers_blocks = DEFAULT_SETTINGS,
+	} = select( 'core' ).getEntityRecord( 'root', 'site' ) ?? {};
 	const {
 		mode: writingMode = 'writing',
 	} = writers_blocks;
