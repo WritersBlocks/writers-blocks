@@ -1,9 +1,10 @@
-import { parse } from './retext';
+import { parse as retext } from './retext';
 import { strip } from '../utils/strip-text';
 
-export default ( text, {
+export const parse = ( text = '', {
+	offset = 0,
 	preserveWhiteSpace = true,
-	dictionary,
+	dictionary = '',
 	ignored: {
 		passive = '',
 		intensify = '',
@@ -12,13 +13,15 @@ export default ( text, {
 		profanities = '',
 		simplify = '',
 		spell = '',
+		assuming = '',
+		cliche = '',
 	} = {},
 } = {} ) => {
 	const content = strip( text, { preserveWhiteSpace } );
 	const {
 		tree: { messages },
 		nodes,
-	} = parse( content, {
+	} = retext( content, {
 		dictionary,
 		ignored: {
 			passive,
@@ -28,6 +31,8 @@ export default ( text, {
 			profanities,
 			simplify,
 			spell,
+			assuming,
+			cliche,
 		},
 	} );
 
@@ -35,30 +40,26 @@ export default ( text, {
 		nodes: ! nodes?.length ? [] : nodes,
 		messages: ! messages?.length
 			? []
-			: messages.map( ( match ) => {
-					const {
-						actual: value,
-						position: {
-							start: { offset: index },
-							end: { offset },
-						},
-						message,
-						fatal,
-						source,
-						expected,
-					} = match;
-
-					return {
-						value,
-						type: source
-							.replace( 'retext-', '' )
-							.replace( '-', '_' ),
-						level: fatal ? 'warning' : 'suggestion',
-						message: `${ message.replaceAll( '`', '"' ).split( ', use' )[0].split( '; did' )[0] }.`,
-						replacements: expected,
-						index,
-						offset,
-					};
-			  } ),
+			: messages.map( ( {
+				actual: value,
+				position: {
+					start: { offset: start },
+					end: { offset: end },
+				} = {},
+				message,
+				fatal,
+				source,
+				expected,
+			} ) => ( {
+				value,
+				type: source
+					.replace( 'retext-', '' )
+					.replace( '-', '_' ),
+				level: fatal ? 'warning' : 'suggestion',
+				message: `${ message.replaceAll( '`', '"' ).split( ', use' )[0].split( '; did' )[0] }.`,
+				replacements: expected,
+				index: start + offset,
+				offset : end + offset,
+			} ) ),
 	};
 };

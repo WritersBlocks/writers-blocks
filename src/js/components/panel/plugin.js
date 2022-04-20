@@ -16,7 +16,7 @@ import {
 	TextareaControl,
 } from '@wordpress/components';
 import { useSelect, select, dispatch } from '@wordpress/data';
-import { Fragment, useEffect, useState, useRef } from '@wordpress/element';
+import { Fragment, useEffect, useState } from '@wordpress/element';
 import { moreVertical } from '@wordpress/icons';
 import { capitalize } from 'lodash';
 
@@ -27,20 +27,27 @@ import {
 	// BLOCK_TYPE_CONTENT_ATTRIBUTE,
 } from '../../constants';
 import { store } from '../../store';
-import { removeAnnotations, addAnnotations } from '../../decorators/gutenberg';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { addAnnotations } from '../../decorators/gutenberg';
 
 const {
 	WB_SETTINGS: { settings: DEFAULT_SETTINGS },
 } = window;
 
 export const PluginPanel = () => {
-	const [ suggestions, setSuggestions ] = useState( DEFAULT_SETTINGS );
+	const [ suggestions, setSuggestions ] = DEFAULT_SETTINGS.demo !== true
+		? useState( DEFAULT_SETTINGS )
+		: useLocalStorage( DEFAULT_SETTINGS, 'writers_blocks' );
 	const [ mode, setMode ] = useState( DEFAULT_SETTINGS.mode );
 	const [ isOptionsPopoverOpen, setIsOptionsPopoverOpen ] = useState( false );
 	const [ isStyleOptionsPopoverOpen, setIsStyleOptionsPopoverOpen ] = useState( false );
 	const [ styleOptionsPopoverType, setStyleOptionsPopoverType ] = useState( null );
-	const [ ignoredWordList, setIgnoredWordList ] = useState( '' );
-	const [ customWordList, setCustomWordList ] = useState( '' );
+	const [ ignoredWordList, setIgnoredWordList ] = DEFAULT_SETTINGS.demo !== true
+		? useState( '' )
+		: useLocalStorage( DEFAULT_SETTINGS, 'writers_blocks__ignored-words' );
+	const [ customWordList, setCustomWordList ] = DEFAULT_SETTINGS.demo !== true
+		? useState( '' )
+		: useLocalStorage( DEFAULT_SETTINGS, 'writers_blocks__dictionary' );
 
 	const siteSettings = useSelect( ( select ) => {
 		return select( 'core' ).getEntityRecord( 'root', 'site' );
@@ -56,6 +63,12 @@ export const PluginPanel = () => {
 	// 		document.body.classList.remove( 'focus-mode' );
 	// 	}
 	// }, [ selectedBlock ] );
+
+	useEffect( () => {
+		if ( suggestions.demo === true ) {
+			localStorage.setItem( 'writers_blocks', JSON.stringify( suggestions ) );
+		}
+	}, [] );
 
 	useEffect( () => {
 		if ( siteSettings ) {
@@ -129,7 +142,7 @@ export const PluginPanel = () => {
 								value={ customWordList }
 								rows={ suggestions.dictionary.split( ',' ).length + 4 }
 								onChange={ ( value ) => {
-									setCustomWordList( value );
+									setCustomWordList( value ?? '' );
 								} }
 								spellCheck={ false }
 							/>
@@ -154,19 +167,37 @@ export const PluginPanel = () => {
 							const previouslyIgnoredWords = suggestions[ `ignored_${ styleOptionsPopoverType }` ].split( ',' );
 							const previousDictionary = suggestions.dictionary.split( ',' );
 
-							dispatch( 'core' ).saveEntityRecord(
-								'root',
-								'site',
-								{
-									writers_blocks: {
-										...suggestions,
-										[ `ignored_${styleOptionsPopoverType}` ]: ignoredWords.join( ',' ),
-										...(styleOptionsPopoverType === 'spell' ? {
-											dictionary: customWordList.split( '\n' ).join( ',' ),
-										} : {})
-									},
-								}
-							);
+							if ( suggestions.demo !== true ) {
+								dispatch( 'core' )
+									.saveEntityRecord(
+										'root',
+										'site',
+										{
+											writers_blocks: {
+												...suggestions,
+												[ `ignored_${styleOptionsPopoverType}` ]: ignoredWords.join( ',' ),
+												...(styleOptionsPopoverType === 'spell' ? {
+													dictionary: customWordList.split( '\n' ).join( ',' ),
+												} : {})
+											},
+										}
+									)
+									.then( ( { writers_blocks } ) => {
+										setSuggestions(
+											writers_blocks
+										);
+									} );
+							} else {
+								setSuggestions( {
+									...suggestions,
+									[ `ignored_${styleOptionsPopoverType}` ]: ignoredWords.join( ',' ),
+									...(styleOptionsPopoverType === 'spell' ? {
+										dictionary: customWordList.split( '\n' ).join( ',' ),
+									} : {})
+								} );
+							}
+
+							console.log(customWordList);
 
 							[
 								...customWordList.split( '\n' ),
@@ -240,20 +271,34 @@ export const PluginPanel = () => {
 											] }
 											onSelect={ ( value ) => {
 												setMode( value );
-												dispatch( 'core' ).saveEntityRecord(
-													'root',
-													'site',
-													{
-														writers_blocks: {
-															...suggestions,
-															mode: value,
-														},
-													}
-												);
-					
-												removeAnnotations( 'syntax' );
-												removeAnnotations( 'style' );
-												document.body.classList.remove( 'focus-mode' );
+												
+												if ( suggestions.demo !== true ) {
+													dispatch( 'core' )
+														.saveEntityRecord(
+															'root',
+															'site',
+															{
+																writers_blocks: {
+																	...suggestions,
+																	mode: value,
+																},
+															}
+														)
+														.then( ( { writers_blocks } ) => {
+															setSuggestions(
+																writers_blocks
+															);
+														} );
+												} else {
+													setSuggestions( {
+														...suggestions,
+														mode: value,
+													} );
+												}
+
+												Annotations.remove( 'syntax' );
+												Annotations.remove( 'style' );
+												// document.body.classList.remove( 'focus-mode' );
 
 												switch ( value ) {
 													case 'editing':
@@ -270,9 +315,11 @@ export const PluginPanel = () => {
 						
 														addAnnotations( blockWords );
 														break;
-													case 'focus':
-														document.body.classList.add( 'focus-mode' );
+													default:
 														break;
+													// case 'focus':
+													// 	document.body.classList.add( 'focus-mode' );
+													// 	break;
 												}
 											} }
 										/>
@@ -315,7 +362,7 @@ export const PluginPanel = () => {
 								);
 
 								if ( suggestions.syntax_mode === '1' ) {
-									removeAnnotations( 'syntax' );
+									Annotations.remove( 'syntax' );
 								}
 
 								if ( suggestions.focus_mode === '1' ) {
@@ -323,7 +370,7 @@ export const PluginPanel = () => {
 								}
 
 								if ( suggestions.editing_mode === '1' ) {
-									removeAnnotations( 'style' );
+									Annotations.remove( 'style' );
 								} else {
 									const blockProblems = select(
 										'writers-blocks/editor'
@@ -360,7 +407,7 @@ export const PluginPanel = () => {
 								);
 
 								if ( suggestions.editing_mode === '1' ) {
-									removeAnnotations( 'style' );
+									Annotations.remove( 'style' );
 								}
 
 								if ( suggestions.focus_mode === '1' ) {
@@ -368,7 +415,7 @@ export const PluginPanel = () => {
 								}
 
 								if ( suggestions.syntax_mode === '1' ) {
-									removeAnnotations( 'syntax' );
+									Annotations.remove( 'syntax' );
 								} else {
 									const blockWords = select(
 										'writers-blocks/editor'
@@ -401,11 +448,11 @@ export const PluginPanel = () => {
 								);
 
 								if ( suggestions.editing_mode === '1' ) {
-									removeAnnotations( 'style' );
+									Annotations.remove( 'style' );
 								}
 
 								if ( suggestions.syntax_mode === '1' ) {
-									removeAnnotations( 'syntax' );
+									Annotations.remove( 'syntax' );
 								}
 
 								if ( suggestions.focus_mode === '1' ) {
@@ -418,7 +465,7 @@ export const PluginPanel = () => {
 					</PanelRow> */}
 				</div>
 				<PanelBody title={ __( 'Readability', 'writers-blocks' ) }>
-					{ readingTime && score && polarity ? (
+					{ readingTime !== undefined && score !== undefined && polarity !== undefined ? (
 						<>
 							<PanelRow>
 								<span>Reading time</span>
@@ -463,20 +510,29 @@ export const PluginPanel = () => {
 												: true
 										}
 										onChange={ ( checked ) => {
-											dispatch( 'core' )
-												.saveEntityRecord( 'root', 'site', {
-													writers_blocks: {
-														...suggestions,
-														[ type ]: checked
-															? '1'
-															: '0',
-													},
-												} )
-												.then( ( { writers_blocks } ) => {
-													setSuggestions(
-														writers_blocks
-													);
-												} );
+											if ( suggestions.demo !== true ) {
+												dispatch( 'core' )
+													.saveEntityRecord( 'root', 'site', {
+														writers_blocks: {
+															...suggestions,
+															[ type ]: checked
+																? '1'
+																: '0',
+														},
+													} )
+													.then( ( { writers_blocks } ) => {
+														setSuggestions(
+															writers_blocks
+														);
+													} );
+											} else {
+												setSuggestions({
+													...suggestions,
+													[ type ]: checked
+														? '1'
+														: '0',
+												});
+											}
 
 											if ( checked ) {
 												const words = select(
@@ -520,20 +576,29 @@ export const PluginPanel = () => {
 												: true
 										}
 										onChange={ ( checked ) => {
-											dispatch( 'core' )
-												.saveEntityRecord( 'root', 'site', {
-													writers_blocks: {
-														...suggestions,
-														[ type ]: checked
-															? '1'
-															: '0',
-													},
-												} )
-												.then( ( { writers_blocks } ) => {
-													setSuggestions(
-														writers_blocks
-													);
-												} );
+											if ( suggestions.demo !== true ) {
+												dispatch( 'core' )
+													.saveEntityRecord( 'root', 'site', {
+														writers_blocks: {
+															...suggestions,
+															[ type ]: checked
+																? '1'
+																: '0',
+														},
+													} )
+													.then( ( { writers_blocks } ) => {
+														setSuggestions(
+															writers_blocks
+														);
+													} );
+											} else {
+												setSuggestions({
+													...suggestions,
+													[ type ]: checked
+														? '1'
+														: '0',
+												});
+											}
 
 											if ( checked ) {
 												const problems = select(

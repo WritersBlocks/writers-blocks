@@ -26,7 +26,7 @@ import { store as noticesStore } from '@wordpress/notices';
 import { PROBLEM_TYPES_WITH_IGNORE } from '../constants';
 import { store } from '../store';
 import { CopyButton } from '../components/CopyButton';
-// import { strip } from '../utils/strip-text';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const {
 	WB_SETTINGS: { settings: DEFAULT_SETTINGS },
@@ -45,7 +45,9 @@ const getPopoverPosition = ( element ) => element.getBoundingClientRect();
  * @return
  */
 const Tooltip = ( { isShown, target, annotationId } ) => {
-	const [ suggestions, setSuggestions ] = useState( DEFAULT_SETTINGS );
+	const [ suggestions, setSuggestions ] = DEFAULT_SETTINGS.demo !== true
+		? useState( DEFAULT_SETTINGS )
+		: useLocalStorage( DEFAULT_SETTINGS, 'writers_blocks' );
 	// const [ ignoredAnnotations, setIgnoredAnnotations ] = useState( null );
 
 	const siteSettings = useSelect( ( select ) => {
@@ -133,16 +135,29 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 								const { dictionary } = suggestions;
 								const newDictionary = new Set( [ ...( dictionary.length ? dictionary.split(',') : [] ), value ] );
 
-								dispatch( 'core' ).saveEntityRecord(
-									'root',
-									'site',
-									{
-										writers_blocks: {
-											...suggestions,
-											dictionary: [...newDictionary].join( ',' ),
-										},
-									}
-								);
+								if ( suggestions.demo !== true ) {
+									dispatch( 'core' )
+										.saveEntityRecord(
+											'root',
+											'site',
+											{
+												writers_blocks: {
+													...suggestions,
+													dictionary: [...newDictionary].join( ',' ),
+												},
+											}
+										)
+										.then( ( { writers_blocks } ) => {
+											setSuggestions(
+												writers_blocks
+											);
+										} );
+								} else {
+									setSuggestions({
+										...suggestions,
+										dictionary: [...newDictionary].join( ',' ),
+									});
+								}
 
 								createNotice(
 									'info',
@@ -173,16 +188,29 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 								const ignored = suggestions[ `ignored_${type}` ];
 								const newIgnored = new Set( [ ...( ignored.length ? ignored.split(',') : [] ), type === 'spell' ? value : value.toLowerCase() ] );
 
-								dispatch( 'core' ).saveEntityRecord(
-									'root',
-									'site',
-									{
-										writers_blocks: {
-											...suggestions,
-											[ `ignored_${type}` ]: [...newIgnored].join( ',' ),
-										},
-									}
-								);
+								if ( suggestions.demo !== true ) {
+									dispatch( 'core' )
+										.saveEntityRecord(
+											'root',
+											'site',
+											{
+												writers_blocks: {
+													...suggestions,
+													[ `ignored_${type}` ]: [...newIgnored].join( ',' ),
+												},
+											}
+										)
+										.then( ( { writers_blocks } ) => {
+											setSuggestions(
+												writers_blocks
+											);
+										} );
+								} else {
+									setSuggestions({
+										...suggestions,
+										[ `ignored_${type}` ]: [...newIgnored].join( ',' ),
+									});
+								}
 
 								createNotice(
 									'info',

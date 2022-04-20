@@ -7,7 +7,10 @@ import { useSelect, dispatch, select } from '@wordpress/data';
 import { ToolbarButton } from '@wordpress/components';
 import { useEffect, useState } from '@wordpress/element';
 
-import { removeAnnotations, addAnnotations } from '../decorators/gutenberg';
+import {
+	addAnnotations,
+	removeAnnotations,
+} from '../decorators/gutenberg';
 
 const {
 	WB_SETTINGS: { settings: DEFAULT_SETTINGS },

@@ -7,7 +7,10 @@ import { __ } from '@wordpress/i18n';
 import { ToolbarButton } from '@wordpress/components';
 import { useSelect, select } from '@wordpress/data';
 
-import { removeAnnotations, addAnnotations } from '../../decorators/gutenberg';
+import {
+	addAnnotations,
+	removeAnnotations,
+} from '../../decorators/gutenberg';
 
 export const EditToolbarButton = ( { setAttributes, isHighlighted } ) => {
 	const selectedBlock = useSelect( ( select ) =>

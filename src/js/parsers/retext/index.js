@@ -35,12 +35,12 @@ import aff from '../dictionary/en/aff';
 import retextAssuming from './assuming';
 import retextCliches from './cliches';
 
-export function parse( value, config ) {
+export function parse( value = '', config = {} ) {
 	return core( value, makeText( config ) );
 }
 
 function makeText( {
-	dictionary,
+	dictionary = '',
 	ignored: {
 		passive = '',
 		intensify = '',

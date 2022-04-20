@@ -51,7 +51,7 @@ function get_options() {
 	$options = get_option( 'writers_blocks', [] );
 
 	$options['demo']                = defined( 'WRITERS_BLOCKS_DEMO' ) ? WRITERS_BLOCKS_DEMO : false;
-	$options['mode']                = defined( 'WRITERS_BLOCKS_DEMO' ) && WRITERS_BLOCKS_DEMO ? 'editing' : $options['mode'];
+	$options['mode']                = defined( 'WRITERS_BLOCKS_DEMO' ) && WRITERS_BLOCKS_DEMO === true ? 'editing' : $options['mode'];
 	$options['dictionary']          = apply_filters( 'writers_blocks_dictionary', $options['dictionary'] );
 	$options['ignored_profanities'] = apply_filters( 'writers_blocks_ignored_profanities', $options['ignored_profanities'] );
 	$options['ignored_spell']       = apply_filters( 'writers_blocks_ignored_spell', $options['ignored_spell'] );
@@ -82,6 +82,9 @@ function register_settings() {
 					'properties' => array(
 						'mode' => array(
 							'type' => 'string',
+						),
+						'demo' => array(
+							'type' => 'boolean',
 						),
 						'simplify' => array(
 							'type' => 'string',
@@ -198,6 +201,10 @@ function sanitize_settings( $settings ) {
 
 	if ( isset( $settings['mode'] ) ) {
 		$new_settings['mode'] = $settings['mode'];
+	}
+
+	if ( isset( $settings['demo'] ) ) {
+		$new_settings['demo'] = $settings['demo'];
 	}
 
 	if ( isset( $settings['simplify'] ) ) {
@@ -360,13 +367,14 @@ function editor_scripts() {
  */
 function activate() {
 	// Do not override existing settings
-	if ( ! empty( get_option( 'writers_blocks' ) ) ) {
-		return;
-	}
+	// if ( ! empty( get_option( 'writers_blocks' ) ) ) {
+	// 	return;
+	// }
 
 	update_option(
 		'writers_blocks',
 		[
+			'demo'                => false,
 			'mode'                => 'writing',
 			'simplify'            => '1',
 			'intensify'           => '1',

@@ -11,22 +11,122 @@ import '@wordpress/annotations';
 /**
  * Internal depenedencies
  */
-import parse from '../parsers';
+// import parse from '../parsers';
 import { store } from '../store';
 import {
-	PROBLEM_TYPES,
-	SYNTAX_TYPES,
 	ALLOWED_BLOCKS,
+	SYNTAX_TYPES,
 	BLOCK_TYPE_CONTENT_ATTRIBUTE,
 } from '../constants';
+import { Parser } from '../workers/parser';
+import { tokenize } from '../utils/tokenizer';
 
 const {
 	WB_SETTINGS: { settings: DEFAULT_SETTINGS },
-	btoa,
 } = window;
 
 let isUpdatingProblems = false;
 let queue = [];
+
+export const removeAnnotations = ( annotationType, blockId = null ) => {
+	// return new Promise( ( resolve, reject ) => {
+		const annotations = select( 'core/annotations' )
+			.__experimentalGetAnnotations()
+			.filter( ( annotation ) =>
+				blockId
+					? annotation.blockClientId === blockId
+					: true &&
+					[ ...PROBLEM_TYPES, ...SYNTAX_TYPES ]
+							.map(
+								( type ) =>
+									`writers-blocks--${ annotationType }--${ type }`
+							)
+							.includes( annotation.source )
+			);
+
+		annotations.forEach( ( { id } ) => {
+			// window.requestAnimationFrame( () => {
+				// setInterval( () => {
+					dispatch( 'core/annotations' ).__experimentalRemoveAnnotation( id );
+				// }, 100 );
+			// } );
+		} );
+
+	// 	resolve();
+	// } );
+};
+
+export const addAnnotations = (
+	blockProblems,
+	{ clientId = null, type, ignore = [], options = {} } = {},
+) => {
+	// return new Promise( ( resolve, reject ) => {
+		if ( clientId ) {
+			removeAnnotations( type, clientId );
+		}
+	
+		const annotations = blockProblems.filter(
+			( problem ) =>
+				problem.state !== 'ignored' && ! ignore.includes( problem.id )
+		);
+		const readabilityAnnotations = annotations.filter(
+			( problem ) => problem.type === 'readability'
+		);
+
+		const ANNOTATION_LIST = [
+			...readabilityAnnotations,
+			...annotations.filter(
+				( annotation ) =>
+					annotation.type &&
+					annotation.type !== 'readability' &&
+					annotation.type !== 'assuming' &&
+					annotation.type !== 'spell'
+			),
+			...annotations.filter(
+				( annotation ) =>
+					annotation.type &&
+					annotation.type === 'assuming'
+			),
+			...annotations.filter(
+				( annotation ) =>
+					annotation.type &&
+					annotation.type === 'spell'
+			),
+		];
+
+		ANNOTATION_LIST.forEach( ( annotation, index ) => {
+			const {
+				blockId,
+				blockName,
+				annotationId,
+				mode,
+				type,
+				index: start,
+				offset: end,
+			} = annotation;
+			const [ name ] = type.split( '-' );
+	
+			if (
+				options[ name ]
+					? options[ name ] === '1'
+					: true
+			) {
+				window.requestIdleCallback( () => {
+					dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
+						source: `writers-blocks--${ mode }--${ type }`,
+						blockClientId: blockId,
+						richTextIdentifier: BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content',
+						range: {
+							start,
+							end,
+						},
+						id: annotationId,
+					} );
+				} );
+			}
+		} );
+	// } );
+};
 
 export function isAnnotationAvailable() {
 	return (
@@ -53,27 +153,19 @@ export const addBlockToQueue = ( block, unshift ) => {
 	}
 };
 
-export const getAnnotatableTextFromBlock = ( block ) => {
-	const {
-		clientId: blockId,
-		name: blockName,
-		attributes: blockAttributes,
-	} = block;
-
-	const isAllowed = ALLOWED_BLOCKS.includes( blockName );
-	const attribute = BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content';
-
-	if ( ! isAllowed ) {
-		console.log(block);
+export const parseBlockText = async ( text = '', { preserveWhiteSpace = true, offset = 0 } ) => {
+	if ( ! text ) {
 		return {
 			nodes: [],
-			problems: [],
+			messages: [],
 		};
 	}
 
 	const {
-		writers_blocks = DEFAULT_SETTINGS,
-	} = select( 'core' ).getEntityRecord( 'root', 'site' ) ?? {};
+		writers_blocks,
+	} = select( 'core' ).getEntityRecord( 'root', 'site' ) ?? {
+		writers_blocks: DEFAULT_SETTINGS.demo !== true ? DEFAULT_SETTINGS : JSON.parse( window.localStorage.getItem( 'writers_blocks' ) ),
+	};
 	const {
 		dictionary = '',
 		ignored_passive: ignoredPassive = '',
@@ -87,8 +179,9 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 		ignored_cliche: ignoredCliche = '',
 	} = writers_blocks;
 
-	const { messages: problems, nodes } = parse( blockAttributes[ attribute ], {
-		preserveWhiteSpace: blockName !== 'core/list',
+	return Parser.parse( text, {
+		offset,
+		preserveWhiteSpace,
 		dictionary,
 		ignored: {
 			passive: ignoredPassive,
@@ -102,31 +195,57 @@ export const getAnnotatableTextFromBlock = ( block ) => {
 			cliche: ignoredCliche,
 		},
 	} );
+};
+
+export const formatAnnotation = (
+	{ clientId, name, attributes },
+	annotation,
+	mode = 'style',
+) => ( {
+	annotationId: uuid(),
+	mode,
+	blockId: clientId,
+	blockName: name,
+	blockAttributes: attributes,
+	...annotation,
+} );
+
+export const getAnnotatableTextFromBlock = async ( block ) => {
+	const {
+		name: blockName,
+		attributes: blockAttributes,
+		blockId,
+	} = block;
+
+	const id = uuid();
+	const isAllowed = ALLOWED_BLOCKS.includes( blockName );
+	const attribute = BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content';
+
+	if ( ! isAllowed ) {
+		return {
+			nodes: [],
+			problems: [],
+		};
+	}
+
+	console.log(
+		`${ blockName } start`
+	)
+	window.performance.mark( `${ blockName }-${id}-start` );
+
+	const { nodes, messages: problems } = await parseBlockText( blockAttributes[ attribute ], {
+		preserveWhiteSpace: blockName !== 'core/list',
+	} );
+
+	window.performance.mark( `${ blockName }-${id}-end` );
+	window.performance.measure( `${ blockName }-${id}-time`, `${ blockName }-${id}-start`, `${ blockName }-${id}-end` );
+	console.log(
+		`${ blockName }: ${ window.performance.getEntriesByName( `${ blockName }-${id}-time` )[ 0 ].duration }ms`,
+	)
 
 	return {
-		nodes: ! nodes.length
-			? []
-			: nodes.map( ( node ) => ( {
-					blockId,
-					blockName,
-					blockAttributes,
-					annotationId: uuid(),
-					mode: 'syntax',
-					...node,
-			  } ) ),
-		problems: ! problems.length
-			? []
-			: problems.map( ( problem ) => ( {
-					blockId,
-					blockName,
-					blockAttributes,
-					annotationId: uuid(),
-					id: btoa(
-						`${ problem.type }_${ problem.index }_${ problem.offset }_${ problem.value }`
-					),
-					mode: 'style',
-					...problem,
-			  } ) ),
+		nodes: nodes.map( ( node ) => formatAnnotation( block, node, 'syntax' ) ),
+		problems: problems.map( ( problem ) => formatAnnotation( block, problem ) ),
 	};
 };
 
@@ -135,11 +254,11 @@ export const getAnnotatableText = ( blocks ) => {
 		ALLOWED_BLOCKS.includes( block.name )
 	);
 	const { nodes, problems } = allowedBlocks.reduce(
-		( acc, block ) => {
+		async ( acc, block ) => {
 			const {
 				nodes: blockNodes,
 				problems: blockProblems,
-			} = getAnnotatableTextFromBlock( block );
+			} = await getAnnotatableTextFromBlock( block );
 			acc.nodes = [ ...acc.nodes, ...blockNodes ];
 			acc.problems = [ ...acc.problems, ...blockProblems ];
 
@@ -154,189 +273,7 @@ export const getAnnotatableText = ( blocks ) => {
 	};
 };
 
-export const removeAnnotations = ( annotationType, blockId = null ) => {
-	const annotations = select( 'core/annotations' )
-		.__experimentalGetAnnotations()
-		.filter( ( annotation ) =>
-			blockId
-				? annotation.blockClientId === blockId
-				: true &&
-				  [ ...PROBLEM_TYPES, ...SYNTAX_TYPES ]
-						.map(
-							( type ) =>
-								`writers-blocks--${ annotationType }--${ type }`
-						)
-						.includes( annotation.source )
-		);
-
-	annotations.forEach( ( annotation ) => {
-		dispatch( 'core/annotations' ).__experimentalRemoveAnnotation(
-			annotation.id
-		);
-	} );
-};
-
-export const addAnnotations = (
-	blockProblems,
-	{ clientId = null, type, ignore = [] } = {}
-) => {
-	if ( clientId ) {
-		removeAnnotations( type, clientId );
-	}
-
-	const annotations = blockProblems.filter(
-		( problem ) =>
-			problem.state !== 'ignored' && ! ignore.includes( problem.id )
-	);
-	const readabilityAnnotations = annotations.filter(
-		( problem ) => problem.type === 'readability'
-	);
-
-	readabilityAnnotations.forEach( ( annotation ) => {
-		const {
-			blockId,
-			blockName,
-			annotationId,
-			mode,
-			type,
-			index,
-			offset,
-		} = annotation;
-		const [ name ] = type.split( '-' );
-
-		if (
-			DEFAULT_SETTINGS[ name ]
-				? DEFAULT_SETTINGS[ name ] === '1'
-				: true
-		) {
-			dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
-				source: `writers-blocks--${ mode }--${ type }`,
-				blockClientId: blockId,
-				richTextIdentifier: BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content',
-				range: {
-					start: index,
-					end: offset,
-				},
-				id: annotationId,
-			} );
-		}
-	} );
-
-	annotations
-		.filter(
-			( annotation ) =>
-				annotation.type &&
-				annotation.type !== 'readability' &&
-				annotation.type !== 'assuming' &&
-				annotation.type !== 'spell'
-		)
-		.forEach( ( annotation ) => {
-			const {
-				blockId,
-				blockName,
-				annotationId,
-				mode,
-				type,
-				index,
-				offset,
-			} = annotation;
-			const [ name ] = type.split( '-' );
-
-			if (
-				DEFAULT_SETTINGS[ name ]
-					? DEFAULT_SETTINGS[ name ] === '1'
-					: true
-			) {
-				dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
-					source: `writers-blocks--${ mode }--${ type }`,
-					blockClientId: blockId,
-					richTextIdentifier:
-						BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content',
-					range: {
-						start: index,
-						end: offset,
-					},
-					id: annotationId,
-				} );
-			}
-		} );
-
-	annotations
-		.filter(
-			( annotation ) =>
-				annotation.type &&
-				annotation.type === 'assuming'
-		)
-		.forEach( ( annotation ) => {
-			const {
-				blockId,
-				blockName,
-				annotationId,
-				mode,
-				type,
-				index,
-				offset,
-			} = annotation;
-			const [ name ] = type.split( '-' );
-
-			if (
-				DEFAULT_SETTINGS[ name ]
-					? DEFAULT_SETTINGS[ name ] === '1'
-					: true
-			) {
-				dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
-					source: `writers-blocks--${ mode }--${ type }`,
-					blockClientId: blockId,
-					richTextIdentifier:
-						BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content',
-					range: {
-						start: index,
-						end: offset,
-					},
-					id: annotationId,
-				} );
-			}
-		} );
-
-	annotations
-		.filter(
-			( annotation ) =>
-				annotation.type &&
-				annotation.type === 'spell'
-		)
-		.forEach( ( annotation ) => {
-			const {
-				blockId,
-				blockName,
-				annotationId,
-				mode,
-				type,
-				index,
-				offset,
-			} = annotation;
-			const [ name ] = type.split( '-' );
-
-			if (
-				DEFAULT_SETTINGS[ name ]
-					? DEFAULT_SETTINGS[ name ] === '1'
-					: true
-			) {
-				dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
-					source: `writers-blocks--${ mode }--${ type }`,
-					blockClientId: blockId,
-					richTextIdentifier:
-						BLOCK_TYPE_CONTENT_ATTRIBUTE[ blockName ] || 'content',
-					range: {
-						start: index,
-						end: offset,
-					},
-					id: annotationId,
-				} );
-			}
-		} );
-};
-
-export const scheduleAnnotations = debounce( () => {
+export const scheduleAnnotations = debounce( async () => {
 	if ( isUpdatingProblems ) {
 		return;
 	}
@@ -352,7 +289,7 @@ export const scheduleAnnotations = debounce( () => {
 	const {
 		problems: blockProblems,
 		nodes: blockNodes,
-	} = getAnnotatableTextFromBlock( block );
+	} = await getAnnotatableTextFromBlock( block );
 	const { clientId } = block;
 
 	if ( blockProblems.length ) {
@@ -376,13 +313,13 @@ export const scheduleAnnotations = debounce( () => {
 	};
 
 	const {
-		mode: writingMode = DEFAULT_SETTINGS.demo ? 'editing' : 'writing',
+		mode: writingMode = DEFAULT_SETTINGS.demo === true ? 'editing' : 'writing',
 	} = writers_blocks;
 
-	if ( writingMode === 'syntax' || writingMode === 'editing' ) {
+	if ( writingMode === 'syntax' || writingMode === 'editing' || DEFAULT_SETTINGS.demo === true ) {
 		addAnnotations(
-			writingMode === 'editing' ? blockProblems : blockNodes,
-			{ clientId, type: writingMode === 'editing' ? 'style' : 'syntax' }
+			writingMode === 'editing' || DEFAULT_SETTINGS.demo === true ? blockProblems : blockNodes,
+			{ clientId, type: writingMode === 'editing' || DEFAULT_SETTINGS.demo === true ? 'style' : 'syntax' }
 		);
 	}
 

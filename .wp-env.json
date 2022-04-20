@@ -1,4 +1,8 @@
 {
 	"core": "WordPress/WordPress",
-	"plugins": [ "." ]
+	"plugins": [ "." ],
+	"themes": [ "tomjn/Frontenberg" ],
+	"config": {
+		"WRITERS_BLOCKS_DEMO": true
+	}
 }

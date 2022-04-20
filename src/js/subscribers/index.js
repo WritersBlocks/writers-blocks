@@ -1,3 +1,3 @@
 import './annotations';
-// import './toolbar';
+import './readability';
 import './tooltip';
