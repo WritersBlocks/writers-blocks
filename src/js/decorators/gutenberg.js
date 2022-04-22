@@ -16,10 +16,12 @@ import { store } from '../store';
 import {
 	ALLOWED_BLOCKS,
 	SYNTAX_TYPES,
+	PROBLEM_TYPES,
 	BLOCK_TYPE_CONTENT_ATTRIBUTE,
 } from '../constants';
 import { Parser } from '../workers/parser';
-import { tokenize } from '../utils/tokenizer';
+import { tokenize } from '../parsers/retext/tokenizer';
+import { normalize } from '../utils/normalize-text';
 
 const {
 	WB_SETTINGS: { settings: DEFAULT_SETTINGS },
@@ -122,7 +124,7 @@ export const addAnnotations = (
 						},
 						id: annotationId,
 					} );
-				} );
+				}, { timeout: 1000 } );
 			}
 		} );
 	// } );
@@ -153,7 +155,11 @@ export const addBlockToQueue = ( block, unshift ) => {
 	}
 };
 
-export const parseBlockText = async ( text = '', { preserveWhiteSpace = true, offset = 0 } ) => {
+export const parseBlockText = async ( text = '', {
+	preserveWhiteSpace = true,
+	previousBlockText = '',
+	offset = 0,
+} ) => {
 	if ( ! text ) {
 		return {
 			nodes: [],
@@ -178,23 +184,42 @@ export const parseBlockText = async ( text = '', { preserveWhiteSpace = true, of
 		ignored_assuming: ignoredAssuming = '',
 		ignored_cliche: ignoredCliche = '',
 	} = writers_blocks;
+	const normalizedText = normalize( text, { preserveWhiteSpace } );
 
-	return Parser.parse( text, {
-		offset,
-		preserveWhiteSpace,
-		dictionary,
-		ignored: {
-			passive: ignoredPassive,
-			equality: ignoredEquality,
-			spell: ignoredSpell,
-			profanities: ignoredProfanities,
-			simplify: ignoredSimplify,
-			diacritics: ignoredDiacritics,
-			intensify: ignoredIntensify,
-			assuming: ignoredAssuming,
-			cliche: ignoredCliche,
-		},
-	} );
+	const { sentences } = tokenize( normalizedText );
+	const { sentences: previousSentences } = previousBlockText ? tokenize( previousBlockText ) : { sentences: [] };
+
+	const parsedSentences = await Promise.all(
+		sentences.map( ( sentence, index ) => {
+			if ( ! previousSentences[ index ] || sentence !== previousSentences[ index ] ) {
+				return Parser.parse( sentence, {
+					offset: sentences.slice( 0, index ).reduce( ( acc, sentence ) => acc + sentence.length, 0 ),
+					sentence: index,
+					dictionary,
+					ignored: {
+						passive: ignoredPassive,
+						equality: ignoredEquality,
+						spell: ignoredSpell,
+						profanities: ignoredProfanities,
+						simplify: ignoredSimplify,
+						diacritics: ignoredDiacritics,
+						intensify: ignoredIntensify,
+						assuming: ignoredAssuming,
+						cliche: ignoredCliche,
+					},
+				} );
+			}
+		} )
+	);
+
+	return parsedSentences.reduce( ( acc, sentence ) => {
+		if ( sentence ) {
+			acc.nodes.push( ...sentence.nodes );
+			acc.messages.push( ...sentence.messages );
+		}
+
+		return acc;
+	}, { nodes: [], messages: [] } );
 };
 
 export const formatAnnotation = (
@@ -316,10 +341,10 @@ export const scheduleAnnotations = debounce( async () => {
 		mode: writingMode = DEFAULT_SETTINGS.demo === true ? 'editing' : 'writing',
 	} = writers_blocks;
 
-	if ( writingMode === 'syntax' || writingMode === 'editing' || DEFAULT_SETTINGS.demo === true ) {
+	if ( writingMode === 'syntax' || writingMode === 'editing' ) {
 		addAnnotations(
-			writingMode === 'editing' || DEFAULT_SETTINGS.demo === true ? blockProblems : blockNodes,
-			{ clientId, type: writingMode === 'editing' || DEFAULT_SETTINGS.demo === true ? 'style' : 'syntax' }
+			writingMode === 'editing' ? blockProblems : blockNodes,
+			{ clientId, type: writingMode === 'editing' ? 'style' : 'syntax' }
 		);
 	}
 

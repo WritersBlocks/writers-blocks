@@ -1,5 +1,3 @@
-const { resolve } = require( 'path' );
-
 /**
  * External dependencies
  */
@@ -15,6 +13,7 @@ module.exports = {
 		'css/editor': path.resolve( process.cwd(), 'src/css/editor.css' ),
 	},
 	output: {
+		...defaultConfig.output,
 		clean: true,
 		chunkFilename: 'js/[name].[contenthash].chunk.js',
 	},

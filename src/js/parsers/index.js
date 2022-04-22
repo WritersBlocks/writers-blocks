@@ -1,9 +1,8 @@
 import { parse as retext } from './retext';
-import { strip } from '../utils/strip-text';
 
 export const parse = ( text = '', {
 	offset = 0,
-	preserveWhiteSpace = true,
+	sentence = 0,
 	dictionary = '',
 	ignored: {
 		passive = '',
@@ -17,11 +16,10 @@ export const parse = ( text = '', {
 		cliche = '',
 	} = {},
 } = {} ) => {
-	const content = strip( text, { preserveWhiteSpace } );
 	const {
 		tree: { messages },
 		nodes,
-	} = retext( content, {
+	} = retext( text, {
 		dictionary,
 		ignored: {
 			passive,
@@ -60,6 +58,7 @@ export const parse = ( text = '', {
 				replacements: expected,
 				index: start + offset,
 				offset : end + offset,
+				sentence,
 			} ) ),
 	};
 };

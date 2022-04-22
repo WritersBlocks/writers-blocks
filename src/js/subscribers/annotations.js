@@ -54,7 +54,7 @@ domReady( () => {
 			return;
 		}
 
-		const isTyping = select( 'core/block-editor' ).isTyping();
+		// const isTyping = select( 'core/block-editor' ).isTyping();
 		const {
 			writers_blocks,
 		} = select( 'core' ).getEntityRecord( 'root', 'site' ) ?? {
@@ -65,10 +65,10 @@ domReady( () => {
 			mode: writingMode = DEFAULT_SETTINGS.demo ? 'editing' : 'writing',
 		} = writers_blocks;
 
-		if ( isTyping ) {
-			console.log('is typing');
-			return;
-		}
+		// if ( isTyping ) {
+		// 	console.log('is typing');
+		// 	return;
+		// }
 
 		const blocks = select( 'core/block-editor' ).getBlocks();
 		const problems = select( store ).getProblems();
@@ -144,5 +144,5 @@ domReady( () => {
 		if ( getQueueLength() > 0 ) {
 			scheduleAnnotations();
 		}
-	}, 250 ) );
+	}, 500 ) );
 } );
