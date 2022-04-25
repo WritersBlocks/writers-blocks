@@ -16,6 +16,7 @@ import { store } from '../store';
 import {
 	ALLOWED_BLOCKS,
 	SYNTAX_TYPES,
+	PROBLEM_TYPES,
 	BLOCK_TYPE_CONTENT_ATTRIBUTE,
 } from '../constants';
 import { Parser } from '../workers/parser';
