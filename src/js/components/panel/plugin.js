@@ -28,7 +28,7 @@ import {
 } from '../../constants';
 import { store } from '../../store';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { addAnnotations } from '../../decorators/gutenberg';
+import { addAnnotations, removeAnnotations } from '../../decorators/gutenberg';
 
 const {
 	WB_SETTINGS: { settings: DEFAULT_SETTINGS },
@@ -296,8 +296,8 @@ export const PluginPanel = () => {
 													} );
 												}
 
-												Annotations.remove( 'syntax' );
-												Annotations.remove( 'style' );
+												removeAnnotations( 'syntax' );
+												removeAnnotations( 'style' );
 												// document.body.classList.remove( 'focus-mode' );
 
 												switch ( value ) {
@@ -362,7 +362,7 @@ export const PluginPanel = () => {
 								);
 
 								if ( suggestions.syntax_mode === '1' ) {
-									Annotations.remove( 'syntax' );
+									removeAnnotations( 'syntax' );
 								}
 
 								if ( suggestions.focus_mode === '1' ) {
@@ -370,7 +370,7 @@ export const PluginPanel = () => {
 								}
 
 								if ( suggestions.editing_mode === '1' ) {
-									Annotations.remove( 'style' );
+									removeAnnotations( 'style' );
 								} else {
 									const blockProblems = select(
 										'writers-blocks/editor'
@@ -407,7 +407,7 @@ export const PluginPanel = () => {
 								);
 
 								if ( suggestions.editing_mode === '1' ) {
-									Annotations.remove( 'style' );
+									removeAnnotations( 'style' );
 								}
 
 								if ( suggestions.focus_mode === '1' ) {
@@ -415,7 +415,7 @@ export const PluginPanel = () => {
 								}
 
 								if ( suggestions.syntax_mode === '1' ) {
-									Annotations.remove( 'syntax' );
+									removeAnnotations( 'syntax' );
 								} else {
 									const blockWords = select(
 										'writers-blocks/editor'
@@ -448,11 +448,11 @@ export const PluginPanel = () => {
 								);
 
 								if ( suggestions.editing_mode === '1' ) {
-									Annotations.remove( 'style' );
+									removeAnnotations( 'style' );
 								}
 
 								if ( suggestions.syntax_mode === '1' ) {
-									Annotations.remove( 'syntax' );
+									removeAnnotations( 'syntax' );
 								}
 
 								if ( suggestions.focus_mode === '1' ) {
