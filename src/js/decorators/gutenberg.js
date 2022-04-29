@@ -59,7 +59,7 @@ export const removeAnnotations = ( annotationType, blockId = null ) => {
 
 export const addAnnotations = (
 	blockProblems,
-	{ clientId = null, type, ignore = [], options = {} } = {},
+	{ clientId = null, type, ignore = [], options = DEFAULT_SETTINGS } = {},
 ) => {
 	// return new Promise( ( resolve, reject ) => {
 		if ( clientId ) {
@@ -319,8 +319,15 @@ export const scheduleAnnotations = debounce( async () => {
 
 	if ( writingMode === 'syntax' || writingMode === 'editing' || DEFAULT_SETTINGS.demo === true ) {
 		addAnnotations(
-			writingMode === 'editing' || DEFAULT_SETTINGS.demo === true ? blockProblems : blockNodes,
-			{ clientId, type: writingMode === 'editing' || DEFAULT_SETTINGS.demo === true ? 'style' : 'syntax' }
+			writingMode === 'editing' || DEFAULT_SETTINGS.demo === true
+				? blockProblems
+				: blockNodes,
+			{
+				clientId,
+				type: writingMode === 'editing' || DEFAULT_SETTINGS.demo === true
+					? 'style'
+					: 'syntax',
+			}
 		);
 	}
 
