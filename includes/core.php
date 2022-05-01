@@ -50,20 +50,10 @@ function get_setting( $setting, $parent = false ) {
 function get_options() {
 	$options = get_option( 'writers_blocks', [] );
 
-	$options['demo']                = defined( 'WRITERS_BLOCKS_DEMO' ) ? WRITERS_BLOCKS_DEMO : false;
-	$options['mode']                = defined( 'WRITERS_BLOCKS_DEMO' ) && WRITERS_BLOCKS_DEMO === true ? 'editing' : $options['mode'];
-	$options['dictionary']          = apply_filters( 'writers_blocks_dictionary', $options['dictionary'] );
-	$options['ignored_profanities'] = apply_filters( 'writers_blocks_ignored_profanities', $options['ignored_profanities'] );
-	$options['ignored_spell']       = apply_filters( 'writers_blocks_ignored_spell', $options['ignored_spell'] );
-	$options['ignored_simplify']    = apply_filters( 'writers_blocks_ignored_simplify', $options['ignored_simplify'] );
-	$options['ignored_intensify']   = apply_filters( 'writers_blocks_ignored_intensify', $options['ignored_intensify'] );
-	$options['ignored_equality']    = apply_filters( 'writers_blocks_ignored_equality', $options['ignored_equality'] );
-	$options['ignored_passive']     = apply_filters( 'writers_blocks_ignored_passive', $options['ignored_passive'] );
-	$options['ignored_diacritics']  = apply_filters( 'writers_blocks_ignored_diacritics', $options['ignored_diacritics'] );
-	$options['ignored_assuming']    = apply_filters( 'writers_blocks_ignored_assuming', $options['ignored_assuming'] );
-	$options['ignored_cliche']      = apply_filters( 'writers_blocks_ignored_cliche', $options['ignored_cliche'] );
+	$options['demo'] = defined( 'WRITERS_BLOCKS_DEMO' ) ? WRITERS_BLOCKS_DEMO : false;
+	$options['mode'] = defined( 'WRITERS_BLOCKS_DEMO' ) && WRITERS_BLOCKS_DEMO === true ? 'editing' : $options['mode'];
 
-	return $options;
+	return apply_filters( 'writers_blocks_options', $options );
 }
 
 /**
