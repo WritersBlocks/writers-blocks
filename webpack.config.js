@@ -22,7 +22,9 @@ module.exports = {
 	plugins: [
 		...defaultConfig.plugins,
 		new RemoveEmptyScriptsPlugin(),
-		new WebWorkerPlugin(),
+		new WebWorkerPlugin({
+			filename: 'js/[name].[contenthash].worker.js',
+		}),
 	],
 	module: {
 		...defaultConfig.module,
