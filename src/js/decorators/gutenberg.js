@@ -21,6 +21,7 @@ import {
 } from '../constants';
 import { Parser } from '../workers/parser';
 import { tokenize } from '../utils/tokenizer';
+import { strip } from '../utils/strip-text';
 
 const {
 	WB_SETTINGS: { settings: DEFAULT_SETTINGS },
@@ -58,8 +59,8 @@ export const removeAnnotations = ( annotationType, blockId = null ) => {
 };
 
 export const addAnnotations = (
-	blockProblems,
-	{ clientId = null, type, ignore = [], options = DEFAULT_SETTINGS } = {},
+	blockProblems = [],
+	{ clientId = null, type = 'style', ignore = [], options = DEFAULT_SETTINGS } = {},
 ) => {
 	// return new Promise( ( resolve, reject ) => {
 		if ( clientId ) {
