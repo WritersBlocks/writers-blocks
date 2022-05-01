@@ -336,133 +336,6 @@ export const PluginPanel = () => {
 							) }
 						</DropdownMenu>
 					</PanelRow>
-					{/* <PanelRow>
-						<ToggleControl
-							label={ __( 'Editing Mode', 'writers-blocks' ) }
-							checked={ suggestions.editing_mode === '1' }
-							onChange={ () => {
-								dispatch( 'core' ).saveEntityRecord(
-									'root',
-									'site',
-									{
-										writers_blocks: {
-											...suggestions,
-											syntax_mode:
-												suggestions.syntax_mode === '1' &&
-												suggestions.editing_mode === '0'
-													? '0'
-													: suggestions.syntax_mode,
-											editing_mode:
-												suggestions.editing_mode === '1'
-													? '0'
-													: '1',
-											focus_mode: '0',
-										},
-									}
-								);
-
-								if ( suggestions.syntax_mode === '1' ) {
-									removeAnnotations( 'syntax' );
-								}
-
-								if ( suggestions.focus_mode === '1' ) {
-									document.body.classList.remove( 'focus-mode' );
-								}
-
-								if ( suggestions.editing_mode === '1' ) {
-									removeAnnotations( 'style' );
-								} else {
-									const blockProblems = select(
-										'writers-blocks/editor'
-									).getProblems();
-
-									addAnnotations( blockProblems );
-								}
-							} }
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label={ __( 'Syntax Mode', 'writers-blocks' ) }
-							checked={ suggestions.syntax_mode === '1' }
-							onChange={ () => {
-								dispatch( 'core' ).saveEntityRecord(
-									'root',
-									'site',
-									{
-										writers_blocks: {
-											...suggestions,
-											editing_mode:
-												suggestions.editing_mode === '1' &&
-												suggestions.syntax_mode === '0'
-													? '0'
-													: suggestions.editing_mode,
-											syntax_mode:
-												suggestions.syntax_mode === '1'
-													? '0'
-													: '1',
-											focus_mode: '0',
-										},
-									}
-								);
-
-								if ( suggestions.editing_mode === '1' ) {
-									removeAnnotations( 'style' );
-								}
-
-								if ( suggestions.focus_mode === '1' ) {
-									document.body.classList.remove( 'focus-mode' );
-								}
-
-								if ( suggestions.syntax_mode === '1' ) {
-									removeAnnotations( 'syntax' );
-								} else {
-									const blockWords = select(
-										'writers-blocks/editor'
-									).getWords();
-
-									addAnnotations( blockWords );
-								}
-							} }
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label={ __( 'Focus Mode', 'writers-blocks' ) }
-							checked={ suggestions.focus_mode === '1' }
-							onChange={ () => {
-								dispatch( 'core' ).saveEntityRecord(
-									'root',
-									'site',
-									{
-										writers_blocks: {
-											...suggestions,
-											editing_mode: '0',
-											syntax_mode: '0',
-											focus_mode:
-												suggestions.focus_mode === '1'
-													? '0'
-													: '1',
-										},
-									}
-								);
-
-								if ( suggestions.editing_mode === '1' ) {
-									removeAnnotations( 'style' );
-								}
-
-								if ( suggestions.syntax_mode === '1' ) {
-									removeAnnotations( 'syntax' );
-								}
-
-								if ( suggestions.focus_mode === '1' ) {
-									document.body.classList.remove( 'focus-mode' );
-								} else {
-									document.body.classList.add( 'focus-mode' );
-								}
-							} }
-						/>
-					</PanelRow> */}
 				</div>
 				<PanelBody title={ __( 'Readability', 'writers-blocks' ) }>
 					{ readingTime !== undefined && score !== undefined && polarity !== undefined ? (
@@ -605,7 +478,12 @@ export const PluginPanel = () => {
 													store
 												).getProblemsByType( type );
 
-												addAnnotations( problems );
+												addAnnotations( problems, {
+													options: {
+														...suggestions,
+														[ type ]: '1',
+													}
+												} );
 											} else {
 												dispatch(
 													'core/annotations'
@@ -629,7 +507,11 @@ export const PluginPanel = () => {
 																'readability' &&
 															suggestions[ type ] ===
 																'1'
-													)
+													),
+													{ options: {
+														...suggestions,
+														[ type ]: '1',
+													} }
 												);
 											}
 										} }
