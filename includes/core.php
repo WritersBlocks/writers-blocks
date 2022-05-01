@@ -76,68 +76,68 @@ function register_settings() {
 						'demo' => array(
 							'type' => 'boolean',
 						),
+						'spell' => array(
+							'type' => 'boolean',
+						),
 						'simplify' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'intensify' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'assuming' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'cliche' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'indefinite_article' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'contractions' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'repeated_words' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'contractions' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'redundant_acronyms' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'diacritics' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'sentence_spacing' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'passive' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'equality' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'profanities' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'readability' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'noun' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'adjective' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'adverb' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'verb' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'conjunction' => array(
-							'type' => 'string',
-						),
-						'spell' => array(
-							'type' => 'string',
+							'type' => 'boolean',
 						),
 						'dictionary' => array(
 							'type' => 'string',
@@ -366,26 +366,26 @@ function activate() {
 		[
 			'demo'                => false,
 			'mode'                => 'writing',
-			'simplify'            => '1',
-			'intensify'           => '1',
-			'assuming'            => '1',
-			'cliche'              => '1',
-			'passive'             => '1',
-			'readability'         => '1',
-			'indefinite_article'  => '1',
-			'equality'            => '1',
-			'profanities'         => '1',
-			'contractions'        => '1',
-			'repeated_words'      => '1',
-			'redundant_acronyms'  => '1',
-			'diacritics'          => '1',
-			'sentence_spacing'    => '1',
-			'noun'			      => '1',
-			'adjective'           => '1',
-			'adverb'              => '1',
-			'verb'                => '1',
-			'conjunction'	      => '1',
-			'spell'               => '1',
+			'simplify'            => true,
+			'intensify'           => true,
+			'assuming'            => true,
+			'cliche'              => true,
+			'passive'             => true,
+			'readability'         => true,
+			'indefinite_article'  => true,
+			'equality'            => true,
+			'profanities'         => true,
+			'contractions'        => true,
+			'repeated_words'      => true,
+			'redundant_acronyms'  => true,
+			'diacritics'          => true,
+			'sentence_spacing'    => true,
+			'noun'			      => true,
+			'adjective'           => true,
+			'adverb'              => true,
+			'verb'                => true,
+			'conjunction'	      => true,
+			'spell'               => true,
 			'dictionary'          => '',
 			'ignored_profanities' => '',
 			'ignored_spell'       => '',

@@ -108,11 +108,7 @@ export const addAnnotations = (
 			} = annotation;
 			const [ name ] = type.split( '-' );
 	
-			if (
-				options[ name ]
-					? options[ name ] === '1'
-					: true
-			) {
+			if ( options[ name ] ) {
 				window.requestIdleCallback( () => {
 					dispatch( 'core/annotations' ).__experimentalAddAnnotation( {
 						source: `writers-blocks--${ mode }--${ type }`,

@@ -93,7 +93,7 @@ export const addAnnotations = (
 	
 			if (
 				options[ name ]
-					? options[ name ] === '1'
+					? options[ name ] === true
 					: true
 			) {
 				// console.log(dispatch( 'core/annotations' ).__experimentalAddAnnotation);

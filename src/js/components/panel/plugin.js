@@ -377,20 +377,14 @@ export const PluginPanel = () => {
 											`${type.charAt( 0 ).toUpperCase() +
 											type.slice( 1 )}s`
 										}
-										checked={
-											suggestions[ type ]
-												? suggestions[ type ] === '1'
-												: true
-										}
+										checked={ suggestions[ type ] }
 										onChange={ ( checked ) => {
 											if ( suggestions.demo !== true ) {
 												dispatch( 'core' )
 													.saveEntityRecord( 'root', 'site', {
 														writers_blocks: {
 															...suggestions,
-															[ type ]: checked
-																? '1'
-																: '0',
+															[ type ]: checked,
 														},
 													} )
 													.then( ( { writers_blocks } ) => {
@@ -401,9 +395,7 @@ export const PluginPanel = () => {
 											} else {
 												setSuggestions({
 													...suggestions,
-													[ type ]: checked
-														? '1'
-														: '0',
+													[ type ]: checked,
 												});
 											}
 
@@ -443,20 +435,14 @@ export const PluginPanel = () => {
 										help={ PROBLEM_TYPES_TO_LABEL[ type ].help(
 											problems[ type ].length
 										) }
-										checked={
-											suggestions[ type ]
-												? suggestions[ type ] === '1'
-												: true
-										}
+										checked={ suggestions[ type ] }
 										onChange={ ( checked ) => {
 											if ( suggestions.demo !== true ) {
 												dispatch( 'core' )
 													.saveEntityRecord( 'root', 'site', {
 														writers_blocks: {
 															...suggestions,
-															[ type ]: checked
-																? '1'
-																: '0',
+															[ type ]: checked,
 														},
 													} )
 													.then( ( { writers_blocks } ) => {
@@ -467,9 +453,7 @@ export const PluginPanel = () => {
 											} else {
 												setSuggestions({
 													...suggestions,
-													[ type ]: checked
-														? '1'
-														: '0',
+													[ type ]: checked,
 												});
 											}
 
@@ -481,7 +465,7 @@ export const PluginPanel = () => {
 												addAnnotations( problems, {
 													options: {
 														...suggestions,
-														[ type ]: '1',
+														[ type ]: true,
 													}
 												} );
 											} else {
@@ -505,12 +489,11 @@ export const PluginPanel = () => {
 														( { type } ) =>
 															type !==
 																'readability' &&
-															suggestions[ type ] ===
-																'1'
+															suggestions[ type ]
 													),
 													{ options: {
 														...suggestions,
-														[ type ]: '1',
+														[ type ]: true,
 													} }
 												);
 											}
