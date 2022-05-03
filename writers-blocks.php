@@ -4,8 +4,8 @@
  * Description:       Writer's Blocks is a suite of tools built for the Gutenberg editor. Write with more power and clarity, cut dead weight, and make your content more accessible, inclusive, and readable.
  * Requires at least: 5.8
  * Requires PHP:      7.0
- * Version:           0.0.1
- * Author:            Ryan DiMascio
+ * Version:           0.1.0
+ * Author:            Writer's Blocks
  * Author URI:        https://usewritersblocks.com
  * Text Domain:       writers-blocks
  *
@@ -40,6 +40,17 @@ if ( ! class_exists( 'LEMONSQUEEZY_LICENSE_CHECKER' ) ) {
 	require_once WRITERS_BLOCKS_PATH_INC . 'classes/class-lemonsqueezy-license-checker.php';
 
 	$license_checker = new LEMONSQUEEZY_LICENSE_CHECKER( __FILE__ );
+}
+
+if ( ! class_exists( 'LEMONSQUEEZY_UPDATER' ) ) {
+	require_once WRITERS_BLOCKS_PATH_INC . 'classes/class-lemonsqueezy-updater.php';
+
+	$plugin_updater = new LEMONSQUEEZY_UPDATER(
+		plugin_basename( __FILE__ ),
+		plugin_basename( __DIR__ ),
+		WRITERS_BLOCKS_VERSION,
+		WRITERS_BLOCKS_API_URL
+	);
 }
 
 // Include files.

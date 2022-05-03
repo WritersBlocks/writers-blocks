@@ -12,13 +12,16 @@
  */
 class LEMONSQUEEZY_LICENSE_CHECKER {
 
-	private $api_url     = 'https://api.lemonsqueezy.com/v1/licenses/';
-	private $api_data    = array();
+	private $api_url     = 'https://api.lemonsqueezy.com';
+	private $api_version = 'v1';
+	private $store_id    = 6151;
+	private $product_id  = 7681;
+	private $api_data    = [];
 	private $name        = '';
-	private $slug        = 'wb';
+	private $slug        = 'writers_blocks';
 	private $wp_override = false;
 	private $loggedin    = false;
-	
+
 	private $health_check_timeout = 5;
 
 	/**
@@ -63,50 +66,8 @@ class LEMONSQUEEZY_LICENSE_CHECKER {
 	 * @return void
 	 */
 	public function init() {
-
-		add_filter( 'admin_init', array( $this, 'admin_activation_notice' ) );
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_update' ) );
 		add_action( 'rest_api_init', array( $this, 'register_rest_route' ) );
-	}
-
-	/**
-	 * Activates license
-	 * 
-	 * This function checks if the license is valid or not.
-	 * The saves the return object as option for future use.
-	 *
-	 * @uses get_repo_api_data()
-	 *
-	 * @return void
-	 */
-	public function admin_activation_notice() {
-		if ( isset( $_GET[ 'license_key' ] ) ) {
-			$license_key = sanitize_text_field( $_GET[ 'license_key' ] );
-			$action      = isset( $_GET['action'] ) ? sanitize_text_field( $_GET['action'] ) : null;
-			$plugin      = isset( $_GET['plugin'] ) ? sanitize_text_field( $_GET['plugin'] ) : null;
-
-			if ( $license_key && $action && $plugin ) {
-				add_action( 'admin_notices', function() use ( $license_key, $action, $plugin ) {
-					$response = $this->get_repo_api_data( $action, $license_key );
-					$response = json_decode( $response );
-					$class    = 'notice notice-lemonsqueezy';
-					$message  = '';
-
-					if ( empty( $response ) ) {
-						$class  .= ' notice-error';
-						$message = esc_html( 'Invalid license key.' );
-					} else if ( isset( $response->activated ) && $response->activated ) {
-						$class  .= ' notice-success';
-						$message = wp_sprintf( '%s successfully activated!', esc_html( ucfirst( $plugin ) ) );
-					} else if ( isset( $response->error ) && $response->error ) {
-						$class  .= ' notice-error';
-						$message = esc_html( $response->error );
-					}
-				
-					printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) ); 
-				} );
-			}
-		}
 	}
 
 	/**
@@ -155,6 +116,24 @@ class LEMONSQUEEZY_LICENSE_CHECKER {
 	 * @return string
 	 */
 	public function activate_license( $license_key = '' ) {
+		$license_data = get_option( 'writers_blocks_license', '' );
+		$license_data = json_decode( $license_data );
+
+		if (
+			! empty( $license_data ) &&
+			isset( $license_data->license_key ) &&
+			isset( $license_data->license_key->key ) &&
+			isset( $license_data->license_key->status ) &&
+			$license_data->license_key->status === 'active'
+		) {
+
+			if ( $license_data->license_key->key === $license_key ) {
+				return '';
+			} else {
+				$this->get_repo_api_data( 'deactivate' );
+			}
+		}
+
 		$response = $this->get_repo_api_data( 'activate', $license_key );
 
 		return $response;
@@ -202,7 +181,7 @@ class LEMONSQUEEZY_LICENSE_CHECKER {
 
 		register_rest_route(
 			'writers-blocks/v1',
-			'/license/(?P<action>[a-zA-Z0-9-]+)/(?P<license>[a-zA-Z0-9-]+)',
+			'/license/',
 			array(
 				'methods'              => 'GET',
 				'permission_callback'  => '__return_true',
@@ -258,7 +237,7 @@ class LEMONSQUEEZY_LICENSE_CHECKER {
 		}
 
 		$instance_id  = '';
-		$license_data = get_option( $this->slug . '_' . 'ls_data', '' );
+		$license_data = get_option( 'writers_blocks_license', '' );
 		$license_data = json_decode( $license_data );
 
 		if ( ! empty( $license_data ) ) {
@@ -286,21 +265,39 @@ class LEMONSQUEEZY_LICENSE_CHECKER {
 			],
 		];
 
-		$request  = wp_remote_post( $this->api_url . $action, $args );
-		$response = wp_remote_retrieve_body($request);
+		$request  = wp_remote_post( 
+			"{$this->api_url}/{$this->api_version}/licenses/{$action}",
+			$args
+		);
+		$response = wp_remote_retrieve_body( $request );
 		$data     = json_decode( $response );
-		
-		if ( empty( $data ) ) {
-			$response = json_encode( [ 'valid' => false, 'error' => esc_attr( 'Invalid license key.' ), 'instance' => [ 'id' => $instance_id ] ] );
+
+		if ( empty( $data ) || ( isset( $data->meta ) && (
+			$data->meta->store_id !== $this->store_id ||
+			$data->meta->product_id !== $this->product_id
+		) ) ) {
+			$response = json_encode( [
+				'valid' => false,
+				'error' => esc_attr( 'Invalid license key.' ),
+				'instance' => [
+					'id' => $instance_id,
+				],
+			] );
 		} else if ( ! empty( $data ) ) {
 
-			if ( isset( $data->license_key ) && 'activate' === $action && 'active' === $data->license_key->status ) {
-				$response = json_encode( array_merge( (array) $license_data, (array) $data ) );
+			if (
+				isset( $data->license_key ) &&
+				'activate' === $action &&
+				'active' === $data->license_key->status
+			) {
+				$response = json_encode(
+					array_merge( (array) $license_data, (array) $data )
+				);
 			}
 		}
 
 		// save license data to wp_option
-		update_option( $this->slug . '_' . 'ls_data', $response, 'no' );
+		update_option( 'writers_blocks_license', $response );
 
 		return $response;
 	}

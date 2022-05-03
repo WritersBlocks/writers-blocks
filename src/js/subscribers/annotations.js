@@ -26,7 +26,7 @@ import { ALLOWED_BLOCKS, BLOCK_TYPE_CONTENT_ATTRIBUTE } from '../constants';
 let _blocks = {};
 
 const {
-	WB_SETTINGS: { settings: DEFAULT_SETTINGS },
+	WRITERS_BLOCKS: { settings: DEFAULT_SETTINGS },
 } = window;
 
 const flattenBlocks = ( blocks ) => {
@@ -72,7 +72,6 @@ domReady( () => {
 
 		const blocks = select( 'core/block-editor' ).getBlocks();
 		const problems = select( store ).getProblems();
-		const nodes = select( store ).getWords();
 		const blockContent = flattenBlocks( blocks ).filter( isBlockAllowed ).reduce( ( accumulator, block ) => {
 			accumulator[ block.clientId ] = getBlockContent( block );
 
@@ -91,40 +90,6 @@ domReady( () => {
 		if ( selectedBlock ) {
 			const selectedBlockContent = getBlockContent( selectedBlock );
 			if ( ! _blocks[ selectedBlock.clientId ] || selectedBlockContent !== _blocks[ selectedBlock.clientId ] ) {
-				// const diff = diffSentences( _blocks[ selectedBlock.clientId ], selectedBlockContent );
-
-				// diff.forEach( ( sentence ) => {
-				// 	if ( sentence.added ) {
-				// 		const content = strip( sentence.value, { preserveWhiteSpace: selectedBlock.name !== 'core/list', } );
-				// 		const { nodes: blockNodes, messages: blockProblems } = parseBlockText( content, {
-				// 			preserveWhiteSpace: selectedBlock.name !== 'core/list',
-				// 		} );
-
-				// 		const filteredProblems = problems.filter( ( problem ) => problem.blockId !== selectedBlock.clientId );
-				// 		const filteredNodes = nodes.filter( ( node ) => node.blockId !== selectedBlock.clientId );
-
-				// 		console.log( select( store ).getBlockProblems( selectedBlock.clientId ) );
-				
-				// 		dispatch( store ).addProblems( [
-				// 			// ...filteredProblems,
-				// 			// ...filteredNodes,
-				// 			...problems,
-				// 			...nodes,
-				// 			...blockProblems.map( ( problem ) => formatAnnotation( selectedBlock, problem ) ),
-				// 			...blockNodes.map( ( node ) => formatAnnotation( selectedBlock, node, 'syntax' ) ),
-				// 		] );
-
-				// 		console.log( select( store ).getBlockProblems( selectedBlock.clientId ) );
-
-				// 		if ( writingMode === 'syntax' || writingMode === 'editing' ) {
-				// 			Annotations.add(
-				// 				writingMode === 'editing' ? [...problems, ...blockProblems] : [...nodes, ...blockNodes],
-				// 				{ clientId: selectedBlock.clientId, type: writingMode === 'editing' ? 'style' : 'syntax' }
-				// 			);
-				// 		}
-				// 	}
-				// } );
-
 				addBlockToQueue( selectedBlock, true );
 
 				_blocks[ selectedBlock.clientId ] = selectedBlockContent;

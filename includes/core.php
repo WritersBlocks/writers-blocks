@@ -336,9 +336,11 @@ function editor_scripts() {
 
 	wp_localize_script(
 		'writers-blocks',
-		'WB_SETTINGS',
+		'WRITERS_BLOCKS',
 		[
 			'settings' => get_options(),
+			'license'  => json_decode( get_option( 'writers_blocks_license', '' ) ),
+			'rest_url' => '/writers-blocks/v1',
 		]
 	);
 

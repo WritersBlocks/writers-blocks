@@ -24,7 +24,7 @@ import { tokenize } from '../utils/tokenizer';
 import { strip } from '../utils/strip-text';
 
 const {
-	WB_SETTINGS: { settings: DEFAULT_SETTINGS },
+	WRITERS_BLOCKS: { settings: DEFAULT_SETTINGS },
 } = window;
 
 let isUpdatingProblems = false;

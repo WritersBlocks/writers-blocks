@@ -6,13 +6,11 @@ import {
 	ToggleControl,
 	Spinner,
 	Button,
-	// MenuItem,
+	MenuItem,
 	MenuGroup,
 	MenuItemsChoice,
 	DropdownMenu,
 	Modal,
-	__experimentalHStack as HStack,
-	TextControl,
 	TextareaControl,
 } from '@wordpress/components';
 import { useSelect, select, dispatch } from '@wordpress/data';
@@ -28,10 +26,11 @@ import {
 } from '../../constants';
 import { store } from '../../store';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { LicenseChecker } from '../license-checker';
 import { addAnnotations, removeAnnotations } from '../../decorators/gutenberg';
 
 const {
-	WB_SETTINGS: { settings: DEFAULT_SETTINGS },
+	WRITERS_BLOCKS: { settings: DEFAULT_SETTINGS },
 } = window;
 
 export const PluginPanel = () => {
@@ -104,25 +103,7 @@ export const PluginPanel = () => {
 				>
 					<h2 className='edit-post-options-modal__section-title'>{ __( 'License', 'writers-blocks' ) }</h2>
 					<p className='edit-post-options-modal__section-help'>{ __( 'Enter your license key for updates and support', 'writers-blocks' ) }</p>
-					<HStack>
-						<TextControl
-							label={ __( 'License key', 'writers-blocks' ) }
-							hideLabelFromVision={ true }
-							value={ '' }
-							onChange={ ( value ) => {
-								// setLicense( value );
-							} }
-						/>
-						<Button
-							isPrimary
-							onClick={ () => {
-								// setIsUpdating( true );
-								// updateLicense( license );
-							} }
-						>
-							{ __( 'Activate', 'writers-blocks' ) }
-						</Button>
-					</HStack>
+					<LicenseChecker />
 				</Modal>
 			) :  null }
 			{ isStyleOptionsPopoverOpen ? (
@@ -324,14 +305,14 @@ export const PluginPanel = () => {
 											} }
 										/>
 									</MenuGroup>
-									{/* <MenuGroup>
+									<MenuGroup>
 										<MenuItem
 											label="Show options"
 											onClick={ () => setIsOptionsPopoverOpen( ( isOpen ) => ! isOpen ) }
 										>
 											{ __( 'Options', 'writers-blocks' ) }
 										</MenuItem>
-									</MenuGroup> */}
+									</MenuGroup>
 								</Fragment>
 							) }
 						</DropdownMenu>

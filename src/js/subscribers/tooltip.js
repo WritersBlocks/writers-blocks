@@ -29,7 +29,7 @@ import { CopyButton } from '../components/CopyButton';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const {
-	WB_SETTINGS: { settings: DEFAULT_SETTINGS },
+	WRITERS_BLOCKS: { settings: DEFAULT_SETTINGS },
 } = window;
 
 /**

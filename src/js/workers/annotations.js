@@ -4,7 +4,7 @@
 import { createWorkerFactory, terminate } from '@shopify/web-worker';
 
 const {
-    WB_SETTINGS: { settings: DEFAULT_SETTINGS },
+    WRITERS_BLOCKS: { settings: DEFAULT_SETTINGS },
 } = window;
 
 const createWorker = createWorkerFactory( () => import( /* webpackChunkName: 'annotations' */ '../decorators/inline-annotations' ) );

@@ -1,0 +1,34 @@
+.writers-blocks__license-checker-input {
+    flex: 1;
+
+    & .components-base-control__field {
+        height: 100%;
+        margin-bottom: 0;
+
+        & input {
+            height: 100%;
+        }
+    }
+}
+
+.writers-blocks__license-checker-message {
+    align-items: center;
+    display: flex;
+    margin: 8px 0 0;
+
+    &.is-valid {
+        color: green;
+
+        & svg {
+            stroke: green;
+        }
+    }
+
+    &.is-invalid {
+        color: red;
+
+        & svg {
+            stroke: red;
+        }
+    }
+}
