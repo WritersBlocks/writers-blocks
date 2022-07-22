@@ -19,13 +19,13 @@ import {
 } from '@wordpress/components';
 import { info, plusCircle, trash } from '@wordpress/icons';
 import { store as noticesStore } from '@wordpress/notices';
+import { create, replace, toHTMLString } from '@wordpress/rich-text';
 
 /**
  * Internal depenedencies
  */
-import { PROBLEM_TYPES_WITH_IGNORE } from '../constants';
+import { BLOCK_TYPE_CONTENT_ATTRIBUTE, PROBLEM_TYPES_WITH_IGNORE } from '../constants';
 import { store } from '../store';
-import { CopyButton } from '../components/CopyButton';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const {
@@ -48,35 +48,19 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 	const [ suggestions, setSuggestions ] = DEFAULT_SETTINGS.demo !== true
 		? useState( DEFAULT_SETTINGS )
 		: useLocalStorage( DEFAULT_SETTINGS, 'writers_blocks' );
-	// const [ ignoredAnnotations, setIgnoredAnnotations ] = useState( null );
 
 	const siteSettings = useSelect( ( select ) => {
 		return select( 'core' ).getEntityRecord( 'root', 'site' );
 	} );
 
-	// const { wb_ignored } = useSelect(
-	// 	( select ) =>
-	// 		select( 'core/editor' ).getEditedPostAttribute( 'meta' ) || {}
-	// );
 	const selectedAnnotation = useSelect( ( select ) =>
 		select( 'writers-blocks/editor' ).getProblem( annotationId )
 	);
 
 	const { createNotice } = useDispatch( noticesStore );
 
-	// const { editPost } = useDispatch( 'core/editor' );
-
-	// useEffect( () => {
-	// 	if ( wb_ignored ) {
-	// 		setIgnoredAnnotations( wb_ignored );
-	// 	}
-	// }, [ wb_ignored ] );
-
 	const {
-		// blockId,
-		// blockName,
-		// index,
-		// offset,
+		blockId,
 		message,
 		type,
 		value,
@@ -94,17 +78,11 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 		}
 	}, [ siteSettings ] );
 
-	// useEffect( () => {
-	// 	if ( ! isOpen ) {
-	// 		setIsOpen( isShown );
-	// 	}
-	// }, [ isOpen ] );
+	const { attributes, name } = useSelect(
+		( select ) => select( 'core/block-editor' ).getBlock( blockId ) || {},
+	);
 
-	// const { attributes } = useSelect(
-	// 	( select ) => select( 'core/block-editor' ).getBlock( blockId ) || {},
-	// );
-
-	// const { updateBlockAttributes } = useDispatch( 'core/block-editor' );
+	const { updateBlockAttributes } = useDispatch( 'core/block-editor' );
 
 	return isShown && message ? (
 		<Popover
@@ -246,12 +224,52 @@ const Tooltip = ( { isShown, target, annotationId } ) => {
 				>
 					{ replacements.slice( 0, 5 ).map( ( replacement ) => {
 						return (
-							<CopyButton
+							<Button
 								key={ replacement }
-								text={ replacement }
+								className="wp-block-writers-blocks-word__modal-synonym"
+								variant="secondary"
+								showTooltip={ true }
 								label={ null }
-								onClick={ () => {} }
-							/>
+								onClick={ () => {
+									const contentAttribute = BLOCK_TYPE_CONTENT_ATTRIBUTE[ name ] || 'content';
+									const content = attributes[ contentAttribute ];
+									const multilineTag = name === 'core/list' ? 'li' : undefined;
+									
+									const blockValue = create({
+										html: content,
+										multilineTag,
+									});
+
+									const newValue = replace(
+										blockValue,
+										value,
+										replacement
+									);
+
+									updateBlockAttributes(blockId, {
+										[contentAttribute]: toHTMLString({
+											value: newValue,
+											multilineTag,
+											multilineWrapperTags:
+												multilineTag === 'li' ? [ 'ul', 'ol' ] : undefined,
+											preserveWhiteSpace: name === 'core/list',
+										}),
+									})
+										.then(() => {
+											dispatch( 'core/annotations' ).__experimentalRemoveAnnotation( annotationId );
+											createNotice(
+												'info',
+												__( `Replaced "${ value }" with "${ replacement }"`, 'writers-blocks' ),
+												{
+													isDismissible: true,
+													type: 'snackbar',
+												}
+											);
+										});
+								} }
+							>
+								{ replacement }
+							</Button>
 						);
 					} ) }
 				</HStack>
