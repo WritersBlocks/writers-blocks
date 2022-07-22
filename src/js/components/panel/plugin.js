@@ -349,7 +349,7 @@ export const PluginPanel = () => {
 				<PanelBody title={ __( 'Syntax', 'writers-blocks' ) } initialOpen={ false }>
 					{ suggestions ? (
 						SYNTAX_TYPES.map( ( type ) => (
-							<PanelRow key={ type }>
+							DEFAULT_SETTINGS[ type ] && <PanelRow key={ type }>
 								<div
 									className={ `writers-blocks__toggle ${ type }` }
 								>
@@ -405,7 +405,7 @@ export const PluginPanel = () => {
 				<PanelBody title={ __( 'Style', 'writers-blocks' ) } initialOpen={ false }>
 					{ suggestions ? (
 						Object.keys( PROBLEM_TYPES_TO_LABEL ).map( ( type ) => (
-							<PanelRow key={ type } className="writers-blocks__panel-row">
+							DEFAULT_SETTINGS[ type ] && <PanelRow key={ type } className="writers-blocks__panel-row">
 								<div
 									className={ `writers-blocks__toggle ${ type }` }
 								>
