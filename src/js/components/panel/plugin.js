@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { PluginSidebar } from '@wordpress/edit-post';
 import {
@@ -17,7 +20,11 @@ import { useSelect, select, dispatch } from '@wordpress/data';
 import { Fragment, useEffect, useState } from '@wordpress/element';
 import { moreVertical } from '@wordpress/icons';
 import { capitalize } from 'lodash';
+import { withErrorBoundary } from 'react-error-boundary';
 
+/**
+ * Internal dependencies
+ */
 import {
 	SYNTAX_TYPES,
 	PROBLEM_TYPES_TO_LABEL,
@@ -26,13 +33,32 @@ import {
 import { store } from '../../store';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { LicenseChecker } from '../license-checker';
+import { WritersBlocksIcon } from '../icon';
 import { addAnnotations, removeAnnotations } from '../../decorators/gutenberg';
 
 const {
 	WRITERS_BLOCKS: { settings: DEFAULT_SETTINGS },
 } = window;
 
-export const PluginPanel = () => {
+const PluginPanelWithError = () => {
+	return (
+		<Fragment>
+			<PluginSidebar
+				name="writers-blocks"
+				icon="text"
+				title={ __( "Writer's Blocks", 'writers-blocks' ) }
+			>
+				<PanelBody>
+					<PanelRow>
+						<p>{ __( 'An error occurred while loading the plugin.', 'writers-blocks' ) }</p>
+					</PanelRow>
+				</PanelBody>
+			</PluginSidebar>
+		</Fragment>
+	);
+};
+
+const PluginPanel = () => {
 	const [ suggestions, setSuggestions ] = DEFAULT_SETTINGS.demo !== true
 		? useState( DEFAULT_SETTINGS )
 		: useLocalStorage( DEFAULT_SETTINGS, 'writers_blocks' );
@@ -166,8 +192,6 @@ export const PluginPanel = () => {
 								} );
 							}
 
-							console.log(customWordList);
-
 							[
 								...customWordList.split( '\n' ),
 								...ignoredWords,
@@ -202,7 +226,7 @@ export const PluginPanel = () => {
 			) : null }
 			<PluginSidebar
 				name="writers-blocks"
-				icon="text"
+				icon={WritersBlocksIcon}
 				title={ __( "Writer's Blocks", 'writers-blocks' ) }
 			>
 				<div style={ { padding: '6px 16px' } }>
@@ -495,3 +519,15 @@ export const PluginPanel = () => {
 		</Fragment>
 	);
 };
+
+export const PluginPanelWithErrorBoundary = withErrorBoundary(PluginPanel, {
+	FallbackComponent: PluginPanelWithError,
+	onError: (error, { componentStack }) => {
+		console.log('-----------------------------------');
+		console.log('Start Writers Blocks Error:');
+		console.log(error);
+		console.log(componentStack);
+		console.log('End Writers Blocks Error');
+		console.log('-----------------------------------');
+	}
+});
