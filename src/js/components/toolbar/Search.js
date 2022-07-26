@@ -17,8 +17,8 @@ import { select } from '@wordpress/data';
  * Internal dependencies
  */
 import { strip } from '../../utils/strip-text';
-import { Confirm } from '../Confirm';
-import { CopyButton } from '../CopyButton';
+import { Confirm } from '../confirm';
+import { CopyButton } from '../copy-button';
 
 export const SearchToolbarButton = ( { attributes } ) => {
 	const [ isSearchModalOpen, setIsSearchModalOpen ] = useState( false );

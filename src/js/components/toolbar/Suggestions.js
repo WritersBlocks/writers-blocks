@@ -17,7 +17,7 @@ import { select } from '@wordpress/data';
  * Internal dependencies
  */
 import { strip } from '../../utils/strip-text';
-import { CopyButton } from '../CopyButton';
+import { CopyButton } from '../copy-button';
 
 export const SuggestionsToolbarButton = ( { attributes } ) => {
 	const [ isSuggestionsModalOpen, setIsSuggestionsModalOpen ] = useState(
