@@ -1,18 +1,16 @@
-const { resolve } = require( 'path' );
-
 /**
  * External dependencies
  */
-const path = require( 'path' );
+const { resolve } = require( 'path' );
+const { WebWorkerPlugin } = require('@shopify/web-worker/webpack');
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
-const { WebWorkerPlugin } = require('@shopify/web-worker/webpack');
 
 module.exports = {
 	...defaultConfig,
 	entry: {
-		'js/editor': path.resolve( process.cwd(), 'src/js/editor.js' ),
-		'css/editor': path.resolve( process.cwd(), 'src/css/editor.css' ),
+		'js/editor': resolve( process.cwd(), 'src/js/editor.js' ),
+		'css/editor': resolve( process.cwd(), 'src/css/editor.css' ),
 	},
 	output: {
 		...defaultConfig.output,
