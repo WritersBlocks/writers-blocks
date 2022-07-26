@@ -2,13 +2,12 @@
  * External dependencies
  */
 import { debounce } from 'lodash';
-import { diffSentences } from 'diff';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { subscribe, select, dispatch } from '@wordpress/data';
+import { subscribe, select } from '@wordpress/data';
 import domReady from '@wordpress/dom-ready';
 
 /**
@@ -55,18 +54,8 @@ domReady( () => {
 		}
 
 		const isTyping = select( 'core/block-editor' ).isTyping();
-		const {
-			writers_blocks,
-		} = select( 'core' ).getEntityRecord( 'root', 'site' ) ?? {
-			writers_blocks: DEFAULT_SETTINGS,
-		};
-	
-		const {
-			mode: writingMode = DEFAULT_SETTINGS.demo ? 'editing' : 'writing',
-		} = writers_blocks;
 
 		if ( isTyping ) {
-			console.log('is typing');
 			return;
 		}
 
@@ -74,7 +63,6 @@ domReady( () => {
 		const problems = select( store ).getProblems();
 		const blockContent = flattenBlocks( blocks ).filter( isBlockAllowed ).reduce( ( accumulator, block ) => {
 			accumulator[ block.clientId ] = getBlockContent( block );
-
 			return accumulator;
 		}, {} );
 
