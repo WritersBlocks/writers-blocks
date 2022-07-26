@@ -16,6 +16,7 @@ module.exports = {
 		...defaultConfig.output,
 		clean: true,
 		chunkFilename: 'js/[name].[contenthash].chunk.js',
+		globalObject: 'self',
 	},
 	plugins: [
 		...defaultConfig.plugins,
