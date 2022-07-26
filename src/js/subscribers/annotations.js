@@ -24,10 +24,6 @@ import { ALLOWED_BLOCKS, BLOCK_TYPE_CONTENT_ATTRIBUTE } from '../constants';
 
 let _blocks = {};
 
-const {
-	WRITERS_BLOCKS: { settings: DEFAULT_SETTINGS },
-} = window;
-
 const flattenBlocks = ( blocks ) => {
 	return blocks.reduce( ( accumulator, block ) => {
 		if ( block.innerBlocks.length ) {

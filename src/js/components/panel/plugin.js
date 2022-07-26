@@ -22,7 +22,6 @@ import {
 	SYNTAX_TYPES,
 	PROBLEM_TYPES_TO_LABEL,
 	PROBLEM_TYPES_WITH_IGNORE,
-	// BLOCK_TYPE_CONTENT_ATTRIBUTE,
 } from '../../constants';
 import { store } from '../../store';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
@@ -51,17 +50,6 @@ export const PluginPanel = () => {
 	const siteSettings = useSelect( ( select ) => {
 		return select( 'core' ).getEntityRecord( 'root', 'site' );
 	} );
-	// const selectedBlock = useSelect( ( select ) => {
-	// 	return select( 'core/block-editor' ).getSelectedBlock();
-	// } );
-
-	// useEffect( () => {
-	// 	if ( suggestions.mode === 'focus' && selectedBlock ) {
-	// 		document.body.classList.add( 'focus-mode' );
-	// 	} else {
-	// 		document.body.classList.remove( 'focus-mode' );
-	// 	}
-	// }, [ selectedBlock ] );
 
 	useEffect( () => {
 		if ( suggestions.demo === true ) {
@@ -279,7 +267,6 @@ export const PluginPanel = () => {
 
 												removeAnnotations( 'syntax' );
 												removeAnnotations( 'style' );
-												// document.body.classList.remove( 'focus-mode' );
 
 												switch ( value ) {
 													case 'editing':
@@ -298,9 +285,6 @@ export const PluginPanel = () => {
 														break;
 													default:
 														break;
-													// case 'focus':
-													// 	document.body.classList.add( 'focus-mode' );
-													// 	break;
 												}
 											} }
 										/>
