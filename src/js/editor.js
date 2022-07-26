@@ -13,6 +13,7 @@ domReady( () => {
 	/**
 	 * Register Access Panel Plugin
 	 */
+	// @ts-ignore
 	registerPlugin( 'writers-blocks', {
 		render: PluginPanelWithErrorBoundary,
 	} );

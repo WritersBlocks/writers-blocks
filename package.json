@@ -35,8 +35,10 @@
 		"plugin-zip": "wp-scripts plugin-zip"
 	},
 	"devDependencies": {
+		"@types/wordpress__components": "^19.10.1",
 		"@types/wordpress__data": "^6.0.1",
 		"@types/wordpress__edit-post": "^4.0.1",
+		"@types/wordpress__notices": "^3.5.0",
 		"@types/wordpress__plugins": "^3.0.0",
 		"@wordpress/icons": "^6.3.0",
 		"@wordpress/scripts": "^23.5.0",
