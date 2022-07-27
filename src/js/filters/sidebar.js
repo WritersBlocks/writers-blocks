@@ -16,43 +16,43 @@ import { store } from '../store';
 
 import { Sidebar } from '../components/sidebar';
 
-const addSidebar = createHigherOrderComponent( ( BlockEdit ) => {
-	return ( props ) => {
+const addSidebar = createHigherOrderComponent((BlockEdit) => {
+	return (props) => {
 		const { clientId, name, isSelected } = props;
 
-		if ( ! ALLOWED_BLOCKS.includes( name ) ) {
-			return <BlockEdit { ...props } />;
+		if (!ALLOWED_BLOCKS.includes(name)) {
+			return <BlockEdit {...props} />;
 		}
 
-		const blockProblems = select( store ).getBlockProblems( clientId );
+		const blockProblems = select(store).getBlockProblems(clientId);
 
-		if ( ! isSelected || ! blockProblems.length ) {
-			return <BlockEdit { ...props } />;
+		if (!isSelected || !blockProblems.length) {
+			return <BlockEdit {...props} />;
 		}
 
-		const problems = blockProblems.reduce( ( acc, problem ) => {
+		const problems = blockProblems.reduce((acc, problem) => {
 			const { type } = problem;
-			const [ formattedType ] = type.split( '-' );
+			const [formattedType] = type.split('-');
 
-			if ( acc[ formattedType ] ) {
-				acc[ formattedType ].push( problem );
+			if (acc[formattedType]) {
+				acc[formattedType].push(problem);
 			} else {
-				acc[ formattedType ] = [ problem ];
+				acc[formattedType] = [problem];
 			}
 
 			return acc;
-		}, {} );
+		}, {});
 
 		return (
 			<Fragment>
-				<BlockEdit { ...props } />
+				<BlockEdit {...props} />
 				<InspectorControls>
-					<Sidebar { ...props } problems={ problems } />
+					<Sidebar {...props} problems={problems} />
 				</InspectorControls>
 			</Fragment>
 		);
 	};
-}, 'addSidebar' );
+}, 'addSidebar');
 
 addFilter(
 	'editor.BlockEdit',

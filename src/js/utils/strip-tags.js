@@ -6,12 +6,12 @@
  * @param          preserveWhiteSpace
  * @return {string} The manipulated text.
  */
-export default function stripTags( text, preserveWhiteSpace ) {
+export default function stripTags(text, preserveWhiteSpace) {
 	return text
-		.replaceAll( '</li><li>', ' ' )
-		.replace( /<\/?[li][^>]*?>/gi, '' )
-		.replace( /<\/?[br][^>]*?>/gi, ' ' )
-		.split( /<\/?[a-z][^>]*?>/gi )
-		.filter( Boolean )
-		.join( preserveWhiteSpace ? ' ' : '' );
+		.replaceAll('</li><li>', ' ')
+		.replace(/<\/?[li][^>]*?>/gi, '')
+		.replace(/<\/?[br][^>]*?>/gi, ' ')
+		.split(/<\/?[a-z][^>]*?>/gi)
+		.filter(Boolean)
+		.join(preserveWhiteSpace ? ' ' : '');
 }

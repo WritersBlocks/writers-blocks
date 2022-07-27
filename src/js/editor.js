@@ -9,12 +9,12 @@ import { PluginPanelWithErrorBoundary } from './components/panel/plugin';
 // import './filters';
 import './subscribers';
 
-domReady( () => {
+domReady(() => {
 	/**
 	 * Register Access Panel Plugin
 	 */
 	// @ts-ignore
-	registerPlugin( 'writers-blocks', {
+	registerPlugin('writers-blocks', {
 		render: PluginPanelWithErrorBoundary,
-	} );
-} );
+	});
+});

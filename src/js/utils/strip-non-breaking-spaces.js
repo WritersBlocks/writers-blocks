@@ -5,6 +5,6 @@
  *
  * @return {string} The manipulated text.
  */
-export default function stripNonBreakingSpaces( text ) {
-    return text.replaceAll( '&nbsp;', ' ' );
+export default function stripNonBreakingSpaces(text) {
+	return text.replaceAll('&nbsp;', ' ');
 }

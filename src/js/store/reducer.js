@@ -10,9 +10,9 @@ import { PROBLEM_TYPES_TO_LABEL } from '../constants';
 
 const DEFAULT_USER_SETTINGS = {
 	showProblems: true,
-	suggestionsToShow: Object.keys( PROBLEM_TYPES_TO_LABEL ).reduce(
-		( accumulator, type ) => {
-			accumulator[ type ] = true;
+	suggestionsToShow: Object.keys(PROBLEM_TYPES_TO_LABEL).reduce(
+		(accumulator, type) => {
+			accumulator[type] = true;
 			return accumulator;
 		},
 		{}
@@ -20,8 +20,8 @@ const DEFAULT_USER_SETTINGS = {
 	blocks: [],
 };
 
-export function readability( state = { stats: {} }, action ) {
-	switch ( action.type ) {
+export function readability(state = { stats: {} }, action) {
+	switch (action.type) {
 		case 'UPDATE_READABILITY':
 			return {
 				...state,
@@ -32,8 +32,8 @@ export function readability( state = { stats: {} }, action ) {
 	}
 }
 
-export function words( state = { list: [] }, action ) {
-	switch ( action.type ) {
+export function words(state = { list: [] }, action) {
+	switch (action.type) {
 		case 'ADD_WORDS':
 			return {
 				...state,
@@ -44,8 +44,8 @@ export function words( state = { list: [] }, action ) {
 	}
 }
 
-export function problems( state = { list: [] }, action ) {
-	switch ( action.type ) {
+export function problems(state = { list: [] }, action) {
+	switch (action.type) {
 		case 'ADD_PROBLEMS':
 			return {
 				...state,
@@ -55,19 +55,19 @@ export function problems( state = { list: [] }, action ) {
 			return {
 				...state,
 				list: state.list.filter(
-					( problem ) => problem.id !== action.name
+					(problem) => problem.id !== action.name
 				),
 			};
 		case 'IGNORE_PROBLEM':
 			const problem = state.list.find(
-				( problem ) => problem.annotationId === action.name
+				(problem) => problem.annotationId === action.name
 			);
 
 			return {
 				...state,
 				list: [
 					...state.list.filter(
-						( problem ) => problem.annotationId !== action.name
+						(problem) => problem.annotationId !== action.name
 					),
 					{
 						...problem,
@@ -80,8 +80,8 @@ export function problems( state = { list: [] }, action ) {
 	}
 }
 
-export function user( state = { settings: DEFAULT_USER_SETTINGS }, action ) {
-	switch ( action.type ) {
+export function user(state = { settings: DEFAULT_USER_SETTINGS }, action) {
+	switch (action.type) {
 		case 'UPDATE_USER_SETTINGS':
 			return {
 				...state,
@@ -95,9 +95,9 @@ export function user( state = { settings: DEFAULT_USER_SETTINGS }, action ) {
 	}
 }
 
-export default combineReducers( {
+export default combineReducers({
 	words,
 	problems,
 	readability,
 	user,
-} );
+});

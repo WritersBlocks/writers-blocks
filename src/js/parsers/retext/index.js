@@ -35,11 +35,11 @@ import aff from '../dictionary/en/aff';
 import retextAssuming from './assuming';
 import retextCliches from './cliches';
 
-export function parse( value = '', config = {} ) {
-	return core( value, makeText( config ) );
+export function parse(value = '', config = {}) {
+	return core(value, makeText(config));
 }
 
-function makeText( {
+function makeText({
 	dictionary = '',
 	ignored: {
 		passive = '',
@@ -52,60 +52,60 @@ function makeText( {
 		assuming = '',
 		cliche = '',
 	},
-} ) {
+}) {
 	return unified()
-		.use( retextEnglish )
-		.use( retextSyntaxUrls )
-		.use( retextSyntaxMentions )
-		.use( retextEquality, {
-			ignore: equality.split( ',' ),
-		} )
-		.use( retextProfanities, {
-			ignore: profanities.split( ',' ),
-		} )
-		.use( retextSimplify, {
-			ignore: simplify.split( ',' ),
-		} )
-		.use( retextReadability )
-		.use( retextIndefiniteArticle )
-		.use( retextSentenceSpacing )
-		.use( retextRepeatedWords )
-		.use( retextRedundantAcronyms )
-		.use( retextPassive, {
-			ignore: passive.split( ',' ),
-		} )
-		.use( retextIntensify, {
-			ignore: intensify.split( ',' ),
-		} )
-		.use( retextDiacritics, {
-			ignore: diacritics.split( ',' ),
-		} )
-		.use( retextContractions, {
+		.use(retextEnglish)
+		.use(retextSyntaxUrls)
+		.use(retextSyntaxMentions)
+		.use(retextEquality, {
+			ignore: equality.split(','),
+		})
+		.use(retextProfanities, {
+			ignore: profanities.split(','),
+		})
+		.use(retextSimplify, {
+			ignore: simplify.split(','),
+		})
+		.use(retextReadability)
+		.use(retextIndefiniteArticle)
+		.use(retextSentenceSpacing)
+		.use(retextRepeatedWords)
+		.use(retextRedundantAcronyms)
+		.use(retextPassive, {
+			ignore: passive.split(','),
+		})
+		.use(retextIntensify, {
+			ignore: intensify.split(','),
+		})
+		.use(retextDiacritics, {
+			ignore: diacritics.split(','),
+		})
+		.use(retextContractions, {
 			straight: true,
-		} )
-		.use( retextAssuming, {
-			ignore: assuming.split( ',' ),
-		} )
-		.use( retextCliches, {
-			ignore: cliche.split( ',' ),
-		} )
-		.use( retextPos )
-		.use( retextSpell, {
-			dictionary: callback => callback( null, { aff, dic } ),
-			personal: dictionary.split( ',' ).join( '\n' ),
-			ignore: spell.split( ',' ),
-		} )
-		.use( () => ( tree ) => tree );
+		})
+		.use(retextAssuming, {
+			ignore: assuming.split(','),
+		})
+		.use(retextCliches, {
+			ignore: cliche.split(','),
+		})
+		.use(retextPos)
+		.use(retextSpell, {
+			dictionary: (callback) => callback(null, { aff, dic }),
+			personal: dictionary.split(',').join('\n'),
+			ignore: spell.split(','),
+		})
+		.use(() => (tree) => tree);
 }
 
-function core( value, processor, options = {} ) {
+function core(value, processor, options = {}) {
 	const nodes = [];
-	const file = new VFile( value );
-	const tree = processor.use( filter, options ).parse( file );
+	const file = new VFile(value);
+	const tree = processor.use(filter, options).parse(file);
 
-	processor.runSync( tree, file );
+	processor.runSync(tree, file);
 
-	visit( tree, 'WordNode', ( node ) => {
+	visit(tree, 'WordNode', (node) => {
 		const {
 			data: { partOfSpeech },
 			children: [
@@ -119,29 +119,29 @@ function core( value, processor, options = {} ) {
 			],
 		} = node;
 
-		const isNodeProcessed = nodes.find( ( node ) => {
+		const isNodeProcessed = nodes.find((node) => {
 			return (
 				node.value === value &&
 				node.index === index &&
 				node.offset === offset
 			);
-		} );
+		});
 
-		if ( ! isNodeProcessed ) {
-			const syntaxType = getPartOfSpeech( partOfSpeech );
+		if (!isNodeProcessed) {
+			const syntaxType = getPartOfSpeech(partOfSpeech);
 
-			if ( SYNTAX_TYPES.includes( syntaxType ) ) {
-				nodes.push( {
+			if (SYNTAX_TYPES.includes(syntaxType)) {
+				nodes.push({
 					type: syntaxType,
 					value,
 					index,
 					offset,
-				} );
+				});
 			}
 		}
-	} );
+	});
 
-	sort( file );
+	sort(file);
 
 	return {
 		nodes,
@@ -149,18 +149,18 @@ function core( value, processor, options = {} ) {
 	};
 }
 
-function filter( options = {} ) {
-	if ( options.allow && options.deny ) {
+function filter(options = {}) {
+	if (options.allow && options.deny) {
 		throw new Error(
 			'Do not provide both allow and deny configuration parameters'
 		);
 	}
 
-	return remarkMessageControl( {
+	return remarkMessageControl({
 		name: 'alex',
-		reset: Boolean( options.deny ),
+		reset: Boolean(options.deny),
 		enable: options.deny,
 		disable: options.allow,
-		source: [ 'retext-equality', 'retext-profanities' ],
-	} );
+		source: ['retext-equality', 'retext-profanities'],
+	});
 }

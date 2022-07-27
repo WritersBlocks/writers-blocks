@@ -1,0 +1,8 @@
+{
+	"*.css": [
+		"npm run lint:css"
+	],
+	"*.js": [
+		"npm run lint:js:src"
+	]
+}

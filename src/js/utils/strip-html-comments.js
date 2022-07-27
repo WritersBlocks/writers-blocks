@@ -5,6 +5,6 @@
  *
  * @return {string} The manipulated text.
  */
-export default function stripHTMLComments( text ) {
-	return text.replace( /<!--[\s\S]*?-->/g, '' );
+export default function stripHTMLComments(text) {
+	return text.replace(/<!--[\s\S]*?-->/g, '');
 }

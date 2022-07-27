@@ -9,10 +9,10 @@ import * as actions from './actions';
 
 const STORE_NAME = 'writers-blocks/editor';
 
-export const store = createReduxStore( STORE_NAME, {
+export const store = createReduxStore(STORE_NAME, {
 	reducer,
 	selectors,
 	actions,
-} );
+});
 
-register( store );
+register(store);

@@ -1,29 +1,26 @@
 {
 	"name": "writers-blocks",
-	"version": "",
-	"description": "",
-	"author": "",
+	"version": "0.0.1",
+	"description": "A suite of tools built for the Gutenberg editor. Write with more power and clarity, cut dead weight, and make your content more accessible, inclusive, and readable.",
 	"main": "build/index.js",
 	"engineStrict": true,
 	"engines": {
-		"node": ">=18.2.0",
-		"npm": ">=8.9.0"
+		"node": ">=16.0.0",
+		"npm": ">=7.0.0"
 	},
 	"files": [
-		"admin/**",
 		"build/**",
 		"includes/**",
-		"languages/**",
-		"public/**",
+		"assets/**",
 		"writers-blocks.php",
 		"config.php",
 		"uninstall.php",
-		"block.json",
-		"changelog.*",
+		"CHANGELOG.*",
 		"license.*",
-		"readme.*"
+		"README.*"
 	],
 	"scripts": {
+		"prepare": "husky install",
 		"build": "wp-scripts build",
 		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
@@ -35,14 +32,20 @@
 		"plugin-zip": "wp-scripts plugin-zip"
 	},
 	"devDependencies": {
+		"@types/wordpress__api-fetch": "^3.23.1",
 		"@types/wordpress__components": "^19.10.1",
 		"@types/wordpress__data": "^6.0.1",
 		"@types/wordpress__edit-post": "^4.0.1",
 		"@types/wordpress__notices": "^3.5.0",
 		"@types/wordpress__plugins": "^3.0.0",
+		"@types/wordpress__url": "^2.14.0",
 		"@wordpress/icons": "^6.3.0",
 		"@wordpress/scripts": "^23.5.0",
+		"commitlint": "^17.0.3",
+		"copy-webpack-plugin": "^11.0.0",
 		"cssnano": "^5.1.4",
+		"husky": "^8.0.1",
+		"lint-staged": "^13.0.3",
 		"postcss-css-variables": "^0.18.0",
 		"postcss-editor-styles": "^0.3.0",
 		"postcss-import": "^14.0.2",

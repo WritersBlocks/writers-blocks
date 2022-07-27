@@ -2,6 +2,7 @@
  * External dependencies
  */
 const { resolve } = require( 'path' );
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { WebWorkerPlugin } = require('@shopify/web-worker/webpack');
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
@@ -21,6 +22,14 @@ module.exports = {
 	plugins: [
 		...defaultConfig.plugins,
 		new RemoveEmptyScriptsPlugin(),
+		new CopyWebpackPlugin({
+			patterns: [
+				{
+					from: '.wordpress-org/*.{jpg,jpeg,png,gif,ico,svg}',
+					to: 'public/[name][ext]',
+				},
+			],
+		}),
 		new WebWorkerPlugin({
 			filename: 'js/[name].[contenthash].worker.js',
 		}),

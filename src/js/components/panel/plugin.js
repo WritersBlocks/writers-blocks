@@ -46,11 +46,16 @@ const PluginPanelWithError = () => {
 			<PluginSidebar
 				name="writers-blocks"
 				icon="text"
-				title={ __( "Writer's Blocks", 'writers-blocks' ) }
+				title={__("Writer's Blocks", 'writers-blocks')}
 			>
 				<PanelBody>
 					<PanelRow>
-						<p>{ __( 'An error occurred while loading the plugin.', 'writers-blocks' ) }</p>
+						<p>
+							{__(
+								'An error occurred while loading the plugin.',
+								'writers-blocks'
+							)}
+						</p>
 					</PanelRow>
 				</PanelBody>
 			</PluginSidebar>
@@ -59,189 +64,255 @@ const PluginPanelWithError = () => {
 };
 
 const PluginPanel = () => {
-	const [ suggestions, setSuggestions ] = DEFAULT_SETTINGS.demo !== true
-		? useState( DEFAULT_SETTINGS )
-		: useLocalStorage( DEFAULT_SETTINGS, 'writers_blocks' );
-	const [ mode, setMode ] = useState( DEFAULT_SETTINGS.mode );
-	const [ isOptionsPopoverOpen, setIsOptionsPopoverOpen ] = useState( false );
-	const [ isStyleOptionsPopoverOpen, setIsStyleOptionsPopoverOpen ] = useState( false );
-	const [ styleOptionsPopoverType, setStyleOptionsPopoverType ] = useState( null );
-	const [ ignoredWordList, setIgnoredWordList ] = DEFAULT_SETTINGS.demo !== true
-		? useState( '' )
-		: useLocalStorage( DEFAULT_SETTINGS, 'writers_blocks__ignored-words' );
-	const [ customWordList, setCustomWordList ] = DEFAULT_SETTINGS.demo !== true
-		? useState( '' )
-		: useLocalStorage( DEFAULT_SETTINGS, 'writers_blocks__dictionary' );
+	const [suggestions, setSuggestions] =
+		DEFAULT_SETTINGS.demo !== true
+			? useState(DEFAULT_SETTINGS)
+			: useLocalStorage(DEFAULT_SETTINGS, 'writers_blocks');
+	const [mode, setMode] = useState(DEFAULT_SETTINGS.mode);
+	const [isOptionsPopoverOpen, setIsOptionsPopoverOpen] = useState(false);
+	const [isStyleOptionsPopoverOpen, setIsStyleOptionsPopoverOpen] =
+		useState(false);
+	const [styleOptionsPopoverType, setStyleOptionsPopoverType] =
+		useState(null);
+	const [ignoredWordList, setIgnoredWordList] =
+		DEFAULT_SETTINGS.demo !== true
+			? useState('')
+			: useLocalStorage(
+					DEFAULT_SETTINGS,
+					'writers_blocks__ignored-words'
+			  );
+	const [customWordList, setCustomWordList] =
+		DEFAULT_SETTINGS.demo !== true
+			? useState('')
+			: useLocalStorage(DEFAULT_SETTINGS, 'writers_blocks__dictionary');
 
-	const siteSettings = useSelect( ( select ) => {
-		return select( 'core' ).getEntityRecord( 'root', 'site' );
-	} );
+	const siteSettings = useSelect((select) => {
+		return select('core').getEntityRecord('root', 'site');
+	});
 
-	useEffect( () => {
-		if ( suggestions.demo === true ) {
-			localStorage.setItem( 'writers_blocks', JSON.stringify( suggestions ) );
+	useEffect(() => {
+		if (suggestions.demo === true) {
+			localStorage.setItem('writers_blocks', JSON.stringify(suggestions));
 		}
-	}, [] );
+	}, []);
 
-	useEffect( () => {
-		if ( siteSettings ) {
+	useEffect(() => {
+		if (siteSettings) {
 			const { writers_blocks } = siteSettings;
-			
-			if ( writers_blocks ) {
-				setSuggestions( writers_blocks );
+
+			if (writers_blocks) {
+				setSuggestions(writers_blocks);
 			}
 		}
-	}, [ siteSettings ] );
+	}, [siteSettings]);
 
-	const { readingTime, score, polarity } = useSelect( ( select ) =>
-		select( store ).getReadability()
+	const { readingTime, score, polarity } = useSelect((select) =>
+		select(store).getReadability()
 	);
 
-	const problems = useSelect( ( select ) => {
-		const currentProblems = select( store ).getProblems();
+	const problems = useSelect((select) => {
+		const currentProblems = select(store).getProblems();
 
-		return Object.keys( PROBLEM_TYPES_TO_LABEL ).reduce( ( acc, key ) => {
-			acc[ key ] = currentProblems.filter( ( { type } ) => type === key );
+		return Object.keys(PROBLEM_TYPES_TO_LABEL).reduce((acc, key) => {
+			acc[key] = currentProblems.filter(({ type }) => type === key);
 			return acc;
-		}, {} );
-	} );
+		}, {});
+	});
 
 	return (
 		<Fragment>
-			{ isOptionsPopoverOpen ? (
+			{isOptionsPopoverOpen ? (
 				<Modal
-					title={ __( "Writer's Blocks options", 'writers-blocks' ) }
-					onRequestClose={ () => {
-						setIsOptionsPopoverOpen( false );
-					} }
+					title={__("Writer's Blocks options", 'writers-blocks')}
+					onRequestClose={() => {
+						setIsOptionsPopoverOpen(false);
+					}}
 				>
-					<h2 className='edit-post-options-modal__section-title'>{ __( 'License', 'writers-blocks' ) }</h2>
-					<p className='edit-post-options-modal__section-help'>{ __( 'Enter your license key for updates and support', 'writers-blocks' ) }</p>
+					<h2 className="edit-post-options-modal__section-title">
+						{__('License', 'writers-blocks')}
+					</h2>
+					<p className="edit-post-options-modal__section-help">
+						{__(
+							'Enter your license key for updates and support',
+							'writers-blocks'
+						)}
+					</p>
 					<LicenseChecker />
 				</Modal>
-			) :  null }
-			{ isStyleOptionsPopoverOpen ? (
+			) : null}
+			{isStyleOptionsPopoverOpen ? (
 				<Modal
-					title={ __( `${ capitalize( styleOptionsPopoverType ) } options`, 'writers-blocks' ) }
-					onRequestClose={ () => {
-						setIsStyleOptionsPopoverOpen( false );
-					} }
+					title={__(
+						`${capitalize(styleOptionsPopoverType)} options`,
+						'writers-blocks'
+					)}
+					onRequestClose={() => {
+						setIsStyleOptionsPopoverOpen(false);
+					}}
 				>
-					{ styleOptionsPopoverType === 'spell' ? (
+					{styleOptionsPopoverType === 'spell' ? (
 						<Fragment>
-							<h2 className='edit-post-options-modal__section-title'>{ __( 'Dictionary', 'writers-blocks' ) }</h2>
-							<p className='edit-post-options-modal__section-help'>{ __( 'Enter a list of words to add to the dictionary. Each word should be on a new line.', 'writers-blocks' ) }</p>
+							<h2 className="edit-post-options-modal__section-title">
+								{__('Dictionary', 'writers-blocks')}
+							</h2>
+							<p className="edit-post-options-modal__section-help">
+								{__(
+									'Enter a list of words to add to the dictionary. Each word should be on a new line.',
+									'writers-blocks'
+								)}
+							</p>
 							<TextareaControl
-								label={ __( 'Dictionary', 'writers-blocks' ) }
-								hideLabelFromVision={ true }
-								value={ customWordList }
-								rows={ suggestions.dictionary.split( ',' ).length + 4 }
-								onChange={ ( value ) => {
-									setCustomWordList( value ?? '' );
-								} }
-								spellCheck={ false }
+								label={__('Dictionary', 'writers-blocks')}
+								hideLabelFromVision={true}
+								value={customWordList}
+								rows={
+									suggestions.dictionary.split(',').length + 4
+								}
+								onChange={(value) => {
+									setCustomWordList(value ?? '');
+								}}
+								spellCheck={false}
 							/>
 						</Fragment>
-					 ) : null }
-					<h2 className='edit-post-options-modal__section-title'>{ __( 'Ignore List', 'writers-blocks' ) }</h2>
-					<p className='edit-post-options-modal__section-help'>{ __( 'Edit your list of ignored words. Each word should be on a new line.', 'writers-blocks' ) }</p>
+					) : null}
+					<h2 className="edit-post-options-modal__section-title">
+						{__('Ignore List', 'writers-blocks')}
+					</h2>
+					<p className="edit-post-options-modal__section-help">
+						{__(
+							'Edit your list of ignored words. Each word should be on a new line.',
+							'writers-blocks'
+						)}
+					</p>
 					<TextareaControl
-						label={ __( 'Ignored Words', 'writers-blocks' ) }
-						hideLabelFromVision={ true }
-						value={ ignoredWordList }
-						rows={ suggestions[ `ignored_${ styleOptionsPopoverType }` ].split( ',' ).length + 4 }
-						onChange={ ( value ) => {
-							setIgnoredWordList( value );
-						} }
-						spellCheck={ false }
+						label={__('Ignored Words', 'writers-blocks')}
+						hideLabelFromVision={true}
+						value={ignoredWordList}
+						rows={
+							suggestions[
+								`ignored_${styleOptionsPopoverType}`
+							].split(',').length + 4
+						}
+						onChange={(value) => {
+							setIgnoredWordList(value);
+						}}
+						spellCheck={false}
 					/>
 					<Button
 						isPrimary
-						onClick={ () => {
-							const ignoredWords = ignoredWordList.split( '\n' ).filter( ( word ) => word.length > 0 );
-							const previouslyIgnoredWords = suggestions[ `ignored_${ styleOptionsPopoverType }` ].split( ',' );
-							const previousDictionary = suggestions.dictionary.split( ',' );
+						onClick={() => {
+							const ignoredWords = ignoredWordList
+								.split('\n')
+								.filter((word) => word.length > 0);
+							const previouslyIgnoredWords =
+								suggestions[
+									`ignored_${styleOptionsPopoverType}`
+								].split(',');
+							const previousDictionary =
+								suggestions.dictionary.split(',');
 
-							if ( suggestions.demo !== true ) {
-								dispatch( 'core' )
-									.saveEntityRecord(
-										'root',
-										'site',
-										{
-											writers_blocks: {
-												...suggestions,
-												[ `ignored_${styleOptionsPopoverType}` ]: ignoredWords.join( ',' ),
-												...(styleOptionsPopoverType === 'spell' ? {
-													dictionary: customWordList.split( '\n' ).join( ',' ),
-												} : {})
-											},
-										}
-									)
-									.then( ( { writers_blocks } ) => {
-										setSuggestions(
-											writers_blocks
-										);
-									} );
+							if (suggestions.demo !== true) {
+								dispatch('core')
+									.saveEntityRecord('root', 'site', {
+										writers_blocks: {
+											...suggestions,
+											[`ignored_${styleOptionsPopoverType}`]:
+												ignoredWords.join(','),
+											...(styleOptionsPopoverType ===
+											'spell'
+												? {
+														dictionary:
+															customWordList
+																.split('\n')
+																.join(','),
+												  }
+												: {}),
+										},
+									})
+									.then(({ writers_blocks }) => {
+										setSuggestions(writers_blocks);
+									});
 							} else {
-								setSuggestions( {
+								setSuggestions({
 									...suggestions,
-									[ `ignored_${styleOptionsPopoverType}` ]: ignoredWords.join( ',' ),
-									...(styleOptionsPopoverType === 'spell' ? {
-										dictionary: customWordList.split( '\n' ).join( ',' ),
-									} : {})
-								} );
+									[`ignored_${styleOptionsPopoverType}`]:
+										ignoredWords.join(','),
+									...(styleOptionsPopoverType === 'spell'
+										? {
+												dictionary: customWordList
+													.split('\n')
+													.join(','),
+										  }
+										: {}),
+								});
 							}
 
 							[
-								...customWordList.split( '\n' ),
+								...customWordList.split('\n'),
 								...ignoredWords,
-							].forEach( ( word ) => {
-								const problems = select( store ).getProblemsByValue( word, styleOptionsPopoverType );
+							].forEach((word) => {
+								const problems = select(
+									store
+								).getProblemsByValue(
+									word,
+									styleOptionsPopoverType
+								);
 
-								problems.forEach( ( { annotationId } ) => {
+								problems.forEach(({ annotationId }) => {
 									dispatch(
 										'core/annotations'
-									).__experimentalRemoveAnnotation( annotationId );
-								} );
-							} );
+									).__experimentalRemoveAnnotation(
+										annotationId
+									);
+								});
+							});
 
-							const removedWords = previouslyIgnoredWords.filter( ( word ) => ! ignoredWords.includes( word ) );
-							const removedDictionary = previousDictionary.filter( ( word ) => ! customWordList.split( '\n' ).includes( word ) );
+							const removedWords = previouslyIgnoredWords.filter(
+								(word) => !ignoredWords.includes(word)
+							);
+							const removedDictionary = previousDictionary.filter(
+								(word) =>
+									!customWordList.split('\n').includes(word)
+							);
 
-							[
-								...removedWords,
-								...removedDictionary,
-							].forEach( ( word ) => {
-								const problems = select( store ).getProblemsByValue( word, styleOptionsPopoverType );
+							[...removedWords, ...removedDictionary].forEach(
+								(word) => {
+									const problems = select(
+										store
+									).getProblemsByValue(
+										word,
+										styleOptionsPopoverType
+									);
 
-								addAnnotations( problems );
-							} );
+									addAnnotations(problems);
+								}
+							);
 
-							setIsStyleOptionsPopoverOpen( false );
-						} }
+							setIsStyleOptionsPopoverOpen(false);
+						}}
 					>
-						{ __( 'Save', 'writers-blocks' ) }
+						{__('Save', 'writers-blocks')}
 					</Button>
 				</Modal>
-			) : null }
+			) : null}
 			<PluginSidebar
 				name="writers-blocks"
 				icon={WritersBlocksIcon}
-				title={ __( "Writer's Blocks", 'writers-blocks' ) }
+				title={__("Writer's Blocks", 'writers-blocks')}
 			>
-				<div style={ { padding: '6px 16px' } }>
+				<div style={{ padding: '6px 16px' }}>
 					<PanelRow className="components-panel__body-static">
 						<span>Settings</span>
 						<DropdownMenu
-							icon={ moreVertical }
+							icon={moreVertical}
 							label="Writer's Blocks settings"
 						>
-							{ ( { onClose } ) => (
+							{({ onClose }) => (
 								<Fragment>
 									<MenuGroup label="Mode">
 										<MenuItemsChoice
-											value={ mode }
-											choices={ [
+											value={mode}
+											choices={[
 												{
 													label: 'Writing',
 													value: 'writing',
@@ -249,271 +320,361 @@ const PluginPanel = () => {
 												{
 													label: 'Editing',
 													value: 'editing',
-													info: 'Highlight style suggestions'
+													info: 'Highlight style suggestions',
 												},
 												{
 													label: 'Syntax',
 													value: 'syntax',
-													info: 'Highlight parts of speech'
+													info: 'Highlight parts of speech',
 												},
 												// {
 												// 	label: 'Focus',
 												// 	value: 'focus',
 												// 	info: 'Focus on one paragraph at a time',
 												// },
-											] }
-											onSelect={ ( value ) => {
-												setMode( value );
-												
-												if ( suggestions.demo !== true ) {
-													dispatch( 'core' )
+											]}
+											onSelect={(value) => {
+												setMode(value);
+
+												if (suggestions.demo !== true) {
+													dispatch('core')
 														.saveEntityRecord(
 															'root',
 															'site',
 															{
-																writers_blocks: {
-																	...suggestions,
-																	mode: value,
-																},
+																writers_blocks:
+																	{
+																		...suggestions,
+																		mode: value,
+																	},
 															}
 														)
-														.then( ( { writers_blocks } ) => {
-															setSuggestions(
-																writers_blocks
-															);
-														} );
+														.then(
+															({
+																writers_blocks,
+															}) => {
+																setSuggestions(
+																	writers_blocks
+																);
+															}
+														);
 												} else {
-													setSuggestions( {
+													setSuggestions({
 														...suggestions,
 														mode: value,
-													} );
+													});
 												}
 
-												removeAnnotations( 'syntax' );
-												removeAnnotations( 'style' );
+												removeAnnotations('syntax');
+												removeAnnotations('style');
 
-												switch ( value ) {
+												switch (value) {
 													case 'editing':
-														const blockProblems = select(
-															'writers-blocks/editor'
-														).getProblems();
-						
-														addAnnotations( blockProblems );
+														const blockProblems =
+															select(
+																'writers-blocks/editor'
+															).getProblems();
+
+														addAnnotations(
+															blockProblems
+														);
 														break;
 													case 'syntax':
-														const blockWords = select(
-															'writers-blocks/editor'
-														).getWords();
-						
-														addAnnotations( blockWords );
+														const blockWords =
+															select(
+																'writers-blocks/editor'
+															).getWords();
+
+														addAnnotations(
+															blockWords
+														);
 														break;
 													default:
 														break;
 												}
-											} }
+											}}
 										/>
 									</MenuGroup>
 									<MenuGroup>
 										<MenuItem
 											label="Show options"
-											onClick={ () => setIsOptionsPopoverOpen( ( isOpen ) => ! isOpen ) }
+											onClick={() =>
+												setIsOptionsPopoverOpen(
+													(isOpen) => !isOpen
+												)
+											}
 										>
-											{ __( 'Options', 'writers-blocks' ) }
+											{__('Options', 'writers-blocks')}
 										</MenuItem>
 									</MenuGroup>
 								</Fragment>
-							) }
+							)}
 						</DropdownMenu>
 					</PanelRow>
 				</div>
-				<PanelBody title={ __( 'Readability', 'writers-blocks' ) }>
-					{ readingTime !== undefined && score !== undefined && polarity !== undefined ? (
+				<PanelBody title={__('Readability', 'writers-blocks')}>
+					{readingTime !== undefined &&
+					score !== undefined &&
+					polarity !== undefined ? (
 						<>
 							<PanelRow>
 								<span>Reading time</span>
-								<h2 style={ { margin: 0 } }>
-									{ ( readingTime || 0 ) >= 1
-										? `${ Math.round( readingTime ) } minute${
-												Math.round( readingTime || 0 ) > 1
+								<h2 style={{ margin: 0 }}>
+									{(readingTime || 0) >= 1
+										? `${Math.round(readingTime)} minute${
+												Math.round(readingTime || 0) > 1
 													? 's'
 													: ''
-										}`
-										: 'Less than a minute' }
+										  }`
+										: 'Less than a minute'}
 								</h2>
 							</PanelRow>
 							<PanelRow>
 								<span>Grade</span>
-								<h2 style={ { margin: 0 } }>{ score || 0 }</h2>
+								<h2 style={{ margin: 0 }}>{score || 0}</h2>
 							</PanelRow>
 							<PanelRow>
 								<span>Polarity</span>
-								<h2 style={ { margin: 0 } }>{ polarity || 0 }</h2>
+								<h2 style={{ margin: 0 }}>{polarity || 0}</h2>
 							</PanelRow>
 						</>
 					) : (
 						<Spinner />
-					) }
+					)}
 				</PanelBody>
-				<PanelBody title={ __( 'Syntax', 'writers-blocks' ) } initialOpen={ false }>
-					{ suggestions ? (
-						SYNTAX_TYPES.map( ( type ) => (
-							DEFAULT_SETTINGS[ type ] && <PanelRow key={ type }>
-								<div
-									className={ `writers-blocks__toggle ${ type }` }
-								>
-									<ToggleControl
-										label={
-											`${type.charAt( 0 ).toUpperCase() +
-											type.slice( 1 )}s`
-										}
-										checked={ suggestions[ type ] }
-										onChange={ ( checked ) => {
-											if ( suggestions.demo !== true ) {
-												dispatch( 'core' )
-													.saveEntityRecord( 'root', 'site', {
-														writers_blocks: {
+				<PanelBody
+					title={__('Syntax', 'writers-blocks')}
+					initialOpen={false}
+				>
+					{suggestions ? (
+						SYNTAX_TYPES.map(
+							(type) =>
+								DEFAULT_SETTINGS[type] && (
+									<PanelRow key={type}>
+										<div
+											className={`writers-blocks__toggle ${type}`}
+										>
+											<ToggleControl
+												label={`${
+													type
+														.charAt(0)
+														.toUpperCase() +
+													type.slice(1)
+												}s`}
+												checked={suggestions[type]}
+												onChange={(checked) => {
+													if (
+														suggestions.demo !==
+														true
+													) {
+														dispatch('core')
+															.saveEntityRecord(
+																'root',
+																'site',
+																{
+																	writers_blocks:
+																		{
+																			...suggestions,
+																			[type]: checked,
+																		},
+																}
+															)
+															.then(
+																({
+																	writers_blocks,
+																}) => {
+																	setSuggestions(
+																		writers_blocks
+																	);
+																}
+															);
+													} else {
+														setSuggestions({
 															...suggestions,
-															[ type ]: checked,
-														},
-													} )
-													.then( ( { writers_blocks } ) => {
-														setSuggestions(
-															writers_blocks
-														);
-													} );
-											} else {
-												setSuggestions({
-													...suggestions,
-													[ type ]: checked,
-												});
-											}
-
-											if ( checked ) {
-												const words = select(
-													store
-												).getWordsByType( type );
-
-												addAnnotations( words );
-											} else {
-												dispatch(
-													'core/annotations'
-												).__experimentalRemoveAnnotationsBySource(
-													`writers-blocks--syntax--${ type }`
-												);
-											}
-										} }
-									/>
-								</div>
-							</PanelRow>
-						) )
-					) : (
-						<Spinner />
-					) }
-				</PanelBody>
-				<PanelBody title={ __( 'Style', 'writers-blocks' ) } initialOpen={ false }>
-					{ suggestions ? (
-						Object.keys( PROBLEM_TYPES_TO_LABEL ).map( ( type ) => (
-							DEFAULT_SETTINGS[ type ] && <PanelRow key={ type } className="writers-blocks__panel-row">
-								<div
-									className={ `writers-blocks__toggle ${ type }` }
-								>
-									<ToggleControl
-										label={
-											PROBLEM_TYPES_TO_LABEL[ type ].label
-										}
-										help={ PROBLEM_TYPES_TO_LABEL[ type ].help(
-											problems[ type ].length
-										) }
-										checked={ suggestions[ type ] }
-										onChange={ ( checked ) => {
-											if ( suggestions.demo !== true ) {
-												dispatch( 'core' )
-													.saveEntityRecord( 'root', 'site', {
-														writers_blocks: {
-															...suggestions,
-															[ type ]: checked,
-														},
-													} )
-													.then( ( { writers_blocks } ) => {
-														setSuggestions(
-															writers_blocks
-														);
-													} );
-											} else {
-												setSuggestions({
-													...suggestions,
-													[ type ]: checked,
-												});
-											}
-
-											if ( checked ) {
-												const problems = select(
-													store
-												).getProblemsByType( type );
-
-												addAnnotations( problems, {
-													options: {
-														...suggestions,
-														[ type ]: true,
+															[type]: checked,
+														});
 													}
-												} );
-											} else {
-												dispatch(
-													'core/annotations'
-												).__experimentalRemoveAnnotationsBySource(
-													`writers-blocks--style--${ type }`
-												);
-											}
 
-											if (
-												type === 'readability' &&
-												checked
-											) {
-												const problems = select(
-													store
-												).getProblems();
+													if (checked) {
+														const words =
+															select(
+																store
+															).getWordsByType(
+																type
+															);
 
-												addAnnotations(
-													problems.filter(
-														( { type } ) =>
-															type !==
-																'readability' &&
-															suggestions[ type ]
-													),
-													{ options: {
-														...suggestions,
-														[ type ]: true,
-													} }
-												);
-											}
-										} }
-									/>
-								</div>
-								{ PROBLEM_TYPES_WITH_IGNORE.includes( type ) ? (
-									<Button
-										variant="tertiary"
-										icon={ moreVertical }
-										label={ __(
-											'More options',
-											'writers-blocks'
-										) }
-										onClick={ () => {
-											setIsStyleOptionsPopoverOpen( true );
-											setStyleOptionsPopoverType( type );
-											setIgnoredWordList( suggestions[ `ignored_${ type }` ].split( ',' ).join( '\n' ) );
-											
-											if ( type === 'spell' ) {
-												setCustomWordList( suggestions.dictionary.split( ',' ).join( '\n' ) );
-											}
-										} }
-										showTooltip={ true }
-									/>
-								) : null }
-							</PanelRow>
-						) )
+														addAnnotations(words);
+													} else {
+														dispatch(
+															'core/annotations'
+														).__experimentalRemoveAnnotationsBySource(
+															`writers-blocks--syntax--${type}`
+														);
+													}
+												}}
+											/>
+										</div>
+									</PanelRow>
+								)
+						)
 					) : (
 						<Spinner />
-					) }
+					)}
+				</PanelBody>
+				<PanelBody
+					title={__('Style', 'writers-blocks')}
+					initialOpen={false}
+				>
+					{suggestions ? (
+						Object.keys(PROBLEM_TYPES_TO_LABEL).map(
+							(type) =>
+								DEFAULT_SETTINGS[type] && (
+									<PanelRow
+										key={type}
+										className="writers-blocks__panel-row"
+									>
+										<div
+											className={`writers-blocks__toggle ${type}`}
+										>
+											<ToggleControl
+												label={
+													PROBLEM_TYPES_TO_LABEL[type]
+														.label
+												}
+												help={PROBLEM_TYPES_TO_LABEL[
+													type
+												].help(problems[type].length)}
+												checked={suggestions[type]}
+												onChange={(checked) => {
+													if (
+														suggestions.demo !==
+														true
+													) {
+														dispatch('core')
+															.saveEntityRecord(
+																'root',
+																'site',
+																{
+																	writers_blocks:
+																		{
+																			...suggestions,
+																			[type]: checked,
+																		},
+																}
+															)
+															.then(
+																({
+																	writers_blocks,
+																}) => {
+																	setSuggestions(
+																		writers_blocks
+																	);
+																}
+															);
+													} else {
+														setSuggestions({
+															...suggestions,
+															[type]: checked,
+														});
+													}
+
+													if (checked) {
+														const problems =
+															select(
+																store
+															).getProblemsByType(
+																type
+															);
+
+														addAnnotations(
+															problems,
+															{
+																options: {
+																	...suggestions,
+																	[type]: true,
+																},
+															}
+														);
+													} else {
+														dispatch(
+															'core/annotations'
+														).__experimentalRemoveAnnotationsBySource(
+															`writers-blocks--style--${type}`
+														);
+													}
+
+													if (
+														type ===
+															'readability' &&
+														checked
+													) {
+														const problems =
+															select(
+																store
+															).getProblems();
+
+														addAnnotations(
+															problems.filter(
+																({ type }) =>
+																	type !==
+																		'readability' &&
+																	suggestions[
+																		type
+																	]
+															),
+															{
+																options: {
+																	...suggestions,
+																	[type]: true,
+																},
+															}
+														);
+													}
+												}}
+											/>
+										</div>
+										{PROBLEM_TYPES_WITH_IGNORE.includes(
+											type
+										) ? (
+											<Button
+												variant="tertiary"
+												icon={moreVertical}
+												label={__(
+													'More options',
+													'writers-blocks'
+												)}
+												onClick={() => {
+													setIsStyleOptionsPopoverOpen(
+														true
+													);
+													setStyleOptionsPopoverType(
+														type
+													);
+													setIgnoredWordList(
+														suggestions[
+															`ignored_${type}`
+														]
+															.split(',')
+															.join('\n')
+													);
+
+													if (type === 'spell') {
+														setCustomWordList(
+															suggestions.dictionary
+																.split(',')
+																.join('\n')
+														);
+													}
+												}}
+												showTooltip={true}
+											/>
+										) : null}
+									</PanelRow>
+								)
+						)
+					) : (
+						<Spinner />
+					)}
 				</PanelBody>
 			</PluginSidebar>
 		</Fragment>
@@ -529,5 +690,5 @@ export const PluginPanelWithErrorBoundary = withErrorBoundary(PluginPanel, {
 		console.log(componentStack);
 		console.log('End Writers Blocks Error');
 		console.log('-----------------------------------');
-	}
+	},
 });

@@ -19,6 +19,6 @@ const tags = {
 	CC: 'conjunction',
 };
 
-export const getPartOfSpeech = ( tag ) => {
-	return tags[ tag ] || tag;
+export const getPartOfSpeech = (tag) => {
+	return tags[tag] || tag;
 };

@@ -7,55 +7,52 @@ import { useSelect, dispatch, select } from '@wordpress/data';
 import { ToolbarButton } from '@wordpress/components';
 import { useEffect, useState } from '@wordpress/element';
 
-import {
-	addAnnotations,
-	removeAnnotations,
-} from '../decorators/gutenberg';
+import { addAnnotations, removeAnnotations } from '../decorators/gutenberg';
 
 const {
 	WRITERS_BLOCKS: { settings: DEFAULT_SETTINGS },
 } = window;
 
-export const EditorToolbarButton = ( props ) => {
-	const [ settings, setSettings ] = useState( DEFAULT_SETTINGS );
+export const EditorToolbarButton = () => {
+	const [settings, setSettings] = useState(DEFAULT_SETTINGS);
 
-	const siteSettings = useSelect( ( select ) => {
-		return select( 'core' ).getEntityRecord( 'root', 'site' );
-	}, [] );
+	const siteSettings = useSelect((get) => {
+		return get('core').getEntityRecord('root', 'site');
+	}, []);
 
-	useEffect( () => {
-		if ( siteSettings ) {
-			const { writers_blocks: settings } = siteSettings;
-			setSettings( settings );
+	useEffect(() => {
+		if (siteSettings) {
+			const { writers_blocks } = siteSettings;
+			setSettings(writers_blocks);
 		}
-	}, [ siteSettings ] );
+	}, [siteSettings]);
 
 	return (
 		<ToolbarButton
-			className={ classnames( 'components-toolbar__control', {
+			className={classnames('components-toolbar__control', {
 				'is-pressed': settings.editing_mode === '1',
-			} ) }
+			})}
 			id="writers-blocks-toolbar-button"
 			icon="edit"
 			label="Edit"
-			onClick={ () => {
-				dispatch( 'core' ).saveEntityRecord( 'root', 'site', {
+			onClick={() => {
+				dispatch('core').saveEntityRecord('root', 'site', {
 					writers_blocks: {
 						...settings,
 						editing_mode: settings.editing_mode === '1' ? '0' : '1',
 					},
-				} );
+				});
 
-				if ( settings.editing_mode === '1' ) {
-					removeAnnotations( 'style' );
+				if (settings.editing_mode === '1') {
+					removeAnnotations('style');
 				} else {
 					const blockProblems = select(
 						'writers-blocks/editor'
 					).getProblems();
 
-					addAnnotations( blockProblems );
+					addAnnotations(blockProblems);
 				}
-			} }
+			}}
 		/>
 	);
 };

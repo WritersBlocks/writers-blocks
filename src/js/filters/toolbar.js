@@ -16,32 +16,30 @@ import { store as problemStore } from '../store';
 
 import { Toolbar } from '../components/toolbar';
 
-const addToolbar = createHigherOrderComponent( ( BlockEdit ) => {
-	return ( props ) => {
+const addToolbar = createHigherOrderComponent((BlockEdit) => {
+	return (props) => {
 		const { clientId, name, isSelected } = props;
 
-		if ( ! ALLOWED_BLOCKS.includes( name ) ) {
-			return <BlockEdit { ...props } />;
+		if (!ALLOWED_BLOCKS.includes(name)) {
+			return <BlockEdit {...props} />;
 		}
 
-		const blockProblems = select( problemStore ).getBlockProblems(
-			clientId
-		);
+		const blockProblems = select(problemStore).getBlockProblems(clientId);
 
-		if ( ! isSelected ) {
-			return <BlockEdit { ...props } />;
+		if (!isSelected) {
+			return <BlockEdit {...props} />;
 		}
 
 		return (
 			<Fragment>
-				<BlockEdit { ...props } />
+				<BlockEdit {...props} />
 				<BlockControls>
-					<Toolbar { ...props } blockProblems={ blockProblems } />
+					<Toolbar {...props} blockProblems={blockProblems} />
 				</BlockControls>
 			</Fragment>
 		);
 	};
-}, 'addToolbar' );
+}, 'addToolbar');
 
 addFilter(
 	'editor.BlockEdit',

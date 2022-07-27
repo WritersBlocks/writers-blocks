@@ -18,29 +18,27 @@ import { store } from '../store';
 
 let _content = '';
 
-const scheduleReadingScoreUpdate = debounce( ( content ) => {
-    dispatch( store ).updateReadability( readingScore( content ) );
-}, 500 );
+const scheduleReadingScoreUpdate = debounce((content) => {
+	dispatch(store).updateReadability(readingScore(content));
+}, 500);
 
-domReady( () => {
-    subscribe( debounce( () => {
-        const content = select( 'core/editor' ).getEditedPostContent();
-        const isTyping = select( 'core/block-editor' ).isTyping();
-        const strippedContent =
-            typeof content === 'string'
-                ? content.replace( /<!--(.*?)-->/g, '' )
-                : '';
+domReady(() => {
+	subscribe(
+		debounce(() => {
+			const content = select('core/editor').getEditedPostContent();
+			const isTyping = select('core/block-editor').isTyping();
+			const strippedContent =
+				typeof content === 'string'
+					? content.replace(/<!--(.*?)-->/g, '')
+					: '';
 
-        if (
-            isTyping ||
-            ! strippedContent ||
-            ( strippedContent === _content )
-        ) {
-            return;
-        }
+			if (isTyping || !strippedContent || strippedContent === _content) {
+				return;
+			}
 
-        scheduleReadingScoreUpdate( strippedContent );
+			scheduleReadingScoreUpdate(strippedContent);
 
-        _content = strippedContent;
-    }, 500 ) );
-} );
+			_content = strippedContent;
+		}, 500)
+	);
+});

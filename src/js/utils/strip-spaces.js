@@ -5,6 +5,6 @@
  *
  * @return {string} The manipulated text.
  */
-export default function stripSpaces( text ) {
-	return text.replace( /[\n\r\t]+/g, ' ' );
+export default function stripSpaces(text) {
+	return text.replace(/[\n\r\t]+/g, ' ');
 }

@@ -19,12 +19,12 @@ import {
  * @param {string} name     Block Name
  * @return {Object}          Updated settings object
  */
-function addAttributes( settings, name ) {
-	if ( ! ALLOWED_BLOCKS.includes( name ) ) {
+function addAttributes(settings, name) {
+	if (!ALLOWED_BLOCKS.includes(name)) {
 		return settings;
 	}
 
-	if ( settings.attributes ) {
+	if (settings.attributes) {
 		settings.attributes.isHighlighted = {
 			type: 'boolean',
 			default: DEFAULT_STATE.isHighlighted,
@@ -35,12 +35,12 @@ function addAttributes( settings, name ) {
 			default: DEFAULT_STATE.isBlurred,
 		};
 
-		Object.keys( PROBLEM_TYPES_TO_LABEL ).forEach( ( type ) => {
-			settings.attributes[ type ] = {
+		Object.keys(PROBLEM_TYPES_TO_LABEL).forEach((type) => {
+			settings.attributes[type] = {
 				type: 'boolean',
-				default: DEFAULT_STATE[ type ],
+				default: DEFAULT_STATE[type],
 			};
-		} );
+		});
 	}
 
 	return settings;

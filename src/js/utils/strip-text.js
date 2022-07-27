@@ -7,14 +7,14 @@ import stripSpaces from './strip-spaces';
 import stripHTMLEntities from './strip-html-entities';
 import stripNonBreakingSpaces from './strip-non-breaking-spaces';
 
-export const strip = ( text, { preserveWhiteSpace = true } = {} ) =>
+export const strip = (text, { preserveWhiteSpace = true } = {}) =>
 	text
-		? `${ flow(
+		? `${flow(
 				stripHTMComments,
 				stripAstrals,
 				stripNonBreakingSpaces,
 				stripSpaces,
 				stripHTMLEntities,
 				stripTags
-		  )( text, preserveWhiteSpace ) }\n`
+		  )(text, preserveWhiteSpace)}\n`
 		: '';

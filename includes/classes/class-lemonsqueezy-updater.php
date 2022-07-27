@@ -53,6 +53,7 @@ class LEMONSQUEEZY_UPDATER {
 
 		add_filter( 'plugins_api', array( $this, 'info' ), 20, 3 );
 		add_filter( 'site_transient_update_plugins', array( $this, 'update' ) );
+		// add_filter( 'upgrader_source_selection', array( $this, 'rename' ), 10, 3 );
 		add_action( 'upgrader_process_complete', array( $this, 'purge' ), 10, 2 );
 	}
 
@@ -138,6 +139,14 @@ class LEMONSQUEEZY_UPDATER {
 		$result->slug = $this->plugin_slug;
 		$result->sections = (array) $result->sections;
 
+		if (file_exists( WRITERS_BLOCKS_PATH . 'README.md' )) {
+			$result->sections['description'] = file_get_contents( WRITERS_BLOCKS_PATH . 'README.md', false ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		}
+
+		if (file_exists( WRITERS_BLOCKS_PATH . 'CHANGELOG.md' )) {
+			$result->sections['changelog'] = file_get_contents( WRITERS_BLOCKS_PATH . 'CHANGELOG.md', false ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		}
+
 		return $result;
 	}
 
@@ -161,12 +170,18 @@ class LEMONSQUEEZY_UPDATER {
 			'new_version'   => $this->version,
 			'url'           => '',
 			'package'       => '',
-			'icons'         => array(),
-			'banners'       => array(),
-			'banners_rtl'   => array(),
-			'tested'        => '',
-			'requires_php'  => '',
-			'compatibility' => new stdClass(),
+			'icons'         => [
+				'2x' => WRITERS_BLOCKS_URL . 'assets/images/icon-256X256.png',
+				'1x' => WRITERS_BLOCKS_URL . 'assets/images/icon-128X128.png',
+			],
+			'banners'       => [
+				'low' => WRITERS_BLOCKS_URL . 'assets/images/banner-772x250.jpg',
+				'high' => WRITERS_BLOCKS_URL . 'assets/images/banner-1544x500.jpg',
+			],
+			'tested'        => WRITERS_BLOCKS_TESTED_WP_VERSION,
+			'requires_php'  => WRITERS_BLOCKS_REQUIRES_WP_VERSION,
+			'requires_php'  => WRITERS_BLOCKS_REQUIRES_PHP_VERSION,
+			'compatibility' => WRITERS_BLOCKS_COMPATIBLE_WP_VERSION,
 		);
 
 		$remote = $this->request();

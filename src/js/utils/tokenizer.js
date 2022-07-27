@@ -1,15 +1,15 @@
 import Tokenizer from 'sentence-tokenizer';
 
-export const tokenize = ( text ) => {
+export const tokenize = (text) => {
 	const tokenizer = new Tokenizer();
-	tokenizer.setEntry( text );
+	tokenizer.setEntry(text);
 
 	try {
 		return {
 			sentences: tokenizer.getSentences(),
 			words: tokenizer.getTokens(),
 		};
-	} catch ( error ) {
+	} catch (error) {
 		return {
 			sentences: 0,
 			words: 0,

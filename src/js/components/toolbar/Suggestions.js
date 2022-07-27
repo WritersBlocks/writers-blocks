@@ -19,85 +19,78 @@ import { select } from '@wordpress/data';
 import { strip } from '../../utils/strip-text';
 import { CopyButton } from '../copy-button';
 
-export const SuggestionsToolbarButton = ( { attributes } ) => {
-	const [ isSuggestionsModalOpen, setIsSuggestionsModalOpen ] = useState(
-		false
-	);
-	const [
-		isSuggestionsModalLoading,
-		setIsSuggestionsModalLoading,
-	] = useState( false );
-	const [ selectedSentence, setSelectedSentence ] = useState( '' );
-	const [ selectedSentenceData, setSelectedSentenceData ] = useState( null );
+export const SuggestionsToolbarButton = ({ attributes }) => {
+	const [isSuggestionsModalOpen, setIsSuggestionsModalOpen] = useState(false);
+	const [isSuggestionsModalLoading, setIsSuggestionsModalLoading] =
+		useState(false);
+	const [selectedSentence, setSelectedSentence] = useState('');
+	const [selectedSentenceData, setSelectedSentenceData] = useState(null);
 
-	useEffect( () => {
-		if ( selectedSentence ) {
-			setIsSuggestionsModalOpen( true );
-			setIsSuggestionsModalLoading( true );
-			apiFetch( {
+	useEffect(() => {
+		if (selectedSentence) {
+			setIsSuggestionsModalOpen(true);
+			setIsSuggestionsModalLoading(true);
+			apiFetch({
 				path: `/writers-blocks/v1/rewrite`,
 				method: 'POST',
 				data: { text: selectedSentence },
-			} ).then( ( response ) => {
-				if ( response ) {
-					console.log( response );
-					setSelectedSentenceData( response );
-					setIsSuggestionsModalLoading( false );
+			}).then((response) => {
+				if (response) {
+					console.log(response);
+					setSelectedSentenceData(response);
+					setIsSuggestionsModalLoading(false);
 				}
-			} );
+			});
 		}
-	}, [ selectedSentence ] );
+	}, [selectedSentence]);
 
 	return (
 		<Fragment>
 			<ToolbarButton
-				className={ classnames( 'components-toolbar__control', {
+				className={classnames('components-toolbar__control', {
 					'is-pressed': isSuggestionsModalOpen,
-				} ) }
-				label={ __( 'Dictionary', 'writers-blocks' ) }
+				})}
+				label={__('Dictionary', 'writers-blocks')}
 				icon="lightning"
-				onClick={ () => {
-					const { offset: selectionStart } = select(
-						'core/block-editor'
-					).getSelectionStart();
-					const {
-						offset: selectionEnd,
-						attributeKey: content,
-					} = select( 'core/block-editor' ).getSelectionEnd();
+				onClick={() => {
+					const { offset: selectionStart } =
+						select('core/block-editor').getSelectionStart();
+					const { offset: selectionEnd, attributeKey: content } =
+						select('core/block-editor').getSelectionEnd();
 
-					if ( selectionStart !== selectionEnd ) {
-						const text = strip( attributes[ content ] );
+					if (selectionStart !== selectionEnd) {
+						const text = strip(attributes[content]);
 						const sentence = text
-							.slice( selectionStart, selectionEnd )
+							.slice(selectionStart, selectionEnd)
 							.trim();
 
-						if ( sentence ) {
-							setSelectedSentence( sentence );
+						if (sentence) {
+							setSelectedSentence(sentence);
 						}
 					}
-				} }
+				}}
 			/>
-			{ isSuggestionsModalOpen ? (
+			{isSuggestionsModalOpen ? (
 				<Modal
 					className="wp-block-writers-blocks-rewrite__modal"
-					title={ __( 'Sentence Rewrite', 'writers-blocks' ) }
-					onRequestClose={ () => {
-						setIsSuggestionsModalOpen( false );
-						setSelectedSentenceData( null );
-					} }
+					title={__('Sentence Rewrite', 'writers-blocks')}
+					onRequestClose={() => {
+						setIsSuggestionsModalOpen(false);
+						setSelectedSentenceData(null);
+					}}
 					isFullScreen
 				>
-					{ isSuggestionsModalLoading ? (
+					{isSuggestionsModalLoading ? (
 						<div className="wp-block-writers-blocks-rewrite__modal-loading">
 							<Spinner />
 						</div>
 					) : (
 						<div className="wp-block-writers-blocks-rewrite__modal-content">
-							{ /* <Flex className="wp-block-writers-blocks-rewrite__modal-title" justify="flex-start">
+							{/* <Flex className="wp-block-writers-blocks-rewrite__modal-title" justify="flex-start">
                                     <h2>{ __( 'Original', 'writers-blocks' ) }</h2>
                                     <small>{ selectedSentence }</small>
-                                </Flex> */ }
-							{ /* {
+                                </Flex> */}
+							{/* {
                                     selectedSentenceData && Object.keys(selectedSentenceData.results).length ?
                                         (
                                             <div>
@@ -175,11 +168,11 @@ export const SuggestionsToolbarButton = ( { attributes } ) => {
                                         ) : (
                                         <p>{ __( 'No results found', 'writers-blocks' ) }</p>
                                     )
-                                } */ }
+                                } */}
 						</div>
-					) }
+					)}
 				</Modal>
-			) : null }
+			) : null}
 		</Fragment>
 	);
 };
