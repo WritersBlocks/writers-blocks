@@ -32,9 +32,7 @@ export const CopyButton = ({
 			className="wp-block-writers-blocks-word__modal-synonym"
 			variant={variant}
 			showTooltip={true}
-			label={
-				label && sprintf( 'Copy %d and close modal', text )
-			}
+			label={label && sprintf('Copy %d and close modal', text)}
 			ref={ref}
 		>
 			{buttonText || text}

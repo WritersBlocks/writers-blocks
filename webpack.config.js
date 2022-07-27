@@ -22,14 +22,14 @@ module.exports = {
 	plugins: [
 		...defaultConfig.plugins,
 		new RemoveEmptyScriptsPlugin(),
-		new CopyWebpackPlugin({
-			patterns: [
-				{
-					from: '.wordpress-org/*.{jpg,jpeg,png,gif,ico,svg}',
-					to: 'public/[name][ext]',
-				},
-			],
-		}),
+		// new CopyWebpackPlugin({
+		// 	patterns: [
+		// 		{
+		// 			from: 'assets/images/*.{jpg,jpeg,png,gif,ico,svg}',
+		// 			to: '.wordpress-org/[name][ext]',
+		// 		},
+		// 	],
+		// }),
 		new WebWorkerPlugin({
 			filename: 'js/[name].[contenthash].worker.js',
 		}),

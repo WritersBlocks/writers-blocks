@@ -5,7 +5,7 @@
  * @package HoltInternationalPlugin
  */
 
-wb_plugin_define( 'WRITERS_BLOCKS_VERSION', '0.2.1' );
+wb_plugin_define( 'WRITERS_BLOCKS_VERSION', '1.0.0' );
 wb_plugin_define( 'WRITERS_BLOCKS_REQUIRES_WP_VERSION', '5.3' );
 wb_plugin_define( 'WRITERS_BLOCKS_COMPATIBLE_WP_VERSION', '5.9.3' );
 wb_plugin_define( 'WRITERS_BLOCKS_REQUIRES_PHP_VERSION', '7.0' );
