@@ -4,7 +4,7 @@
  * Description:       Writer's Blocks is a suite of tools built for the Gutenberg editor. Write with more power and clarity, cut dead weight, and make your content more accessible, inclusive, and readable.
  * Requires at least: 5.8
  * Requires PHP:      7.0
- * Version:           0.1.0
+ * Version:           0.1.1
  * Author:            Writer's Blocks
  * Author URI:        https://usewritersblocks.com
  * Text Domain:       writers-blocks

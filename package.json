@@ -15,9 +15,9 @@
 		"writers-blocks.php",
 		"config.php",
 		"uninstall.php",
-		"CHANGELOG.*",
+		"changelog.*",
 		"license.*",
-		"README.*"
+		"readme.*"
 	],
 	"scripts": {
 		"prepare": "husky install",
@@ -29,7 +29,9 @@
 		"lint:js:src:fix": "wp-scripts lint-js ./src --fix",
 		"start": "wp-scripts start",
 		"packages-update": "wp-scripts packages-update",
-		"plugin-zip": "wp-scripts plugin-zip"
+		"plugin-zip": "wp-scripts plugin-zip",
+		"generate:description": "marked -i README.md -o assets/html/description.html",
+		"generate:changelog": "marked -i CHANGELOG.md -o assets/html/changelog.html"
 	},
 	"devDependencies": {
 		"@types/wordpress__api-fetch": "^3.23.1",
@@ -42,6 +44,7 @@
 		"@wordpress/icons": "^6.3.0",
 		"@wordpress/scripts": "^23.5.0",
 		"commitlint": "^17.0.3",
+		"conventional-changelog-conventionalcommits": "^5.0.0",
 		"copy-webpack-plugin": "^11.0.0",
 		"cssnano": "^5.1.4",
 		"husky": "^8.0.1",
@@ -67,6 +70,7 @@
 		"dictionary-en": "^3.1.0",
 		"dictionary-en-gb": "^2.3.0",
 		"lodash": "^4.17.21",
+		"marked": "^4.0.18",
 		"nlcst-search": "^3.1.0",
 		"nlcst-to-string": "^3.1.0",
 		"open-color": "^1.9.1",
