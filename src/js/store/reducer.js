@@ -55,7 +55,7 @@ export function problems(state = { list: [] }, action) {
 			return {
 				...state,
 				list: state.list.filter(
-					(problem) => problem.id !== action.name
+					(problem) => problem.annotationId !== action.name
 				),
 			};
 		case 'IGNORE_PROBLEM':
