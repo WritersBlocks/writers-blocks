@@ -43,18 +43,18 @@ class LEMONSQUEEZY_UPDATER {
 	 * @param string $version     The API URL to the update server.
 	 */
 	public function __construct( $plugin_id, $plugin_slug, $version, $api_url ) {
-		$this->plugin_id     = $plugin_id;
-		$this->plugin_slug   = $plugin_slug;
-		$this->version       = $version;
-		$this->api_url       = $api_url;
+		$this->plugin_id   = $plugin_id;
+		$this->plugin_slug = $plugin_slug;
+		$this->version     = $version;
+		$this->api_url     = $api_url;
 
 		$this->cache_key     = str_replace( '-', '_', $this->plugin_slug ) . '_updater';
 		$this->cache_allowed = false; // Only disable this for debugging
 
-		add_filter( 'plugins_api', array( $this, 'info' ), 20, 3 );
-		add_filter( 'site_transient_update_plugins', array( $this, 'update' ) );
-		add_filter( 'upgrader_source_selection', array( $this, 'rename' ), 10, 3 );
-		add_action( 'upgrader_process_complete', array( $this, 'purge' ), 10, 2 );
+		add_filter( 'plugins_api', [ $this, 'info' ], 20, 3 );
+		add_filter( 'site_transient_update_plugins', [ $this, 'update' ] );
+		add_filter( 'upgrader_source_selection', [ $this, 'rename' ], 10, 3 );
+		add_action( 'upgrader_process_complete', [ $this, 'purge' ], 10, 2 );
 	}
 
 	/**
@@ -73,6 +73,11 @@ class LEMONSQUEEZY_UPDATER {
             : null;
 	}
 
+	/**
+	 * Get the html markup for the screenshot section.
+	 *
+	 * @return string
+	 */
 	public function screenshots() {
 		$html        = '<ol>';
 		$screenshots = [
@@ -133,8 +138,13 @@ class LEMONSQUEEZY_UPDATER {
 		return $html;
 	}
 
+	/**
+	 * Get the html markup for the installation section.
+	 *
+	 * @return string
+	 */
 	public function installation() {
-		$html = '<p>Install Writer\'s Blocks like you would any other WordPress plugin:</p>';
+		$html  = '<p>Install Writer\'s Blocks like you would any other WordPress plugin:</p>';
 		$html .= '<ol>';
 		$html .= '<li>Download the plugin from <a href="https://usewritersblocks.com" target="_blank">usewritersblocks.com</a>.</li>';
 		$html .= '<li>Log in to your WordPress installation.</li>';
@@ -149,6 +159,11 @@ class LEMONSQUEEZY_UPDATER {
 		return $html;
 	}
 
+	/**
+	 * Get the html markup for the FAQ section.
+	 *
+	 * @return string
+	 */
 	public function faq() {
 		$html = '';
 		$faq  = [
@@ -189,9 +204,7 @@ class LEMONSQUEEZY_UPDATER {
 		if ( false === $remote || ! $this->cache_allowed ) {
 			$remote = wp_remote_get(
 				$this->api_url . "/update?license_key={$lsq_license_key}",
-				array(
-					'timeout' => 10,
-				)
+				[ 'timeout' => 10 ]
 			);
 
 			if (
@@ -293,20 +306,20 @@ class LEMONSQUEEZY_UPDATER {
 			return $transient;
 		}
 
-		$res = (object) array(
+		$res = (object) [
 			'id'            => $this->plugin_id,
 			'slug'          => $this->plugin_slug,
 			'plugin'        => $this->plugin_id,
 			'new_version'   => $this->version,
 			'url'           => '',
 			'package'       => '',
-			'icons'         => array(),
-			'banners'       => array(),
-			'banners_rtl'   => array(),
+			'icons'         => [],
+			'banners'       => [],
+			'banners_rtl'   => [],
 			'tested'        => '',
 			'requires_php'  => '',
 			'compatibility' => new stdClass(),
-		);
+		];
 
 		$remote = $this->request();
 
@@ -337,11 +350,11 @@ class LEMONSQUEEZY_UPDATER {
 	public function purge( $upgrader, $options ) {
 		if (
 			$this->cache_allowed
-			&& 'update' === $options['action']
-			&& 'plugin' === $options['type']
-			&& ! empty( $options['plugins'] )
+			&& 'update' === $options[ 'action' ]
+			&& 'plugin' === $options[ 'type' ]
+			&& ! empty( $options[ 'plugins' ] )
 		) {
-			foreach ( $options['plugins'] as $plugin ) {
+			foreach ( $options[ 'plugins' ] as $plugin ) {
 				if ( $plugin === $this->plugin_id ) {
 					delete_transient( $this->cache_key );
 				}
@@ -349,51 +362,52 @@ class LEMONSQUEEZY_UPDATER {
 		}
 	}
 
-	private function plugin($searchHeaders) {
-		if ( !function_exists('get_plugins') ){
+	private function plugin( $search_headers ) {
+		if ( !function_exists( 'get_plugins' ) ){
 			/** @noinspection PhpIncludeInspection */
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		}
 
-		$installedPlugins = get_plugins();
-		$matches = array();
-		foreach ($installedPlugins as $pluginBasename => $headers) {
-			$diff1 = array_diff_assoc($headers, $searchHeaders);
-			$diff2 = array_diff_assoc($searchHeaders, $headers);
-			if ( empty($diff1) && empty($diff2) ) {
-				$matches[] = $pluginBasename;
+		$installed_plugins = get_plugins();
+		$matches = [];
+
+		foreach ( $installed_plugins as $plugin_basename => $headers ) {
+			$diff = array_diff_assoc( $headers, $search_headers );
+
+			if ( empty( $diff ) && empty( array_diff_assoc( $search_headers, $headers ) ) ) {
+				$matches[] = $plugin_basename;
 			}
 		}
 
-		//It's possible (though very unlikely) that there could be two plugins with identical
-		//headers. In that case, we can't unambiguously identify the plugin that's being upgraded.
-		if ( count($matches) !== 1 ) {
+		// It's possible (though very unlikely) that there could be two plugins with identical
+		// headers. In that case, we can't unambiguously identify the plugin that's being upgraded.
+		if ( count( $matches ) !== 1 ) {
 			return null;
 		}
 
-		return reset($matches);
+		return reset( $matches );
 	}
 
-	private function active($upgrader) {
-		if ( !isset($upgrader, $upgrader->skin) ) {
+	private function active( $upgrader ) {
+		if ( !isset( $upgrader, $upgrader->skin ) ) {
 			return null;
 		}
 
-		$pluginFile = null;
+		$plugin_file = null;
 		$skin = $upgrader->skin;
 
 		if ( $skin instanceof Plugin_Upgrader_Skin ) {
-			if ( isset($skin->plugin) && is_string($skin->plugin) && ($skin->plugin !== '') ) {
-				$pluginFile = $skin->plugin;
+			if ( isset( $skin->plugin ) && is_string( $skin->plugin ) && ( $skin->plugin !== '' ) ) {
+				$plugin_file = $skin->plugin;
 			}
-		} elseif ( isset($skin->plugin_info) && is_array($skin->plugin_info) ) {
-			//This case is tricky because Bulk_Plugin_Upgrader_Skin (etc) doesn't actually store the plugin
-			//filename anywhere. Instead, it has the plugin headers in $plugin_info. So the best we can
-			//do is compare those headers to the headers of installed plugins.
-			$pluginFile = $this->plugin($skin->plugin_info);
+		} elseif ( isset( $skin->plugin_info ) && is_array( $skin->plugin_info ) ) {
+			// This case is tricky because Bulk_Plugin_Upgrader_Skin (etc) doesn't actually store the plugin
+			// filename anywhere. Instead, it has the plugin headers in $plugin_info. So the best we can
+			// do is compare those headers to the headers of installed plugins.
+			$plugin_file = $this->plugin( $skin->plugin_info );
 		}
 
-		return $pluginFile;
+		return $plugin_file;
 	}
 
 	/**
@@ -402,11 +416,11 @@ class LEMONSQUEEZY_UPDATER {
 	 * @param WP_Upgrader|null $upgrader The upgrader that's performing the current update.
 	 * @return bool
 	 */
-	public function upgrading($upgrader = null) {
+	public function upgrading( $upgrader = null ) {
 		$id = null;
 
-		if ( isset($upgrader) ) {
-			$id = $this->active($upgrader);
+		if ( isset( $upgrader ) ) {
+			$id = $this->active( $upgrader );
 		}
 
 		return $this->plugin_id === $id;
@@ -416,23 +430,24 @@ class LEMONSQUEEZY_UPDATER {
 	 * Check for incorrect update directory structure. An update must contain a single directory,
 	 * all other files should be inside that directory.
 	 *
-	 * @param string $remoteSource Directory path.
+	 * @param string $remote_source Directory path.
 	 * @return bool
 	 */
-	public function validate($remoteSource) {
+	public function validate( $remote_source ) {
 		global $wp_filesystem;
 		/** @var WP_Filesystem_Base $wp_filesystem */
 
-		$sourceFiles = $wp_filesystem->dirlist($remoteSource);
-		if ( is_array($sourceFiles) ) {
-			$sourceFiles = array_keys($sourceFiles);
-			$firstFilePath = trailingslashit($remoteSource) . $sourceFiles[0];
+		$source_files = $wp_filesystem->dirlist( $remote_source );
+
+		if ( is_array( $source_files ) ) {
+			$source_files = array_keys( $source_files );
+			$first_file_path = trailingslashit( $remote_source ) . $source_files[ 0 ];
 
 			// If the first file is not a directory, then the directory structure is bad.
-			return (count($sourceFiles) > 1) || (!$wp_filesystem->is_dir($firstFilePath));
+			return ( count( $source_files ) > 1 ) || ( ! $wp_filesystem->is_dir( $first_file_path ) );
 		}
 
-		//Assume it's fine.
+		// Assume it's fine.
 		return false;
 	}
 
@@ -448,59 +463,54 @@ class LEMONSQUEEZY_UPDATER {
 	 *
 	 * This is a hook callback. Don't call it from a plugin.
 	 *
-	 * @param string $source The directory to copy to /wp-content/plugins or /wp-content/themes. Usually a subdirectory of $remoteSource.
-	 * @param string $remoteSource WordPress has extracted the update to this directory.
+	 * @param string $source The directory to copy to /wp-content/plugins or /wp-content/themes. Usually a subdirectory of $remote_source.
+	 * @param string $remote_source WordPress has extracted the update to this directory.
 	 * @param WP_Upgrader $upgrader
 	 * @return string|WP_Error
 	 */
-	public function rename($source, $remoteSource, $upgrader) {
+	public function rename( $source, $remote_source, $upgrader ) {
 		global $wp_filesystem;
 		/** @var WP_Filesystem_Base $wp_filesystem */
 
-		//Basic sanity checks.
-		if ( !isset($source, $remoteSource, $upgrader, $upgrader->skin, $wp_filesystem) ) {
+		// Basic sanity checks.
+		if ( ! isset( $source, $remote_source, $upgrader, $upgrader->skin, $wp_filesystem ) ) {
 			return $source;
 		}
 
-		//If WordPress is upgrading anything other than our plugin/theme, leave the directory name unchanged.
-		if ( !$this->upgrading($upgrader) ) {
+		// If WordPress is upgrading anything other than our plugin/theme, leave the directory name unchanged.
+		if ( ! $this->upgrading( $upgrader ) ) {
 			return $source;
 		}
 
-		//Rename the source to match the existing directory.
-		$correctedSource = trailingslashit($remoteSource) . $this->plugin_slug . '/';
-		if ( $source !== $correctedSource ) {
-			//The update archive should contain a single directory that contains the rest of plugin/theme files.
-			//Otherwise, WordPress will try to copy the entire working directory ($source == $remoteSource).
-			//We can't rename $remoteSource because that would break WordPress code that cleans up temporary files
-			//after update.
-			if ( $this->validate($remoteSource) ) {
+		// Rename the source to match the existing directory.
+		$corrected_source = trailingslashit( $remote_source ) . $this->plugin_slug . '/';
+
+		if ( $source !== $corrected_source ) {
+			// The update archive should contain a single directory that contains the rest of plugin/theme files.
+			// Otherwise, WordPress will try to copy the entire working directory ($source == $remote_source).
+			// We can't rename $remote_source because that would break WordPress code that cleans up temporary files
+			// after update.
+			if ( $this->validate( $remote_source ) ) {
 				return new WP_Error(
 					'writers-blocks-incorrect-directory-structure',
 					sprintf(
 						'The directory structure of the update is incorrect. All files should be inside ' .
 						'a directory named <span class="code">%s</span>, not at the root of the ZIP archive. ' .
-						'Source: <span class="code">%s</span> ' .
-						'Corrected source: <span class="code">%s</span> ' .
-						'Remote source: <span class="code">%s</span>',
-						htmlentities($this->plugin_slug),
-						htmlentities($source),
-						htmlentities($correctedSource),
-						htmlentities($remoteSource),
+						htmlentities( $this->plugin_slug ),
 					)
 				);
 			}
 
-			/** @var WP_Upgrader_Skin $upgrader ->skin */
-			$upgrader->skin->feedback(sprintf(
+			/** @var WP_Upgrader_Skin $upgrader->skin */
+			$upgrader->skin->feedback( sprintf(
 				'Renaming %s to %s&#8230;',
-				'<span class="code">' . basename($source) . '</span>',
+				'<span class="code">' . basename( $source ) . '</span>',
 				'<span class="code">' . $this->plugin_id . '</span>'
-			));
+			) );
 
-			if ( $wp_filesystem->move($source, $correctedSource, true) ) {
-				$upgrader->skin->feedback('Directory successfully renamed.');
-				return $correctedSource;
+			if ( $wp_filesystem->move( $source, $corrected_source, true ) ) {
+				$upgrader->skin->feedback( 'Directory successfully renamed.' );
+				return $corrected_source;
 			} else {
 				return new WP_Error(
 					'writers-blocks-rename-failed',
