@@ -223,6 +223,7 @@ const Tooltip = ({ isShown, target, annotationId }) => {
 								).getProblemsByValue(value, type);
 
 								problems.forEach(({ annotationId }) => {
+									dispatch( store ).removeProblem( annotationId );
 									dispatch(
 										'core/annotations'
 									).__experimentalRemoveAnnotation(
@@ -285,11 +286,13 @@ const Tooltip = ({ isShown, target, annotationId }) => {
 												name === 'core/list',
 										}),
 									}).then(() => {
+										dispatch( store ).removeProblem( annotationId );
 										dispatch(
 											'core/annotations'
 										).__experimentalRemoveAnnotation(
 											annotationId
 										);
+
 										createNotice(
 											'info',
 											__(
